@@ -1,0 +1,117 @@
+.chinese{
+    -webkit-text-orientation:upright;
+    text-orientation: upright;
+    vertical-align: middle;
+}
+.jumbotron p {
+    padding-top: 68px;
+}
+.nav>li>a {
+    display: inline-block;
+}
+.glyphicon {
+    margin-bottom: 5px;
+    vertical-align: middle;
+    left: 0;
+}
+.footer {
+    padding: 20px 50px;
+    margin-left: 100px;
+    color: #ccc;
+    background-color: #286090;
+}
+.navbar-default .navbar-nav>li>a {
+    display: block;
+}
+#typehere textarea,
+#typehere input{
+    display: table-cell;
+    font-size:16px;
+    height: 100%;
+    border-radius: 0;
+    margin-right: 20px;
+}
+#typehere textarea, #editable{
+    min-width: 300px;
+}
+#typehere input[type="text"]{
+    width: auto;
+}
+#editable{
+    overflow-y: auto;
+    font-size:16px;
+    height: 100%;
+    margin-right: 20px;
+}
+#donate{
+    color: #FFC107;
+    font-size: 32px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px #FFC107 solid;
+    border-radius: 9px;
+}
+#donate-img{
+    margin-top: 20px;
+}
+iframe#dlfile{
+    width: 0;
+    height: 0;
+    position: fixed;
+    top: -999em;
+    visibility:hidden;
+    display: none;
+}
+#dlcount{
+    margin-top: 5px;
+}
+
+/*WeChat*/
+.navbar-header {
+    width: 50px;
+}
+.footer .row{
+    width: 128px;    
+}
+/*firefox*/
+@-moz-document url-prefix() {
+    .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+        margin-top: 0;
+    }
+}
+/*MS Edge*/
+@supports (-ms-accelerator:true) {
+    .chinese, .glyphicon, .badge{
+        vertical-align: baseline;
+    }
+    #typehere textarea,
+    #typehere input{
+        display: inline-block;
+        writing-mode: tb-lr;
+    }
+}
+/*IE9-11*/
+@media screen and (min-width:0\0){
+    .mong, [lang=mn-mong] > body, [mong] { 
+        font-feature-settings: normal;
+    }
+    .chinese, .glyphicon, .badge{
+        vertical-align: baseline;
+    }
+    #typehere textarea,
+    #typehere input{
+        display: inline-block;
+        -ms-writing-mode: tb-lr;
+    }
+}
+@media (max-height: 520px) {
+    #donate-img{
+        display: block;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    #donate{
+        font-size: 24px;
+        border-radius: 5px;
+    }
+}
