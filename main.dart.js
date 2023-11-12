@@ -28077,7 +28077,7 @@ if(s==null||this.c==null)return
 s.toString
 this.U4(s)}}
 A.rr.prototype={
-K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"textarea")
+K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"input")
 r.c=o
 o.spellcheck=!1
 s=A.aX("off")
@@ -28521,7 +28521,7 @@ giP(){return"search"}}
 A.a5R.prototype={
 giP(){return"send"}}
 A.Yz.prototype={
-CL(){return A.c0(self.document,"input")},
+CL(){return A.c0(self.document,"textarea")},
 Oc(a){var s
 if(this.giZ()==null)return
 s=$.dl()
