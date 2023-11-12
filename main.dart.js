@@ -838,7 +838,7 @@ aCh(a){var s=a.a
 if((s&256)!==0)return B.P2
 else if((s&65536)!==0)return B.P3
 else return B.P1},
-axx(a){var s=new A.q1(A.c0(self.document,"input"),a)
+axx(a){var s=new A.q1(A.c0(self.document,"textarea"),a)
 s.XM(a)
 return s},
 ax_(a){return new A.Yr(a)},
@@ -991,7 +991,7 @@ for(s=n.length,d=0,r="";d<s;++d){c=n[d]
 r=(r.length>0?r+"*":r)+c}b=r.charCodeAt(0)==0?r:r
 a=$.Df.h(0,b)
 if(a!=null)a.remove()
-a0=A.c0(self.document,"input")
+a0=A.c0(self.document,"textarea")
 A.TT(a0,!0)
 a0.className="submitBtn"
 A.Xk(a0,"submit")
@@ -28077,7 +28077,7 @@ if(s==null||this.c==null)return
 s.toString
 this.U4(s)}}
 A.rr.prototype={
-K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"input")
+K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"textarea")
 r.c=o
 o.spellcheck=!1
 s=A.aX("off")
@@ -28521,7 +28521,7 @@ giP(){return"search"}}
 A.a5R.prototype={
 giP(){return"send"}}
 A.Yz.prototype={
-CL(){return A.c0(self.document,"input")},
+CL(){return A.c0(self.document,"textarea")},
 Oc(a){var s
 if(this.giZ()==null)return
 s=$.dl()
@@ -28532,7 +28532,7 @@ s.toString
 s=A.aX(s)
 A.am(a,"setAttribute",["inputmode",s==null?t.K.a(s):s])}}}
 A.a2f.prototype={
-giZ(){return A.c0(self.document,"textarea")}}
+giZ(){return"none"}}
 A.a7o.prototype={
 giZ(){return null}}
 A.a2i.prototype={
