@@ -28077,7 +28077,7 @@ if(s==null||this.c==null)return
 s.toString
 this.U4(s)}}
 A.rr.prototype={
-K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"input")
+K6(){var s,r=this,q="setAttribute",p=r.b,o=(p.a&524288)!==0?A.c0(self.document,"textarea"):A.c0(self.document,"textarea")
 r.c=o
 o.spellcheck=!1
 s=A.aX("off")
