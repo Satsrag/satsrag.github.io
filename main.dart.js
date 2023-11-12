@@ -28532,7 +28532,7 @@ s.toString
 s=A.aX(s)
 A.am(a,"setAttribute",["inputmode",s==null?t.K.a(s):s])}}}
 A.a2f.prototype={
-giZ(){return"none"}}
+giZ(){return A.c0(self.document,"textarea")}}
 A.a7o.prototype={
 giZ(){return null}}
 A.a2i.prototype={
