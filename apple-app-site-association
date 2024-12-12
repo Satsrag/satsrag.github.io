@@ -1,0 +1,20 @@
+{
+  "cntvs": {
+      "details": [
+           {
+             "appIDs": [ "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test"],
+             "components": [
+               {
+                  "#": "no_universal_links",
+                  "exclude": true,
+                  "comment": "Matches any URL with a fragment that equals no_universal_links and instructs the system not to open it as a universal link."
+               },
+               {
+                  "/": "/detail/*",
+                  "comment": "Matches any URL with a path that starts with /detail/."
+               }
+             ]
+           }
+       ]
+   }
+}
