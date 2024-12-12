@@ -2,7 +2,7 @@
   "applinks": {
       "details": [
            {
-             "appIDs": [ "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test"],
+             "appIDs": [ "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test"],
              "components": [
                {
                   "#": "no_universal_links",
@@ -18,6 +18,6 @@
        ]
    },
    "webcredentials": {
-      "apps": [ "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test" ]
+      "apps": [ "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test" ]
    }
 }
