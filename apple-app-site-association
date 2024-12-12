@@ -1,5 +1,5 @@
 {
-  "cntvs": {
+  "applinks": {
       "details": [
            {
              "appIDs": [ "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test"],
@@ -16,5 +16,8 @@
              ]
            }
        ]
+   },
+   "webcredentials": {
+      "apps": [ "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test" ]
    }
 }
