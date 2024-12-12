@@ -2,7 +2,7 @@
     "applinks": {
         "apps": [],
         "details": [{
-            "appID": "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test",
+            "appID": "L6D888N95T.cn.cntv.apps.mongolntv.statsrag.test",
             "paths": ["/detail/*","/qq_conn/100785663/*"]
         }]
     }
