@@ -1,23 +1,9 @@
 {
-  "applinks": {
-      "details": [
-           {
-             "appIDs": [ "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test"],
-             "components": [
-               {
-                  "#": "no_universal_links",
-                  "exclude": true,
-                  "comment": "Matches any URL with a fragment that equals no_universal_links and instructs the system not to open it as a universal link."
-               },
-               {
-                  "/": "/detail/*",
-                  "comment": "Matches any URL with a path that starts with /detail/."
-               }
-             ]
-           }
-       ]
-   },
-   "webcredentials": {
-      "apps": [ "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test" ]
-   }
+    "applinks": {
+        "apps": [],
+        "details": [{
+            "appID": "GZRYF6GLLV.cn.cntv.apps.mongolntv.statsrag.test",
+            "paths": ["/cntv/*"]
+        }]
+    }
 }
