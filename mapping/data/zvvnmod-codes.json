@@ -1,0 +1,1457 @@
+{
+  "schema": "zvvnmod-code-table-v1",
+  "count": 139,
+  "source": {
+    "csv": "Satsrag/zvvnmod-utn57 data/zvvnmod-unicode-names.csv",
+    "font": "Satsrag/meco fonts/zvvnmod/zvvnmod.sfd",
+    "font_commit": "7edff334d33fc367596d1d33406b33bccb8ddc60"
+  },
+  "groups": [
+    {
+      "id": "A",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E000",
+            "value": 57344,
+            "name": "A i",
+            "const": "A_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E005",
+            "value": 57349,
+            "name": "A m",
+            "const": "A_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E00C",
+            "value": 57356,
+            "name": "A f",
+            "const": "A_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Aa",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E00D",
+            "value": 57357,
+            "name": "Aa f",
+            "const": "AA_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "B",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E029",
+            "value": 57385,
+            "name": "B i",
+            "const": "B_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E02A",
+            "value": 57386,
+            "name": "B m",
+            "const": "B_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E02B",
+            "value": 57387,
+            "name": "B f",
+            "const": "B_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [
+          {
+            "codepoint": "U+E079",
+            "value": 57465,
+            "name": "B i I f",
+            "const": "B_I_ISOL"
+          },
+          {
+            "codepoint": "U+E07A",
+            "value": 57466,
+            "name": "B i O f",
+            "const": "B_O_ISOL"
+          },
+          {
+            "codepoint": "U+E07B",
+            "value": 57467,
+            "name": "B i Ue f",
+            "const": "B_UE_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E07C",
+            "value": 57468,
+            "name": "B i A m",
+            "const": "B_A_INIT"
+          },
+          {
+            "codepoint": "U+E07F",
+            "value": 57471,
+            "name": "B i I m",
+            "const": "B_I_INIT"
+          },
+          {
+            "codepoint": "U+E082",
+            "value": 57474,
+            "name": "B i O m",
+            "const": "B_O_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E07D",
+            "value": 57469,
+            "name": "B m A m",
+            "const": "B_A_MEDI"
+          },
+          {
+            "codepoint": "U+E080",
+            "value": 57472,
+            "name": "B m I m",
+            "const": "B_I_MEDI"
+          },
+          {
+            "codepoint": "U+E083",
+            "value": 57475,
+            "name": "B m O m",
+            "const": "B_O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E081",
+            "value": 57473,
+            "name": "B m I f",
+            "const": "B_I_FINA"
+          },
+          {
+            "codepoint": "U+E084",
+            "value": 57476,
+            "name": "B m O f",
+            "const": "B_O_FINA"
+          },
+          {
+            "codepoint": "U+E0CD",
+            "value": 57549,
+            "name": "B m Ue f",
+            "const": "B_UE_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "C",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E05F",
+            "value": 57439,
+            "name": "C i",
+            "const": "C_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E060",
+            "value": 57440,
+            "name": "C m",
+            "const": "C_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E061",
+            "value": 57441,
+            "name": "C f",
+            "const": "C_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Ch",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E04A",
+            "value": 57418,
+            "name": "Ch i",
+            "const": "CH_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E04B",
+            "value": 57419,
+            "name": "Ch m",
+            "const": "CH_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E04C",
+            "value": 57420,
+            "name": "Ch f",
+            "const": "CH_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "D",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E045",
+            "value": 57413,
+            "name": "D i",
+            "const": "D_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E046",
+            "value": 57414,
+            "name": "D m",
+            "const": "D_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E049",
+            "value": 57417,
+            "name": "D f",
+            "const": "D_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "F",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E059",
+            "value": 57433,
+            "name": "F i",
+            "const": "F_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E05A",
+            "value": 57434,
+            "name": "F m",
+            "const": "F_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E05B",
+            "value": 57435,
+            "name": "F f",
+            "const": "F_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [
+          {
+            "codepoint": "U+E09F",
+            "value": 57503,
+            "name": "F i I f",
+            "const": "F_I_ISOL"
+          },
+          {
+            "codepoint": "U+E0A0",
+            "value": 57504,
+            "name": "F i O f",
+            "const": "F_O_ISOL"
+          },
+          {
+            "codepoint": "U+E0A1",
+            "value": 57505,
+            "name": "F i Ue f",
+            "const": "F_UE_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E0A2",
+            "value": 57506,
+            "name": "F i A m",
+            "const": "F_A_INIT"
+          },
+          {
+            "codepoint": "U+E0A5",
+            "value": 57509,
+            "name": "F i I m",
+            "const": "F_I_INIT"
+          },
+          {
+            "codepoint": "U+E0A8",
+            "value": 57512,
+            "name": "F i O m",
+            "const": "F_O_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E0A3",
+            "value": 57507,
+            "name": "F m A m",
+            "const": "F_A_MEDI"
+          },
+          {
+            "codepoint": "U+E0A6",
+            "value": 57510,
+            "name": "F m I m",
+            "const": "F_I_MEDI"
+          },
+          {
+            "codepoint": "U+E0A9",
+            "value": 57513,
+            "name": "F m O m",
+            "const": "F_O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E0A7",
+            "value": 57511,
+            "name": "F m I f",
+            "const": "F_I_FINA"
+          },
+          {
+            "codepoint": "U+E0AA",
+            "value": 57514,
+            "name": "F m O f",
+            "const": "F_O_FINA"
+          },
+          {
+            "codepoint": "U+E0D0",
+            "value": 57552,
+            "name": "F m Ue f",
+            "const": "F_UE_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "G",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E030",
+            "value": 57392,
+            "name": "G i",
+            "const": "G_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E031",
+            "value": 57393,
+            "name": "G m",
+            "const": "G_MEDI"
+          }
+        ],
+        "fina": []
+      },
+      "merged": {
+        "isol": [
+          {
+            "codepoint": "U+E092",
+            "value": 57490,
+            "name": "G i I f",
+            "const": "G_I_ISOL"
+          },
+          {
+            "codepoint": "U+E093",
+            "value": 57491,
+            "name": "G i Ue f",
+            "const": "G_UE_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E094",
+            "value": 57492,
+            "name": "G i A m",
+            "const": "G_A_INIT"
+          },
+          {
+            "codepoint": "U+E097",
+            "value": 57495,
+            "name": "G i I m",
+            "const": "G_I_INIT"
+          },
+          {
+            "codepoint": "U+E09A",
+            "value": 57498,
+            "name": "G i O m I m",
+            "const": "G_O_I_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E095",
+            "value": 57493,
+            "name": "G m A m",
+            "const": "G_A_MEDI"
+          },
+          {
+            "codepoint": "U+E098",
+            "value": 57496,
+            "name": "G m I m",
+            "const": "G_I_MEDI"
+          },
+          {
+            "codepoint": "U+E09B",
+            "value": 57499,
+            "name": "G m O m",
+            "const": "G_O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E099",
+            "value": 57497,
+            "name": "G m I f",
+            "const": "G_I_FINA"
+          },
+          {
+            "codepoint": "U+E09C",
+            "value": 57500,
+            "name": "G m O f",
+            "const": "G_O_FINA"
+          },
+          {
+            "codepoint": "U+E0CF",
+            "value": 57551,
+            "name": "G m Ue f",
+            "const": "G_UE_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "H",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E02F",
+            "value": 57391,
+            "name": "H i",
+            "const": "H_INIT"
+          }
+        ],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E032",
+            "value": 57394,
+            "name": "H f",
+            "const": "H_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Hr",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [
+          {
+            "codepoint": "U+E066",
+            "value": 57446,
+            "name": "Hr m",
+            "const": "HR_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E067",
+            "value": 57447,
+            "name": "Hr f",
+            "const": "HR_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Hx",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E034",
+            "value": 57396,
+            "name": "Hx i",
+            "const": "HX_INIT"
+          }
+        ],
+        "medi": [],
+        "fina": []
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E09D",
+            "value": 57501,
+            "name": "Hx f Aa f",
+            "const": "HX_AA_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "I",
+      "single": {
+        "isol": [
+          {
+            "codepoint": "U+E01A",
+            "value": 57370,
+            "name": "I isol",
+            "const": "I_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E04D",
+            "value": 57421,
+            "name": "I i",
+            "const": "I_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E006",
+            "value": 57350,
+            "name": "I m",
+            "const": "I_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E00E",
+            "value": 57358,
+            "name": "I f",
+            "const": "I_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "J",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [
+          {
+            "codepoint": "U+E04E",
+            "value": 57422,
+            "name": "J m",
+            "const": "J_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E04F",
+            "value": 57423,
+            "name": "J f",
+            "const": "J_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "K",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E05C",
+            "value": 57436,
+            "name": "K i",
+            "const": "K_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E05D",
+            "value": 57437,
+            "name": "K m",
+            "const": "K_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E05E",
+            "value": 57438,
+            "name": "K f",
+            "const": "K_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [
+          {
+            "codepoint": "U+E0AD",
+            "value": 57517,
+            "name": "K i I f",
+            "const": "K_I_ISOL"
+          },
+          {
+            "codepoint": "U+E0AE",
+            "value": 57518,
+            "name": "K i O f",
+            "const": "K_O_ISOL"
+          },
+          {
+            "codepoint": "U+E0AF",
+            "value": 57519,
+            "name": "K i Ue f",
+            "const": "K_UE_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E0B0",
+            "value": 57520,
+            "name": "K i A m",
+            "const": "K_A_INIT"
+          },
+          {
+            "codepoint": "U+E0B6",
+            "value": 57526,
+            "name": "K i I m",
+            "const": "K_I_INIT"
+          },
+          {
+            "codepoint": "U+E0B9",
+            "value": 57529,
+            "name": "K i O m",
+            "const": "K_O_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E0B1",
+            "value": 57521,
+            "name": "K m A m",
+            "const": "K_A_MEDI"
+          },
+          {
+            "codepoint": "U+E0B7",
+            "value": 57527,
+            "name": "K m I m",
+            "const": "K_I_MEDI"
+          },
+          {
+            "codepoint": "U+E0BA",
+            "value": 57530,
+            "name": "K m O m",
+            "const": "K_O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E0B8",
+            "value": 57528,
+            "name": "K m I f",
+            "const": "K_I_FINA"
+          },
+          {
+            "codepoint": "U+E0BB",
+            "value": 57531,
+            "name": "K m O f",
+            "const": "K_O_FINA"
+          },
+          {
+            "codepoint": "U+E0BC",
+            "value": 57532,
+            "name": "K m Ue f",
+            "const": "K_UE_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "L",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E039",
+            "value": 57401,
+            "name": "L i",
+            "const": "L_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E03A",
+            "value": 57402,
+            "name": "L m",
+            "const": "L_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E03B",
+            "value": 57403,
+            "name": "L f",
+            "const": "L_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "M",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E036",
+            "value": 57398,
+            "name": "M i",
+            "const": "M_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E037",
+            "value": 57399,
+            "name": "M m",
+            "const": "M_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E038",
+            "value": 57400,
+            "name": "M f",
+            "const": "M_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "N",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E027",
+            "value": 57383,
+            "name": "N i",
+            "const": "N_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E028",
+            "value": 57384,
+            "name": "N m",
+            "const": "N_MEDI"
+          }
+        ],
+        "fina": []
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E077",
+            "value": 57463,
+            "name": "N f Aa f",
+            "const": "N_AA_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "O",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E001",
+            "value": 57345,
+            "name": "O i",
+            "const": "O_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E008",
+            "value": 57352,
+            "name": "O m",
+            "const": "O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E00F",
+            "value": 57359,
+            "name": "O f",
+            "const": "O_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "P",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E02C",
+            "value": 57388,
+            "name": "P i",
+            "const": "P_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E02D",
+            "value": 57389,
+            "name": "P m",
+            "const": "P_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E02E",
+            "value": 57390,
+            "name": "P f",
+            "const": "P_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [
+          {
+            "codepoint": "U+E086",
+            "value": 57478,
+            "name": "P i I f",
+            "const": "P_I_ISOL"
+          },
+          {
+            "codepoint": "U+E087",
+            "value": 57479,
+            "name": "P i O f",
+            "const": "P_O_ISOL"
+          },
+          {
+            "codepoint": "U+E088",
+            "value": 57480,
+            "name": "P i Ue f",
+            "const": "P_UE_ISOL"
+          }
+        ],
+        "init": [
+          {
+            "codepoint": "U+E089",
+            "value": 57481,
+            "name": "P i A m",
+            "const": "P_A_INIT"
+          },
+          {
+            "codepoint": "U+E08C",
+            "value": 57484,
+            "name": "P i I m",
+            "const": "P_I_INIT"
+          },
+          {
+            "codepoint": "U+E08F",
+            "value": 57487,
+            "name": "P i O m",
+            "const": "P_O_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E08A",
+            "value": 57482,
+            "name": "P m A m",
+            "const": "P_A_MEDI"
+          },
+          {
+            "codepoint": "U+E08D",
+            "value": 57485,
+            "name": "P m I m",
+            "const": "P_I_MEDI"
+          },
+          {
+            "codepoint": "U+E090",
+            "value": 57488,
+            "name": "P m O m",
+            "const": "P_O_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E08E",
+            "value": 57486,
+            "name": "P m I f",
+            "const": "P_I_FINA"
+          },
+          {
+            "codepoint": "U+E091",
+            "value": 57489,
+            "name": "P m O f",
+            "const": "P_O_FINA"
+          },
+          {
+            "codepoint": "U+E0CE",
+            "value": 57550,
+            "name": "P m Ue f",
+            "const": "P_UE_FINA"
+          }
+        ]
+      },
+      "special": []
+    },
+    {
+      "id": "R",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E053",
+            "value": 57427,
+            "name": "R i",
+            "const": "R_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E054",
+            "value": 57428,
+            "name": "R m",
+            "const": "R_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E055",
+            "value": 57429,
+            "name": "R f",
+            "const": "R_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Rh",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E068",
+            "value": 57448,
+            "name": "Rh i",
+            "const": "RH_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E069",
+            "value": 57449,
+            "name": "Rh m",
+            "const": "RH_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E06A",
+            "value": 57450,
+            "name": "Rh f",
+            "const": "RH_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "S",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E03C",
+            "value": 57404,
+            "name": "S i",
+            "const": "S_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E03D",
+            "value": 57405,
+            "name": "S m",
+            "const": "S_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E03E",
+            "value": 57406,
+            "name": "S f",
+            "const": "S_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Sh",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E03F",
+            "value": 57407,
+            "name": "Sh i",
+            "const": "SH_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E040",
+            "value": 57408,
+            "name": "Sh m",
+            "const": "SH_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E041",
+            "value": 57409,
+            "name": "Sh f",
+            "const": "SH_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "T",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E042",
+            "value": 57410,
+            "name": "T i",
+            "const": "T_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E043",
+            "value": 57411,
+            "name": "T m",
+            "const": "T_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E044",
+            "value": 57412,
+            "name": "T f",
+            "const": "T_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "U",
+      "single": {
+        "isol": [
+          {
+            "codepoint": "U+E01B",
+            "value": 57371,
+            "name": "U isol",
+            "const": "U_ISOL"
+          }
+        ],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E011",
+            "value": 57361,
+            "name": "U f",
+            "const": "U_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Ue",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E010",
+            "value": 57360,
+            "name": "Ue f",
+            "const": "UE_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "W",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E056",
+            "value": 57430,
+            "name": "W i",
+            "const": "W_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E057",
+            "value": 57431,
+            "name": "W m",
+            "const": "W_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E058",
+            "value": 57432,
+            "name": "W f",
+            "const": "W_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Y",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E050",
+            "value": 57424,
+            "name": "Y i",
+            "const": "Y_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E051",
+            "value": 57425,
+            "name": "Y m",
+            "const": "Y_MEDI"
+          }
+        ],
+        "fina": []
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Z",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E062",
+            "value": 57442,
+            "name": "Z i",
+            "const": "Z_INIT"
+          }
+        ],
+        "medi": [
+          {
+            "codepoint": "U+E063",
+            "value": 57443,
+            "name": "Z m",
+            "const": "Z_MEDI"
+          }
+        ],
+        "fina": [
+          {
+            "codepoint": "U+E064",
+            "value": 57444,
+            "name": "Z f",
+            "const": "Z_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Zr",
+      "single": {
+        "isol": [],
+        "init": [
+          {
+            "codepoint": "U+E0E7",
+            "value": 57575,
+            "name": "Zr i",
+            "const": "ZR_INIT"
+          }
+        ],
+        "medi": [],
+        "fina": []
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    },
+    {
+      "id": "Nirugu",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": [
+        {
+          "codepoint": "U+E0E5",
+          "value": 57573,
+          "name": "Nirugu",
+          "const": "NIRUGU"
+        }
+      ]
+    },
+    {
+      "id": "Ir",
+      "single": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": [
+          {
+            "codepoint": "U+E0E6",
+            "value": 57574,
+            "name": "Ir f",
+            "const": "IR_FINA"
+          }
+        ]
+      },
+      "merged": {
+        "isol": [],
+        "init": [],
+        "medi": [],
+        "fina": []
+      },
+      "special": []
+    }
+  ]
+}

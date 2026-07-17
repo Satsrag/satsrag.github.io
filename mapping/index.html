@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="UTN57 written units and ZVVNMOD code inventories for mapping preparation.">
+  <title>UTN57 ↔ ZVVNMOD inventories</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Back to Satsrag tools">Satsrag <span>/ Mapping reference</span></a>
+    <nav aria-label="Page navigation">
+      <a href="#utn57">UTN57</a>
+      <a href="#zvvnmod">ZVVNMOD</a>
+      <a href="../flutter.html">Flutter app</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-heading" aria-labelledby="page-title">
+      <p class="eyebrow">Inventory workspace · mapping not yet assigned</p>
+      <h1 id="page-title">UTN57 ↔ ZVVNMOD</h1>
+      <p>Two source inventories placed side by side in one searchable reference page. This first version deliberately shows inventory only; it does not claim mapping relationships.</p>
+      <dl class="summary" aria-label="Inventory summary">
+        <div><dt>UTN57 rows</dt><dd>38</dd></div>
+        <div><dt>ZVVNMOD shapes</dt><dd>139</dd></div>
+        <div><dt>Format</dt><dd>Static</dd></div>
+      </dl>
+    </section>
+
+    <div class="toolbar" role="search">
+      <label for="inventory-search">Filter both inventories</label>
+      <div class="search-row">
+        <input id="inventory-search" type="search" placeholder="Try Hx, U+E09D, fina…" autocomplete="off">
+        <button id="clear-search" type="button" hidden>Clear</button>
+      </div>
+      <p id="filter-status" class="filter-status" aria-live="polite">Showing all rows</p>
+    </div>
+
+    <section id="utn57" class="inventory-section" aria-labelledby="utn57-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">01</p>
+          <h2 id="utn57-title">UTN57 Written units</h2>
+          <p>Variants and ligated variants from Mongolian Font Builder’s Hudum editor’s draft.</p>
+        </div>
+        <a href="https://mongfontbuilder.pages.dev/hudum#written-units" target="_blank" rel="noreferrer">Open source ↗</a>
+      </div>
+      <div id="utn-table" class="table-shell" aria-busy="true"><p class="loading">Loading Written units…</p></div>
+    </section>
+
+    <section id="zvvnmod" class="inventory-section" aria-labelledby="zvvnmod-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">02</p>
+          <h2 id="zvvnmod-title">ZVVNMOD codes</h2>
+          <p>Explicit shape codes grouped by base ID, joining position, and single or merged form.</p>
+        </div>
+        <a href="https://github.com/Satsrag/zvvnmod-utn57" target="_blank" rel="noreferrer">Open source ↗</a>
+      </div>
+      <div id="zvvnmod-table" class="table-shell" aria-busy="true"><p class="loading">Loading ZVVNMOD codes…</p></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>UTN57 table and font: <a href="https://github.com/Kushim-Jiang/mongfontbuilder">Mongolian Font Builder</a> (MIT). ZVVNMOD font source: <a href="https://github.com/Satsrag/meco">meco</a> (Apache-2.0).</p>
+    <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
+  </footer>
+  <script src="app.js?v=2" defer></script>
+</body>
+</html>
