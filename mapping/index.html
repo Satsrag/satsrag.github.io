@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="UTN57 written units and ZVVNMOD code inventories for mapping preparation.">
-  <title>UTN57 ↔ ZVVNMOD inventories</title>
+  <meta name="description" content="UTN57 and ZVVNMOD inventories with an editable JSON mapping workbench.">
+  <title>UTN57 ↔ ZVVNMOD mapping workbench</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,19 +13,20 @@
     <nav aria-label="Page navigation">
       <a href="#utn57">UTN57</a>
       <a href="#zvvnmod">ZVVNMOD</a>
+      <a href="#mapping-workbench">Mapping editor</a>
       <a href="../flutter.html">Flutter app</a>
     </nav>
   </header>
 
   <main>
     <section class="page-heading" aria-labelledby="page-title">
-      <p class="eyebrow">Inventory workspace · mapping not yet assigned</p>
+      <p class="eyebrow">Inventory workspace · editable draft mapping</p>
       <h1 id="page-title">UTN57 ↔ ZVVNMOD</h1>
-      <p>Two source inventories placed side by side in one searchable reference page. This first version deliberately shows inventory only; it does not claim mapping relationships.</p>
+      <p>Keep both source inventories visible, then prepare and download an editable ZVVNMOD → UTN57 mapping in the aligned workbench below.</p>
       <dl class="summary" aria-label="Inventory summary">
         <div><dt>UTN57 rows</dt><dd>38</dd></div>
         <div><dt>ZVVNMOD shapes</dt><dd>139</dd></div>
-        <div><dt>Format</dt><dd>Static</dd></div>
+        <div><dt>Format</dt><dd>Editable JSON</dd></div>
       </dl>
     </section>
 
@@ -61,6 +62,46 @@
       </div>
       <div id="zvvnmod-table" class="table-shell" aria-busy="true"><p class="loading">Loading ZVVNMOD codes…</p></div>
     </section>
+
+    <section id="mapping-workbench" class="inventory-section mapping-section" aria-labelledby="mapping-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">03</p>
+          <h2 id="mapping-title">Editable mapping workbench</h2>
+          <p>Each aligned row maps one ZVVNMOD source sequence to an ordered UTN57 target sequence. Name-matched direct mappings are generated drafts, not authoritative rules; edit exceptions and download the resulting JSON.</p>
+        </div>
+        <div class="mapping-actions" aria-label="Mapping file actions">
+          <button id="download-mapping" class="primary-action" type="button" disabled>Download JSON</button>
+          <button id="import-mapping-trigger" type="button" disabled>Import JSON</button>
+          <input id="import-mapping" type="file" accept="application/json,.json" hidden disabled>
+          <button id="reset-mapping" type="button" disabled>Reload source JSON</button>
+        </div>
+      </div>
+
+      <div class="mapping-toolbar">
+        <label for="mapping-search">Filter mapping rows</label>
+        <div class="mapping-filter-row">
+          <input id="mapping-search" type="search" placeholder="Try A_INIT, Hx medi, U+E09D…" autocomplete="off" disabled>
+          <select id="mapping-mode-filter" aria-label="Filter by mapping mode" disabled>
+            <option value="all">All mappings</option>
+            <option value="direct">Generated direct</option>
+            <option value="special">Edited special</option>
+            <option value="unmapped">Unmapped</option>
+          </select>
+        </div>
+        <div id="mapping-summary" class="mapping-summary" aria-live="polite">Loading mapping JSON…</div>
+      </div>
+
+      <div id="mapping-shell" class="mapping-shell" aria-busy="true" inert>
+        <div class="mapping-columns" aria-hidden="true">
+          <span>ZVVNMOD source</span>
+          <span>Mapping</span>
+          <span>UTN57 target sequence</span>
+        </div>
+        <div id="mapping-rows"><p class="loading">Loading mapping workbench…</p></div>
+      </div>
+      <p id="mapping-message" class="mapping-message" aria-live="polite">Edits stay in this browser tab until you download the JSON.</p>
+    </section>
   </main>
 
   <footer>
@@ -68,5 +109,6 @@
     <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
   </footer>
   <script src="app.js?v=2" defer></script>
+  <script src="workbench.js?v=1" type="module"></script>
 </body>
 </html>
