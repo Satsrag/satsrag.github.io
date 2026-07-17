@@ -20,13 +20,13 @@ from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parents[2]
 MAPPING = ROOT / "mapping"
-ROOT_FIELDS = {"schema", "description", "targets", "mappings"}
+ROOT_FIELDS = {"schema", "description", "sources", "targets", "mappings"}
+SOURCE_FIELDS = {"id", "name", "const", "value", "glyph", "order"}
 TARGET_FIELDS = {"id", "unit", "position", "glyph", "order"}
 MAPPING_FIELDS = {
-    "source",
-    "sourceName",
-    "sourceConst",
-    "sourceValue",
+    "id",
+    "defaultSources",
+    "sources",
     "defaultTargets",
     "targets",
     "mode",
@@ -86,8 +86,9 @@ def main() -> None:
     mapping = json.loads(mapping_path.read_text())
     check(isinstance(mapping, dict), "mapping root must be an object")
     check(set(mapping) == ROOT_FIELDS, "mapping root fields differ from schema")
-    check(mapping.get("schema") == "zvvnmod-utn57-map-v1", "mapping schema mismatch")
+    check(mapping.get("schema") == "zvvnmod-utn57-map-v2", "mapping schema mismatch")
     check(isinstance(mapping.get("description"), str), "mapping description must be a string")
+    check(isinstance(mapping.get("sources"), list), "mapping sources must be an array")
     check(isinstance(mapping.get("targets"), list), "mapping targets must be an array")
     check(isinstance(mapping.get("mappings"), list), "mappings must be an array")
 
@@ -107,29 +108,48 @@ def main() -> None:
         generated = json.loads(generated_path.read_text())
 
     check(mapping["description"] == generated["description"], "mapping description differs from generated scaffold")
+
+    for index, source in enumerate(mapping["sources"]):
+        check(isinstance(source, dict), f"ZVVNMOD source {index} must be an object")
+        check(set(source) == SOURCE_FIELDS, f"ZVVNMOD source {index} fields differ from schema")
+        check(source.get("order") == index, f"ZVVNMOD source order mismatch at index {index}")
+    check(mapping["sources"] == generated["sources"], "ZVVNMOD source catalogue differs from generated inventory")
+    source_ids = [source["id"] for source in mapping["sources"]]
+    check(len(source_ids) == len(set(source_ids)) == 80, "mapping must contain 80 unique ZVVNMOD sources")
+    valid_sources = set(source_ids)
+
     for index, target in enumerate(mapping["targets"]):
         check(isinstance(target, dict), f"UTN57 target {index} must be an object")
         check(set(target) == TARGET_FIELDS, f"UTN57 target {index} fields differ from schema")
+        check(target.get("order") == index, f"UTN57 target order mismatch at index {index}")
     check(mapping["targets"] == generated["targets"], "UTN57 target catalogue differs from generated inventory")
-    check(len(mapping["mappings"]) == len(generated["mappings"]) == 139, "mapping must contain 139 entries")
     target_ids = [target["id"] for target in mapping["targets"]]
     check(len(target_ids) == len(set(target_ids)) == 95, "mapping must contain 95 unique UTN57 targets")
     check(target_ids[0] == "A:isol", "UTN57 target catalogue must start at A:isol")
     valid_targets = set(target_ids)
-    source_keys: set[tuple[str, ...]] = set()
+
+    check(len(mapping["mappings"]) == len(generated["mappings"]) == 97, "mapping must contain 97 alignment rows")
+    row_ids: set[str] = set()
     modes = {"direct": 0, "special": 0, "unmapped": 0}
-    immutable_fields = ("source", "sourceName", "sourceConst", "sourceValue", "defaultTargets")
+    immutable_fields = ("id", "defaultSources", "defaultTargets")
 
     for index, (entry, default_entry) in enumerate(zip(mapping["mappings"], generated["mappings"])):
         check(isinstance(entry, dict), f"mapping {index} must be an object")
         check(set(entry) == MAPPING_FIELDS, f"mapping {index} fields differ from schema")
         for field in immutable_fields:
             check(entry.get(field) == default_entry[field], f"mapping {index} changed generated field {field}")
-        source = entry["source"]
-        check(isinstance(source, list) and source and all(isinstance(item, str) for item in source), f"mapping {index} has invalid source")
-        source_key = tuple(source)
-        check(source_key not in source_keys, f"duplicate source sequence: {' '.join(source)}")
-        source_keys.add(source_key)
+        row_id = entry["id"]
+        check(isinstance(row_id, str) and row_id, f"mapping {index} has invalid id")
+        check(row_id not in row_ids, f"duplicate mapping id: {row_id}")
+        row_ids.add(row_id)
+
+        current_sources = entry.get("sources")
+        check(
+            isinstance(current_sources, list) and all(isinstance(source, str) for source in current_sources),
+            f"mapping {index} sources must be strings",
+        )
+        for source in current_sources:
+            check(source in valid_sources, f"unknown ZVVNMOD source: {source}")
 
         current_targets = entry.get("targets")
         check(
@@ -138,16 +158,25 @@ def main() -> None:
         )
         for target in current_targets:
             check(target in valid_targets, f"unknown UTN57 target: {target}")
+        check(current_sources or current_targets, f"mapping {index} cannot have both sides empty")
 
-        if current_targets != entry["defaultTargets"]:
+        changed = (
+            current_sources != entry["defaultSources"]
+            or current_targets != entry["defaultTargets"]
+        )
+        if changed:
             expected_mode = "special"
         else:
-            expected_mode = "direct" if entry["defaultTargets"] else "unmapped"
+            expected_mode = (
+                "direct"
+                if entry["defaultSources"] and entry["defaultTargets"]
+                else "unmapped"
+            )
         check(entry.get("mode") == expected_mode, f"mapping {index} mode must be {expected_mode}")
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
         modes[expected_mode] += 1
 
-    check(len(source_keys) == 139, "mapping must cover 139 unique source sequences")
+    check(len(row_ids) == 97, "mapping must contain 97 unique alignment row IDs")
 
     font_path = MAPPING / "assets/zvvnmod.ttf"
     font = TTFont(font_path)
@@ -199,7 +228,8 @@ def main() -> None:
 
     print(
         "verified: 38 UTN57 rows, 32 ZVVNMOD groups, 139 font-backed codes, "
-        "139 editable mappings, and Flutter PWA routing"
+        "80 editable ZVVNMOD sources, 95 UTN57 targets, 97 alignment rows, "
+        "and Flutter PWA routing"
     )
 
 

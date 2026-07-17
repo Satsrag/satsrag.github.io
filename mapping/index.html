@@ -68,7 +68,7 @@
         <div>
           <p class="section-index">03</p>
           <h2 id="mapping-title">Editable mapping workbench</h2>
-          <p>Each aligned row maps one ZVVNMOD source sequence to an ordered UTN57 target sequence. Name-matched direct mappings are generated drafts, not authoritative rules; edit exceptions and download the resulting JSON.</p>
+          <p>The left catalogue contains decomposed ZVVNMOD codes plus the two retained chachlag forms. Rows align generated matches; when either inventory has no match, the opposite side stays blank. Edit either side as an ordered sequence of one or more codes, then download the resulting JSON.</p>
         </div>
         <div class="mapping-actions" aria-label="Mapping file actions">
           <button id="download-mapping" class="primary-action" type="button" disabled>Download JSON</button>
@@ -94,7 +94,7 @@
 
       <div id="mapping-shell" class="mapping-shell" aria-busy="true" inert>
         <div class="mapping-columns" aria-hidden="true">
-          <span>ZVVNMOD source</span>
+          <span>ZVVNMOD source sequence</span>
           <span>Mapping</span>
           <span>UTN57 target sequence</span>
         </div>
@@ -109,6 +109,6 @@
     <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
   </footer>
   <script src="app.js?v=2" defer></script>
-  <script src="workbench.js?v=1" type="module"></script>
+  <script src="workbench.js?v=2" type="module"></script>
 </body>
 </html>

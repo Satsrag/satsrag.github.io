@@ -12,6 +12,7 @@ from typing import Any
 
 POSITIONS = ("isol", "init", "medi", "fina")
 POSITION_NAMES = {"isol": "isol", "i": "init", "m": "medi", "f": "fina"}
+RETAINED_MERGED_CODES = {"N_AA_FINA", "HX_AA_FINA"}
 
 
 class WrittenUnitTargetParser(HTMLParser):
@@ -51,12 +52,18 @@ class WrittenUnitTargetParser(HTMLParser):
             self._wu_depth = 0
 
 
-def flatten_codes(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def editable_codes(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return decomposed ZVVNMOD codes plus the two retained chachlag forms."""
     codes: list[dict[str, Any]] = []
     for group in payload["groups"]:  # type: ignore[index]
-        for family in ("single", "merged"):
-            for position in POSITIONS:
-                codes.extend(group[family][position])  # type: ignore[index]
+        for position in POSITIONS:
+            codes.extend(group["single"][position])  # type: ignore[index]
+        for position in POSITIONS:
+            codes.extend(
+                code
+                for code in group["merged"][position]  # type: ignore[index]
+                if code["const"] in RETAINED_MERGED_CODES
+            )
         codes.extend(group["special"])  # type: ignore[index]
     return codes
 
@@ -86,16 +93,30 @@ def build_mapping(codes_path: Path, written_units_path: Path) -> dict[str, Any]:
     targets = parser.targets
     valid_targets = {target["id"] for target in targets}
     code_payload = json.loads(codes_path.read_text())
+    codes = editable_codes(code_payload)
+    sources = [
+        {
+            "id": code["codepoint"],
+            "name": code["name"],
+            "const": code["const"],
+            "value": code["value"],
+            "glyph": chr(code["value"]),
+            "order": order,
+        }
+        for order, code in enumerate(codes)
+    ]
 
     mappings = []
-    for code in flatten_codes(code_payload):
+    represented_targets: set[str] = set()
+    for code in codes:
         target_sequence = semantic_targets(str(code["name"]), valid_targets)
+        represented_targets.update(target_sequence)
+        source_sequence = [code["codepoint"]]
         mappings.append(
             {
-                "source": [code["codepoint"]],
-                "sourceName": code["name"],
-                "sourceConst": code["const"],
-                "sourceValue": code["value"],
+                "id": f"source:{code['codepoint']}",
+                "defaultSources": source_sequence,
+                "sources": source_sequence,
                 "defaultTargets": target_sequence,
                 "targets": target_sequence,
                 "mode": "direct" if target_sequence else "unmapped",
@@ -103,9 +124,25 @@ def build_mapping(codes_path: Path, written_units_path: Path) -> dict[str, Any]:
             }
         )
 
+    for target in targets:
+        if target["id"] in represented_targets:
+            continue
+        mappings.append(
+            {
+                "id": f"target:{target['id']}",
+                "defaultSources": [],
+                "sources": [],
+                "defaultTargets": [target["id"]],
+                "targets": [target["id"]],
+                "mode": "unmapped",
+                "note": "",
+            }
+        )
+
     return {
-        "schema": "zvvnmod-utn57-map-v1",
-        "description": "Editable ZVVNMOD code sequence to UTN57 written-unit target sequence mappings.",
+        "schema": "zvvnmod-utn57-map-v2",
+        "description": "Editable aligned ZVVNMOD and UTN57 code sequences; either side may be empty or contain multiple codes.",
+        "sources": sources,
         "targets": targets,
         "mappings": mappings,
     }
