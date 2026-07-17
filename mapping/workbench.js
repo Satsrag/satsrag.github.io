@@ -21,6 +21,7 @@ const resetElement = document.getElementById("reset-mapping");
 
 let sourcePayload;
 let payload;
+let sourceById = new Map();
 let targetById = new Map();
 let editingIndex = -1;
 let draft = null;
@@ -37,35 +38,58 @@ function targetLabel(target) {
   return `${target.unit} · ${target.position}`;
 }
 
-function refreshTargetIndex() {
+function refreshCatalogueIndexes() {
+  sourceById = new Map(payload.sources.map((source) => [source.id, source]));
   targetById = new Map(payload.targets.map((target) => [target.id, target]));
 }
 
 function mappingSearchText(entry) {
+  const sourceText = entry.sources
+    .map((sourceId) => {
+      const source = sourceById.get(sourceId);
+      return source ? `${source.id} ${source.name} ${source.const}` : sourceId;
+    })
+    .join(" ");
   const targetText = entry.targets
     .map((targetId) => {
       const target = targetById.get(targetId);
       return target ? `${target.id} ${target.unit} ${target.position}` : targetId;
     })
     .join(" ");
-  return `${entry.source.join(" ")} ${entry.sourceName || ""} ${entry.sourceConst || ""} ${targetText} ${entry.note || ""}`.toLowerCase();
+  return `${entry.id} ${sourceText} ${targetText} ${entry.note || ""}`.toLowerCase();
 }
 
-function sourceCard(entry) {
-  const card = make("div", "mapping-source-card");
-  const glyph = make("span", "mapping-source-glyph");
+function sourceCard(sourceId) {
+  const source = sourceById.get(sourceId);
+  const card = make("span", "mapping-source-card");
+  if (!source) {
+    card.classList.add("invalid");
+    card.textContent = sourceId;
+    return card;
+  }
+  const glyph = make("span", "mapping-source-glyph", source.glyph || "");
   glyph.setAttribute("aria-hidden", "true");
-  if (Number.isInteger(entry.sourceValue)) glyph.textContent = String.fromCodePoint(entry.sourceValue);
-  card.append(glyph);
-
   const meta = make("span", "mapping-source-meta");
   meta.append(
-    make("strong", "mapping-source-name", entry.sourceName || entry.source.join(" + ")),
-    make("span", "mapping-source-code", entry.source.join(" + ")),
-    make("span", "mapping-source-const", entry.sourceConst || "sequence"),
+    make("strong", "mapping-source-name", source.name),
+    make("span", "mapping-source-code", source.id),
+    make("span", "mapping-source-const", source.const),
   );
-  card.append(meta);
+  card.append(glyph, meta);
   return card;
+}
+
+function sourceSequence(entry) {
+  const cell = make("div", "mapping-source-sequence");
+  if (!entry.sources.length) {
+    cell.append(make("span", "mapping-empty-source", "Blank — no ZVVNMOD source assigned"));
+    return cell;
+  }
+  entry.sources.forEach((sourceId, index) => {
+    if (index) cell.append(make("span", "sequence-plus", "+"));
+    cell.append(sourceCard(sourceId));
+  });
+  return cell;
 }
 
 function targetCard(targetId, compact = false) {
@@ -91,7 +115,7 @@ function targetCard(targetId, compact = false) {
 function targetSequence(entry) {
   const cell = make("div", "mapping-target-sequence");
   if (!entry.targets.length) {
-    cell.append(make("span", "mapping-empty-target", "No UTN57 target assigned"));
+    cell.append(make("span", "mapping-empty-target", "Blank — no UTN57 target assigned"));
     return cell;
   }
   entry.targets.forEach((targetId, index) => {
@@ -101,7 +125,19 @@ function targetSequence(entry) {
   return cell;
 }
 
-function optionList(selectedValue = "") {
+function sourceOptionList(selectedValue = "") {
+  const select = make("select", "source-select");
+  payload.sources.forEach((source) => {
+    const option = document.createElement("option");
+    option.value = source.id;
+    option.textContent = `${source.name} · ${source.id}`;
+    option.selected = source.id === selectedValue;
+    select.append(option);
+  });
+  return select;
+}
+
+function targetOptionList(selectedValue = "") {
   const select = make("select", "target-select");
   payload.targets.forEach((target) => {
     const option = document.createElement("option");
@@ -123,50 +159,83 @@ function iconButton(label, action, position, disabled = false, ariaLabel = "") {
   return button;
 }
 
+function sequenceEditor(side, index) {
+  const isSource = side === "source";
+  const items = isSource ? draft.sources : draft.targets;
+  const noun = isSource ? "ZVVNMOD source" : "UTN57 target";
+  const section = make("section", `sequence-editor ${side}-sequence-editor`);
+  section.append(make("h3", "", `${noun} sequence`));
+
+  const list = make("div", "sequence-editor-list");
+  if (!items.length) {
+    list.append(make("p", `mapping-empty-${side}`, `Blank — add a ${noun} below.`));
+  }
+  items.forEach((itemId, position) => {
+    const itemRow = make("div", "sequence-editor-row");
+    const select = isSource ? sourceOptionList(itemId) : targetOptionList(itemId);
+    select.dataset.action = `change-${side}`;
+    select.dataset.position = String(position);
+    select.setAttribute("aria-label", `${noun} ${position + 1}`);
+    itemRow.append(
+      make("span", "target-order", String(position + 1)),
+      select,
+      iconButton(
+        "↑",
+        `move-${side}-up`,
+        position,
+        position === 0,
+        `Move ${noun} ${position + 1} up`,
+      ),
+      iconButton(
+        "↓",
+        `move-${side}-down`,
+        position,
+        position === items.length - 1,
+        `Move ${noun} ${position + 1} down`,
+      ),
+      iconButton("Remove", `remove-${side}`, position, false, `Remove ${noun} ${position + 1}`),
+    );
+    list.append(itemRow);
+  });
+  section.append(list);
+
+  const addRow = make("div", "sequence-add-row");
+  const firstId = isSource ? payload.sources[0]?.id : payload.targets[0]?.id;
+  const addSelect = isSource ? sourceOptionList(firstId || "") : targetOptionList(firstId || "");
+  addSelect.id = `add-${side}-${index}`;
+  addSelect.dataset.role = `add-${side}-select`;
+  addSelect.setAttribute("aria-label", `${noun} to add`);
+  const addButton = make("button", "button-like", `Add ${isSource ? "source" : "target"}`);
+  addButton.type = "button";
+  addButton.dataset.action = `add-${side}`;
+  addRow.append(addSelect, addButton);
+  section.append(addRow);
+  return section;
+}
+
 function editor(entry, index) {
   const panel = make("div", "mapping-editor");
+  panel.id = `mapping-editor-${index}`;
   panel.dataset.index = String(index);
+  panel.setAttribute("role", "region");
+  panel.setAttribute("aria-label", `Edit alignment ${entry.id}`);
 
   const heading = make("div", "mapping-editor-heading");
   heading.append(
-    make("strong", "", `Edit ${entry.sourceName || entry.source.join(" + ")}`),
-    make("span", "", "Target order is significant."),
+    make("strong", "", `Edit alignment ${entry.id}`),
+    make("span", "", "Order is significant on both sides."),
   );
   panel.append(heading);
 
-  const list = make("div", "target-editor-list");
-  if (!draft.targets.length) list.append(make("p", "mapping-empty-target", "No targets. Add one below."));
-  draft.targets.forEach((targetId, position) => {
-    const row = make("div", "target-editor-row");
-    const select = optionList(targetId);
-    select.dataset.action = "change-target";
-    select.dataset.position = String(position);
-    row.append(
-      make("span", "target-order", String(position + 1)),
-      select,
-      iconButton("↑", "move-up", position, position === 0, `Move target ${position + 1} up`),
-      iconButton("↓", "move-down", position, position === draft.targets.length - 1, `Move target ${position + 1} down`),
-      iconButton("Remove", "remove-target", position),
-    );
-    list.append(row);
-  });
-  panel.append(list);
-
-  const addRow = make("div", "target-add-row");
-  const addSelect = optionList(payload.targets[0]?.id || "");
-  addSelect.id = `add-target-${index}`;
-  addSelect.dataset.role = "add-target-select";
-  const addButton = make("button", "button-like", "Add target");
-  addButton.type = "button";
-  addButton.dataset.action = "add-target";
-  addRow.append(addSelect, addButton);
-  panel.append(addRow);
+  const editorGrid = make("div", "mapping-editor-grid");
+  editorGrid.append(sequenceEditor("source", index), sequenceEditor("target", index));
+  panel.append(editorGrid);
 
   const noteLabel = make("label", "mapping-note-label", "Mapping note");
   const note = document.createElement("input");
   note.type = "text";
   note.value = draft.note;
-  note.placeholder = "Why is this mapping special?";
+  note.placeholder = "Why is this alignment special?";
   note.dataset.action = "edit-note";
   noteLabel.append(note);
   panel.append(noteLabel);
@@ -192,13 +261,16 @@ function row(entry, index) {
   item.dataset.mode = entry.mode;
   item.dataset.search = mappingSearchText(entry);
 
-  item.append(sourceCard(entry));
+  item.append(sourceSequence(entry));
 
   const connector = make("button", "mapping-connector");
   connector.type = "button";
   connector.dataset.action = "edit-entry";
   connector.setAttribute("aria-expanded", String(editingIndex === index));
-  connector.setAttribute("aria-label", `Edit mapping for ${entry.sourceName || entry.source.join(" + ")}`);
+  connector.setAttribute("aria-label", `Edit alignment ${entry.id}`);
+  if (editingIndex === index) {
+    connector.setAttribute("aria-controls", `mapping-editor-${index}`);
+  }
   connector.append(
     make("span", "connector-line"),
     make("span", `mode-badge ${entry.mode}`, entry.mode === "special" ? "special" : entry.mode),
@@ -211,7 +283,7 @@ function row(entry, index) {
 }
 
 function render() {
-  refreshTargetIndex();
+  refreshCatalogueIndexes();
   const query = searchElement.value.trim().toLowerCase();
   const requestedMode = modeElement.value;
   const fragment = document.createDocumentFragment();
@@ -230,20 +302,28 @@ function render() {
   rowsElement.replaceChildren(fragment);
   summaryElement.replaceChildren(
     make("span", "summary-count", `${visible} shown`),
-    make("span", "summary-count", `${payload.targets.length} UTN targets · ${targetLabel(payload.targets[0])} first`),
+    make("span", "summary-count", `${payload.sources.length} ZVVNMOD sources · ${payload.targets.length} UTN57 targets`),
     make("span", "summary-count direct", `${counts.direct} direct`),
     make("span", "summary-count special", `${counts.special} special`),
     make("span", "summary-count unmapped", `${counts.unmapped} unmapped`),
   );
 }
 
-function focusDraftTarget(index, position = 0) {
+function focusDraftSequence(index, side, position = 0) {
   const item = rowsElement.querySelector(`.mapping-row[data-index="${index}"]`);
-  const targets = item?.querySelectorAll("[data-action='change-target']");
-  const target = targets?.[position]
-    || item?.querySelector("[data-role='add-target-select']")
+  const controls = item?.querySelectorAll(`[data-action='change-${side}']`);
+  const control = controls?.[position]
+    || item?.querySelector(`[data-role='add-${side}-select']`)
     || item?.querySelector("[data-action='save-entry']");
-  target?.focus();
+  control?.focus();
+}
+
+function focusDraftSource(index, position = 0) {
+  focusDraftSequence(index, "source", position);
+}
+
+function focusDraftTarget(index, position = 0) {
+  focusDraftSequence(index, "target", position);
 }
 
 function focusEditButton(index) {
@@ -256,7 +336,7 @@ function focusEditButton(index) {
 function guardActiveDraft(action) {
   if (editingIndex === -1) return false;
   setMessage(`Save or cancel the open mapping before ${action}.`, true);
-  focusDraftTarget(editingIndex);
+  focusDraftSource(editingIndex);
   return true;
 }
 
@@ -264,10 +344,10 @@ function beginEdit(index) {
   if (guardActiveDraft("opening another mapping")) return;
   editingIndex = index;
   const entry = payload.mappings[index];
-  draft = { targets: [...entry.targets], note: entry.note || "" };
+  draft = { sources: [...entry.sources], targets: [...entry.targets], note: entry.note || "" };
   render();
   setDraftSensitiveControlsEnabled(false);
-  focusDraftTarget(index);
+  focusDraftSource(index);
 }
 
 function closeEditor() {
@@ -343,48 +423,65 @@ rowsElement.addEventListener("click", (event) => {
   if (action === "edit-entry") return beginEdit(index);
   if (action === "cancel-entry") return closeEditor();
   if (action === "save-entry") {
-    payload.mappings[index] = updateMappingEntry(payload.mappings[index], draft.targets, draft.note);
-    setMessage(`Saved ${payload.mappings[index].sourceName} as ${payload.mappings[index].mode}. Download JSON to keep this edit.`);
+    if (!draft.sources.length && !draft.targets.length) {
+      setMessage("An alignment row cannot have both sides blank.", true);
+      focusDraftSource(index);
+      return;
+    }
+    payload.mappings[index] = updateMappingEntry(
+      payload.mappings[index],
+      draft.sources,
+      draft.targets,
+      draft.note,
+    );
+    setMessage(`Saved ${payload.mappings[index].id} as ${payload.mappings[index].mode}. Download JSON to keep this edit.`);
     return closeEditor();
   }
   if (action === "restore-entry") {
     const entry = payload.mappings[index];
-    payload.mappings[index] = updateMappingEntry(entry, entry.defaultTargets, "");
-    setMessage(`Restored generated targets for ${entry.sourceName}.`);
+    payload.mappings[index] = updateMappingEntry(
+      entry,
+      entry.defaultSources,
+      entry.defaultTargets,
+      "",
+    );
+    setMessage(`Restored generated alignment ${entry.id}.`);
     return closeEditor();
   }
-  if (action === "add-target") {
-    const select = item.querySelector("[data-role='add-target-select']");
-    draft.targets.push(select.value);
+
+  const actionMatch = action.match(/^(add|remove|move)-(source|target)(?:-(up|down))?$/);
+  if (!actionMatch) return;
+  const [, verb, side, direction] = actionMatch;
+  const items = draft[`${side}s`];
+  const focus = side === "source" ? focusDraftSource : focusDraftTarget;
+
+  if (verb === "add") {
+    const select = item.querySelector(`[data-role='add-${side}-select']`);
+    items.push(select.value);
     render();
-    focusDraftTarget(index, draft.targets.length - 1);
+    focus(index, items.length - 1);
     return;
   }
 
   const position = Number(button.dataset.position);
-  if (action === "remove-target") {
-    draft.targets.splice(position, 1);
+  if (verb === "remove") {
+    items.splice(position, 1);
     render();
-    focusDraftTarget(index, Math.min(position, draft.targets.length - 1));
+    focus(index, Math.min(position, items.length - 1));
     return;
   }
-  if (action === "move-up" && position > 0) {
-    [draft.targets[position - 1], draft.targets[position]] = [draft.targets[position], draft.targets[position - 1]];
-    render();
-    focusDraftTarget(index, position - 1);
-    return;
-  }
-  if (action === "move-down" && position < draft.targets.length - 1) {
-    [draft.targets[position], draft.targets[position + 1]] = [draft.targets[position + 1], draft.targets[position]];
-    render();
-    focusDraftTarget(index, position + 1);
-  }
+  const nextPosition = direction === "up" ? position - 1 : position + 1;
+  if (nextPosition < 0 || nextPosition >= items.length) return;
+  [items[position], items[nextPosition]] = [items[nextPosition], items[position]];
+  render();
+  focus(index, nextPosition);
 });
 
 rowsElement.addEventListener("change", (event) => {
   if (shellElement.inert) return;
-  if (event.target.dataset.action !== "change-target") return;
-  draft.targets[Number(event.target.dataset.position)] = event.target.value;
+  const actionMatch = event.target.dataset.action?.match(/^change-(source|target)$/);
+  if (!actionMatch) return;
+  draft[`${actionMatch[1]}s`][Number(event.target.dataset.position)] = event.target.value;
 });
 
 rowsElement.addEventListener("input", (event) => {

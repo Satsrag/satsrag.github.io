@@ -1,6 +1,648 @@
 {
-  "schema": "zvvnmod-utn57-map-v1",
-  "description": "Editable ZVVNMOD code sequence to UTN57 written-unit target sequence mappings.",
+  "schema": "zvvnmod-utn57-map-v2",
+  "description": "Editable aligned ZVVNMOD and UTN57 code sequences; either side may be empty or contain multiple codes.",
+  "sources": [
+    {
+      "id": "U+E000",
+      "name": "A i",
+      "const": "A_INIT",
+      "value": 57344,
+      "glyph": "",
+      "order": 0
+    },
+    {
+      "id": "U+E005",
+      "name": "A m",
+      "const": "A_MEDI",
+      "value": 57349,
+      "glyph": "",
+      "order": 1
+    },
+    {
+      "id": "U+E00C",
+      "name": "A f",
+      "const": "A_FINA",
+      "value": 57356,
+      "glyph": "",
+      "order": 2
+    },
+    {
+      "id": "U+E00D",
+      "name": "Aa f",
+      "const": "AA_FINA",
+      "value": 57357,
+      "glyph": "",
+      "order": 3
+    },
+    {
+      "id": "U+E029",
+      "name": "B i",
+      "const": "B_INIT",
+      "value": 57385,
+      "glyph": "",
+      "order": 4
+    },
+    {
+      "id": "U+E02A",
+      "name": "B m",
+      "const": "B_MEDI",
+      "value": 57386,
+      "glyph": "",
+      "order": 5
+    },
+    {
+      "id": "U+E02B",
+      "name": "B f",
+      "const": "B_FINA",
+      "value": 57387,
+      "glyph": "",
+      "order": 6
+    },
+    {
+      "id": "U+E05F",
+      "name": "C i",
+      "const": "C_INIT",
+      "value": 57439,
+      "glyph": "",
+      "order": 7
+    },
+    {
+      "id": "U+E060",
+      "name": "C m",
+      "const": "C_MEDI",
+      "value": 57440,
+      "glyph": "",
+      "order": 8
+    },
+    {
+      "id": "U+E061",
+      "name": "C f",
+      "const": "C_FINA",
+      "value": 57441,
+      "glyph": "",
+      "order": 9
+    },
+    {
+      "id": "U+E04A",
+      "name": "Ch i",
+      "const": "CH_INIT",
+      "value": 57418,
+      "glyph": "",
+      "order": 10
+    },
+    {
+      "id": "U+E04B",
+      "name": "Ch m",
+      "const": "CH_MEDI",
+      "value": 57419,
+      "glyph": "",
+      "order": 11
+    },
+    {
+      "id": "U+E04C",
+      "name": "Ch f",
+      "const": "CH_FINA",
+      "value": 57420,
+      "glyph": "",
+      "order": 12
+    },
+    {
+      "id": "U+E045",
+      "name": "D i",
+      "const": "D_INIT",
+      "value": 57413,
+      "glyph": "",
+      "order": 13
+    },
+    {
+      "id": "U+E046",
+      "name": "D m",
+      "const": "D_MEDI",
+      "value": 57414,
+      "glyph": "",
+      "order": 14
+    },
+    {
+      "id": "U+E049",
+      "name": "D f",
+      "const": "D_FINA",
+      "value": 57417,
+      "glyph": "",
+      "order": 15
+    },
+    {
+      "id": "U+E059",
+      "name": "F i",
+      "const": "F_INIT",
+      "value": 57433,
+      "glyph": "",
+      "order": 16
+    },
+    {
+      "id": "U+E05A",
+      "name": "F m",
+      "const": "F_MEDI",
+      "value": 57434,
+      "glyph": "",
+      "order": 17
+    },
+    {
+      "id": "U+E05B",
+      "name": "F f",
+      "const": "F_FINA",
+      "value": 57435,
+      "glyph": "",
+      "order": 18
+    },
+    {
+      "id": "U+E030",
+      "name": "G i",
+      "const": "G_INIT",
+      "value": 57392,
+      "glyph": "",
+      "order": 19
+    },
+    {
+      "id": "U+E031",
+      "name": "G m",
+      "const": "G_MEDI",
+      "value": 57393,
+      "glyph": "",
+      "order": 20
+    },
+    {
+      "id": "U+E02F",
+      "name": "H i",
+      "const": "H_INIT",
+      "value": 57391,
+      "glyph": "",
+      "order": 21
+    },
+    {
+      "id": "U+E032",
+      "name": "H f",
+      "const": "H_FINA",
+      "value": 57394,
+      "glyph": "",
+      "order": 22
+    },
+    {
+      "id": "U+E066",
+      "name": "Hr m",
+      "const": "HR_MEDI",
+      "value": 57446,
+      "glyph": "",
+      "order": 23
+    },
+    {
+      "id": "U+E067",
+      "name": "Hr f",
+      "const": "HR_FINA",
+      "value": 57447,
+      "glyph": "",
+      "order": 24
+    },
+    {
+      "id": "U+E034",
+      "name": "Hx i",
+      "const": "HX_INIT",
+      "value": 57396,
+      "glyph": "",
+      "order": 25
+    },
+    {
+      "id": "U+E09D",
+      "name": "Hx f Aa f",
+      "const": "HX_AA_FINA",
+      "value": 57501,
+      "glyph": "",
+      "order": 26
+    },
+    {
+      "id": "U+E01A",
+      "name": "I isol",
+      "const": "I_ISOL",
+      "value": 57370,
+      "glyph": "",
+      "order": 27
+    },
+    {
+      "id": "U+E04D",
+      "name": "I i",
+      "const": "I_INIT",
+      "value": 57421,
+      "glyph": "",
+      "order": 28
+    },
+    {
+      "id": "U+E006",
+      "name": "I m",
+      "const": "I_MEDI",
+      "value": 57350,
+      "glyph": "",
+      "order": 29
+    },
+    {
+      "id": "U+E00E",
+      "name": "I f",
+      "const": "I_FINA",
+      "value": 57358,
+      "glyph": "",
+      "order": 30
+    },
+    {
+      "id": "U+E04E",
+      "name": "J m",
+      "const": "J_MEDI",
+      "value": 57422,
+      "glyph": "",
+      "order": 31
+    },
+    {
+      "id": "U+E04F",
+      "name": "J f",
+      "const": "J_FINA",
+      "value": 57423,
+      "glyph": "",
+      "order": 32
+    },
+    {
+      "id": "U+E05C",
+      "name": "K i",
+      "const": "K_INIT",
+      "value": 57436,
+      "glyph": "",
+      "order": 33
+    },
+    {
+      "id": "U+E05D",
+      "name": "K m",
+      "const": "K_MEDI",
+      "value": 57437,
+      "glyph": "",
+      "order": 34
+    },
+    {
+      "id": "U+E05E",
+      "name": "K f",
+      "const": "K_FINA",
+      "value": 57438,
+      "glyph": "",
+      "order": 35
+    },
+    {
+      "id": "U+E039",
+      "name": "L i",
+      "const": "L_INIT",
+      "value": 57401,
+      "glyph": "",
+      "order": 36
+    },
+    {
+      "id": "U+E03A",
+      "name": "L m",
+      "const": "L_MEDI",
+      "value": 57402,
+      "glyph": "",
+      "order": 37
+    },
+    {
+      "id": "U+E03B",
+      "name": "L f",
+      "const": "L_FINA",
+      "value": 57403,
+      "glyph": "",
+      "order": 38
+    },
+    {
+      "id": "U+E036",
+      "name": "M i",
+      "const": "M_INIT",
+      "value": 57398,
+      "glyph": "",
+      "order": 39
+    },
+    {
+      "id": "U+E037",
+      "name": "M m",
+      "const": "M_MEDI",
+      "value": 57399,
+      "glyph": "",
+      "order": 40
+    },
+    {
+      "id": "U+E038",
+      "name": "M f",
+      "const": "M_FINA",
+      "value": 57400,
+      "glyph": "",
+      "order": 41
+    },
+    {
+      "id": "U+E027",
+      "name": "N i",
+      "const": "N_INIT",
+      "value": 57383,
+      "glyph": "",
+      "order": 42
+    },
+    {
+      "id": "U+E028",
+      "name": "N m",
+      "const": "N_MEDI",
+      "value": 57384,
+      "glyph": "",
+      "order": 43
+    },
+    {
+      "id": "U+E077",
+      "name": "N f Aa f",
+      "const": "N_AA_FINA",
+      "value": 57463,
+      "glyph": "",
+      "order": 44
+    },
+    {
+      "id": "U+E001",
+      "name": "O i",
+      "const": "O_INIT",
+      "value": 57345,
+      "glyph": "",
+      "order": 45
+    },
+    {
+      "id": "U+E008",
+      "name": "O m",
+      "const": "O_MEDI",
+      "value": 57352,
+      "glyph": "",
+      "order": 46
+    },
+    {
+      "id": "U+E00F",
+      "name": "O f",
+      "const": "O_FINA",
+      "value": 57359,
+      "glyph": "",
+      "order": 47
+    },
+    {
+      "id": "U+E02C",
+      "name": "P i",
+      "const": "P_INIT",
+      "value": 57388,
+      "glyph": "",
+      "order": 48
+    },
+    {
+      "id": "U+E02D",
+      "name": "P m",
+      "const": "P_MEDI",
+      "value": 57389,
+      "glyph": "",
+      "order": 49
+    },
+    {
+      "id": "U+E02E",
+      "name": "P f",
+      "const": "P_FINA",
+      "value": 57390,
+      "glyph": "",
+      "order": 50
+    },
+    {
+      "id": "U+E053",
+      "name": "R i",
+      "const": "R_INIT",
+      "value": 57427,
+      "glyph": "",
+      "order": 51
+    },
+    {
+      "id": "U+E054",
+      "name": "R m",
+      "const": "R_MEDI",
+      "value": 57428,
+      "glyph": "",
+      "order": 52
+    },
+    {
+      "id": "U+E055",
+      "name": "R f",
+      "const": "R_FINA",
+      "value": 57429,
+      "glyph": "",
+      "order": 53
+    },
+    {
+      "id": "U+E068",
+      "name": "Rh i",
+      "const": "RH_INIT",
+      "value": 57448,
+      "glyph": "",
+      "order": 54
+    },
+    {
+      "id": "U+E069",
+      "name": "Rh m",
+      "const": "RH_MEDI",
+      "value": 57449,
+      "glyph": "",
+      "order": 55
+    },
+    {
+      "id": "U+E06A",
+      "name": "Rh f",
+      "const": "RH_FINA",
+      "value": 57450,
+      "glyph": "",
+      "order": 56
+    },
+    {
+      "id": "U+E03C",
+      "name": "S i",
+      "const": "S_INIT",
+      "value": 57404,
+      "glyph": "",
+      "order": 57
+    },
+    {
+      "id": "U+E03D",
+      "name": "S m",
+      "const": "S_MEDI",
+      "value": 57405,
+      "glyph": "",
+      "order": 58
+    },
+    {
+      "id": "U+E03E",
+      "name": "S f",
+      "const": "S_FINA",
+      "value": 57406,
+      "glyph": "",
+      "order": 59
+    },
+    {
+      "id": "U+E03F",
+      "name": "Sh i",
+      "const": "SH_INIT",
+      "value": 57407,
+      "glyph": "",
+      "order": 60
+    },
+    {
+      "id": "U+E040",
+      "name": "Sh m",
+      "const": "SH_MEDI",
+      "value": 57408,
+      "glyph": "",
+      "order": 61
+    },
+    {
+      "id": "U+E041",
+      "name": "Sh f",
+      "const": "SH_FINA",
+      "value": 57409,
+      "glyph": "",
+      "order": 62
+    },
+    {
+      "id": "U+E042",
+      "name": "T i",
+      "const": "T_INIT",
+      "value": 57410,
+      "glyph": "",
+      "order": 63
+    },
+    {
+      "id": "U+E043",
+      "name": "T m",
+      "const": "T_MEDI",
+      "value": 57411,
+      "glyph": "",
+      "order": 64
+    },
+    {
+      "id": "U+E044",
+      "name": "T f",
+      "const": "T_FINA",
+      "value": 57412,
+      "glyph": "",
+      "order": 65
+    },
+    {
+      "id": "U+E01B",
+      "name": "U isol",
+      "const": "U_ISOL",
+      "value": 57371,
+      "glyph": "",
+      "order": 66
+    },
+    {
+      "id": "U+E011",
+      "name": "U f",
+      "const": "U_FINA",
+      "value": 57361,
+      "glyph": "",
+      "order": 67
+    },
+    {
+      "id": "U+E010",
+      "name": "Ue f",
+      "const": "UE_FINA",
+      "value": 57360,
+      "glyph": "",
+      "order": 68
+    },
+    {
+      "id": "U+E056",
+      "name": "W i",
+      "const": "W_INIT",
+      "value": 57430,
+      "glyph": "",
+      "order": 69
+    },
+    {
+      "id": "U+E057",
+      "name": "W m",
+      "const": "W_MEDI",
+      "value": 57431,
+      "glyph": "",
+      "order": 70
+    },
+    {
+      "id": "U+E058",
+      "name": "W f",
+      "const": "W_FINA",
+      "value": 57432,
+      "glyph": "",
+      "order": 71
+    },
+    {
+      "id": "U+E050",
+      "name": "Y i",
+      "const": "Y_INIT",
+      "value": 57424,
+      "glyph": "",
+      "order": 72
+    },
+    {
+      "id": "U+E051",
+      "name": "Y m",
+      "const": "Y_MEDI",
+      "value": 57425,
+      "glyph": "",
+      "order": 73
+    },
+    {
+      "id": "U+E062",
+      "name": "Z i",
+      "const": "Z_INIT",
+      "value": 57442,
+      "glyph": "",
+      "order": 74
+    },
+    {
+      "id": "U+E063",
+      "name": "Z m",
+      "const": "Z_MEDI",
+      "value": 57443,
+      "glyph": "",
+      "order": 75
+    },
+    {
+      "id": "U+E064",
+      "name": "Z f",
+      "const": "Z_FINA",
+      "value": 57444,
+      "glyph": "",
+      "order": 76
+    },
+    {
+      "id": "U+E0E7",
+      "name": "Zr i",
+      "const": "ZR_INIT",
+      "value": 57575,
+      "glyph": "",
+      "order": 77
+    },
+    {
+      "id": "U+E0E5",
+      "name": "Nirugu",
+      "const": "NIRUGU",
+      "value": 57573,
+      "glyph": "",
+      "order": 78
+    },
+    {
+      "id": "U+E0E6",
+      "name": "Ir f",
+      "const": "IR_FINA",
+      "value": 57574,
+      "glyph": "",
+      "order": 79
+    }
+  ],
   "targets": [
     {
       "id": "A:isol",
@@ -670,12 +1312,13 @@
   ],
   "mappings": [
     {
-      "source": [
+      "id": "source:U+E000",
+      "defaultSources": [
         "U+E000"
       ],
-      "sourceName": "A i",
-      "sourceConst": "A_INIT",
-      "sourceValue": 57344,
+      "sources": [
+        "U+E000"
+      ],
       "defaultTargets": [
         "A:init"
       ],
@@ -686,12 +1329,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E005",
+      "defaultSources": [
         "U+E005"
       ],
-      "sourceName": "A m",
-      "sourceConst": "A_MEDI",
-      "sourceValue": 57349,
+      "sources": [
+        "U+E005"
+      ],
       "defaultTargets": [
         "A:medi"
       ],
@@ -702,12 +1346,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E00C",
+      "defaultSources": [
         "U+E00C"
       ],
-      "sourceName": "A f",
-      "sourceConst": "A_FINA",
-      "sourceValue": 57356,
+      "sources": [
+        "U+E00C"
+      ],
       "defaultTargets": [
         "A:fina"
       ],
@@ -718,12 +1363,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E00D",
+      "defaultSources": [
         "U+E00D"
       ],
-      "sourceName": "Aa f",
-      "sourceConst": "AA_FINA",
-      "sourceValue": 57357,
+      "sources": [
+        "U+E00D"
+      ],
       "defaultTargets": [
         "Aa:fina"
       ],
@@ -734,12 +1380,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E029",
+      "defaultSources": [
         "U+E029"
       ],
-      "sourceName": "B i",
-      "sourceConst": "B_INIT",
-      "sourceValue": 57385,
+      "sources": [
+        "U+E029"
+      ],
       "defaultTargets": [
         "B:init"
       ],
@@ -750,12 +1397,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E02A",
+      "defaultSources": [
         "U+E02A"
       ],
-      "sourceName": "B m",
-      "sourceConst": "B_MEDI",
-      "sourceValue": 57386,
+      "sources": [
+        "U+E02A"
+      ],
       "defaultTargets": [
         "B:medi"
       ],
@@ -766,12 +1414,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E02B",
+      "defaultSources": [
         "U+E02B"
       ],
-      "sourceName": "B f",
-      "sourceConst": "B_FINA",
-      "sourceValue": 57387,
+      "sources": [
+        "U+E02B"
+      ],
       "defaultTargets": [
         "B:fina"
       ],
@@ -782,228 +1431,13 @@
       "note": ""
     },
     {
-      "source": [
-        "U+E079"
-      ],
-      "sourceName": "B i I f",
-      "sourceConst": "B_I_ISOL",
-      "sourceValue": 57465,
-      "defaultTargets": [
-        "B:init",
-        "I:fina"
-      ],
-      "targets": [
-        "B:init",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E07A"
-      ],
-      "sourceName": "B i O f",
-      "sourceConst": "B_O_ISOL",
-      "sourceValue": 57466,
-      "defaultTargets": [
-        "B:init",
-        "O:fina"
-      ],
-      "targets": [
-        "B:init",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E07B"
-      ],
-      "sourceName": "B i Ue f",
-      "sourceConst": "B_UE_ISOL",
-      "sourceValue": 57467,
-      "defaultTargets": [
-        "B:init",
-        "Ue:fina"
-      ],
-      "targets": [
-        "B:init",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E07C"
-      ],
-      "sourceName": "B i A m",
-      "sourceConst": "B_A_INIT",
-      "sourceValue": 57468,
-      "defaultTargets": [
-        "B:init",
-        "A:medi"
-      ],
-      "targets": [
-        "B:init",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E07F"
-      ],
-      "sourceName": "B i I m",
-      "sourceConst": "B_I_INIT",
-      "sourceValue": 57471,
-      "defaultTargets": [
-        "B:init",
-        "I:medi"
-      ],
-      "targets": [
-        "B:init",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E082"
-      ],
-      "sourceName": "B i O m",
-      "sourceConst": "B_O_INIT",
-      "sourceValue": 57474,
-      "defaultTargets": [
-        "B:init",
-        "O:medi"
-      ],
-      "targets": [
-        "B:init",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E07D"
-      ],
-      "sourceName": "B m A m",
-      "sourceConst": "B_A_MEDI",
-      "sourceValue": 57469,
-      "defaultTargets": [
-        "B:medi",
-        "A:medi"
-      ],
-      "targets": [
-        "B:medi",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E080"
-      ],
-      "sourceName": "B m I m",
-      "sourceConst": "B_I_MEDI",
-      "sourceValue": 57472,
-      "defaultTargets": [
-        "B:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "B:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E083"
-      ],
-      "sourceName": "B m O m",
-      "sourceConst": "B_O_MEDI",
-      "sourceValue": 57475,
-      "defaultTargets": [
-        "B:medi",
-        "O:medi"
-      ],
-      "targets": [
-        "B:medi",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E081"
-      ],
-      "sourceName": "B m I f",
-      "sourceConst": "B_I_FINA",
-      "sourceValue": 57473,
-      "defaultTargets": [
-        "B:medi",
-        "I:fina"
-      ],
-      "targets": [
-        "B:medi",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E084"
-      ],
-      "sourceName": "B m O f",
-      "sourceConst": "B_O_FINA",
-      "sourceValue": 57476,
-      "defaultTargets": [
-        "B:medi",
-        "O:fina"
-      ],
-      "targets": [
-        "B:medi",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0CD"
-      ],
-      "sourceName": "B m Ue f",
-      "sourceConst": "B_UE_FINA",
-      "sourceValue": 57549,
-      "defaultTargets": [
-        "B:medi",
-        "Ue:fina"
-      ],
-      "targets": [
-        "B:medi",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
+      "id": "source:U+E05F",
+      "defaultSources": [
         "U+E05F"
       ],
-      "sourceName": "C i",
-      "sourceConst": "C_INIT",
-      "sourceValue": 57439,
+      "sources": [
+        "U+E05F"
+      ],
       "defaultTargets": [
         "C:init"
       ],
@@ -1014,12 +1448,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E060",
+      "defaultSources": [
         "U+E060"
       ],
-      "sourceName": "C m",
-      "sourceConst": "C_MEDI",
-      "sourceValue": 57440,
+      "sources": [
+        "U+E060"
+      ],
       "defaultTargets": [
         "C:medi"
       ],
@@ -1030,12 +1465,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E061",
+      "defaultSources": [
         "U+E061"
       ],
-      "sourceName": "C f",
-      "sourceConst": "C_FINA",
-      "sourceValue": 57441,
+      "sources": [
+        "U+E061"
+      ],
       "defaultTargets": [
         "C:fina"
       ],
@@ -1046,12 +1482,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04A",
+      "defaultSources": [
         "U+E04A"
       ],
-      "sourceName": "Ch i",
-      "sourceConst": "CH_INIT",
-      "sourceValue": 57418,
+      "sources": [
+        "U+E04A"
+      ],
       "defaultTargets": [
         "Ch:init"
       ],
@@ -1062,12 +1499,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04B",
+      "defaultSources": [
         "U+E04B"
       ],
-      "sourceName": "Ch m",
-      "sourceConst": "CH_MEDI",
-      "sourceValue": 57419,
+      "sources": [
+        "U+E04B"
+      ],
       "defaultTargets": [
         "Ch:medi"
       ],
@@ -1078,12 +1516,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04C",
+      "defaultSources": [
         "U+E04C"
       ],
-      "sourceName": "Ch f",
-      "sourceConst": "CH_FINA",
-      "sourceValue": 57420,
+      "sources": [
+        "U+E04C"
+      ],
       "defaultTargets": [
         "Ch:fina"
       ],
@@ -1094,12 +1533,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E045",
+      "defaultSources": [
         "U+E045"
       ],
-      "sourceName": "D i",
-      "sourceConst": "D_INIT",
-      "sourceValue": 57413,
+      "sources": [
+        "U+E045"
+      ],
       "defaultTargets": [
         "D:init"
       ],
@@ -1110,12 +1550,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E046",
+      "defaultSources": [
         "U+E046"
       ],
-      "sourceName": "D m",
-      "sourceConst": "D_MEDI",
-      "sourceValue": 57414,
+      "sources": [
+        "U+E046"
+      ],
       "defaultTargets": [
         "D:medi"
       ],
@@ -1126,12 +1567,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E049",
+      "defaultSources": [
         "U+E049"
       ],
-      "sourceName": "D f",
-      "sourceConst": "D_FINA",
-      "sourceValue": 57417,
+      "sources": [
+        "U+E049"
+      ],
       "defaultTargets": [
         "D:fina"
       ],
@@ -1142,12 +1584,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E059",
+      "defaultSources": [
         "U+E059"
       ],
-      "sourceName": "F i",
-      "sourceConst": "F_INIT",
-      "sourceValue": 57433,
+      "sources": [
+        "U+E059"
+      ],
       "defaultTargets": [
         "F:init"
       ],
@@ -1158,12 +1601,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E05A",
+      "defaultSources": [
         "U+E05A"
       ],
-      "sourceName": "F m",
-      "sourceConst": "F_MEDI",
-      "sourceValue": 57434,
+      "sources": [
+        "U+E05A"
+      ],
       "defaultTargets": [
         "F:medi"
       ],
@@ -1174,12 +1618,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E05B",
+      "defaultSources": [
         "U+E05B"
       ],
-      "sourceName": "F f",
-      "sourceConst": "F_FINA",
-      "sourceValue": 57435,
+      "sources": [
+        "U+E05B"
+      ],
       "defaultTargets": [
         "F:fina"
       ],
@@ -1190,228 +1635,13 @@
       "note": ""
     },
     {
-      "source": [
-        "U+E09F"
-      ],
-      "sourceName": "F i I f",
-      "sourceConst": "F_I_ISOL",
-      "sourceValue": 57503,
-      "defaultTargets": [
-        "F:init",
-        "I:fina"
-      ],
-      "targets": [
-        "F:init",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A0"
-      ],
-      "sourceName": "F i O f",
-      "sourceConst": "F_O_ISOL",
-      "sourceValue": 57504,
-      "defaultTargets": [
-        "F:init",
-        "O:fina"
-      ],
-      "targets": [
-        "F:init",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A1"
-      ],
-      "sourceName": "F i Ue f",
-      "sourceConst": "F_UE_ISOL",
-      "sourceValue": 57505,
-      "defaultTargets": [
-        "F:init",
-        "Ue:fina"
-      ],
-      "targets": [
-        "F:init",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A2"
-      ],
-      "sourceName": "F i A m",
-      "sourceConst": "F_A_INIT",
-      "sourceValue": 57506,
-      "defaultTargets": [
-        "F:init",
-        "A:medi"
-      ],
-      "targets": [
-        "F:init",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A5"
-      ],
-      "sourceName": "F i I m",
-      "sourceConst": "F_I_INIT",
-      "sourceValue": 57509,
-      "defaultTargets": [
-        "F:init",
-        "I:medi"
-      ],
-      "targets": [
-        "F:init",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A8"
-      ],
-      "sourceName": "F i O m",
-      "sourceConst": "F_O_INIT",
-      "sourceValue": 57512,
-      "defaultTargets": [
-        "F:init",
-        "O:medi"
-      ],
-      "targets": [
-        "F:init",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A3"
-      ],
-      "sourceName": "F m A m",
-      "sourceConst": "F_A_MEDI",
-      "sourceValue": 57507,
-      "defaultTargets": [
-        "F:medi",
-        "A:medi"
-      ],
-      "targets": [
-        "F:medi",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A6"
-      ],
-      "sourceName": "F m I m",
-      "sourceConst": "F_I_MEDI",
-      "sourceValue": 57510,
-      "defaultTargets": [
-        "F:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "F:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A9"
-      ],
-      "sourceName": "F m O m",
-      "sourceConst": "F_O_MEDI",
-      "sourceValue": 57513,
-      "defaultTargets": [
-        "F:medi",
-        "O:medi"
-      ],
-      "targets": [
-        "F:medi",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0A7"
-      ],
-      "sourceName": "F m I f",
-      "sourceConst": "F_I_FINA",
-      "sourceValue": 57511,
-      "defaultTargets": [
-        "F:medi",
-        "I:fina"
-      ],
-      "targets": [
-        "F:medi",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0AA"
-      ],
-      "sourceName": "F m O f",
-      "sourceConst": "F_O_FINA",
-      "sourceValue": 57514,
-      "defaultTargets": [
-        "F:medi",
-        "O:fina"
-      ],
-      "targets": [
-        "F:medi",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0D0"
-      ],
-      "sourceName": "F m Ue f",
-      "sourceConst": "F_UE_FINA",
-      "sourceValue": 57552,
-      "defaultTargets": [
-        "F:medi",
-        "Ue:fina"
-      ],
-      "targets": [
-        "F:medi",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
+      "id": "source:U+E030",
+      "defaultSources": [
         "U+E030"
       ],
-      "sourceName": "G i",
-      "sourceConst": "G_INIT",
-      "sourceValue": 57392,
+      "sources": [
+        "U+E030"
+      ],
       "defaultTargets": [
         "G:init"
       ],
@@ -1422,12 +1652,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E031",
+      "defaultSources": [
         "U+E031"
       ],
-      "sourceName": "G m",
-      "sourceConst": "G_MEDI",
-      "sourceValue": 57393,
+      "sources": [
+        "U+E031"
+      ],
       "defaultTargets": [
         "G:medi"
       ],
@@ -1438,212 +1669,13 @@
       "note": ""
     },
     {
-      "source": [
-        "U+E092"
-      ],
-      "sourceName": "G i I f",
-      "sourceConst": "G_I_ISOL",
-      "sourceValue": 57490,
-      "defaultTargets": [
-        "G:init",
-        "I:fina"
-      ],
-      "targets": [
-        "G:init",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E093"
-      ],
-      "sourceName": "G i Ue f",
-      "sourceConst": "G_UE_ISOL",
-      "sourceValue": 57491,
-      "defaultTargets": [
-        "G:init",
-        "Ue:fina"
-      ],
-      "targets": [
-        "G:init",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E094"
-      ],
-      "sourceName": "G i A m",
-      "sourceConst": "G_A_INIT",
-      "sourceValue": 57492,
-      "defaultTargets": [
-        "G:init",
-        "A:medi"
-      ],
-      "targets": [
-        "G:init",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E097"
-      ],
-      "sourceName": "G i I m",
-      "sourceConst": "G_I_INIT",
-      "sourceValue": 57495,
-      "defaultTargets": [
-        "G:init",
-        "I:medi"
-      ],
-      "targets": [
-        "G:init",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E09A"
-      ],
-      "sourceName": "G i O m I m",
-      "sourceConst": "G_O_I_INIT",
-      "sourceValue": 57498,
-      "defaultTargets": [
-        "G:init",
-        "O:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "G:init",
-        "O:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E095"
-      ],
-      "sourceName": "G m A m",
-      "sourceConst": "G_A_MEDI",
-      "sourceValue": 57493,
-      "defaultTargets": [
-        "G:medi",
-        "A:medi"
-      ],
-      "targets": [
-        "G:medi",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E098"
-      ],
-      "sourceName": "G m I m",
-      "sourceConst": "G_I_MEDI",
-      "sourceValue": 57496,
-      "defaultTargets": [
-        "G:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "G:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E09B"
-      ],
-      "sourceName": "G m O m",
-      "sourceConst": "G_O_MEDI",
-      "sourceValue": 57499,
-      "defaultTargets": [
-        "G:medi",
-        "O:medi"
-      ],
-      "targets": [
-        "G:medi",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E099"
-      ],
-      "sourceName": "G m I f",
-      "sourceConst": "G_I_FINA",
-      "sourceValue": 57497,
-      "defaultTargets": [
-        "G:medi",
-        "I:fina"
-      ],
-      "targets": [
-        "G:medi",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E09C"
-      ],
-      "sourceName": "G m O f",
-      "sourceConst": "G_O_FINA",
-      "sourceValue": 57500,
-      "defaultTargets": [
-        "G:medi",
-        "O:fina"
-      ],
-      "targets": [
-        "G:medi",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0CF"
-      ],
-      "sourceName": "G m Ue f",
-      "sourceConst": "G_UE_FINA",
-      "sourceValue": 57551,
-      "defaultTargets": [
-        "G:medi",
-        "Ue:fina"
-      ],
-      "targets": [
-        "G:medi",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
+      "id": "source:U+E02F",
+      "defaultSources": [
         "U+E02F"
       ],
-      "sourceName": "H i",
-      "sourceConst": "H_INIT",
-      "sourceValue": 57391,
+      "sources": [
+        "U+E02F"
+      ],
       "defaultTargets": [
         "H:init"
       ],
@@ -1654,12 +1686,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E032",
+      "defaultSources": [
         "U+E032"
       ],
-      "sourceName": "H f",
-      "sourceConst": "H_FINA",
-      "sourceValue": 57394,
+      "sources": [
+        "U+E032"
+      ],
       "defaultTargets": [
         "H:fina"
       ],
@@ -1670,12 +1703,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E066",
+      "defaultSources": [
         "U+E066"
       ],
-      "sourceName": "Hr m",
-      "sourceConst": "HR_MEDI",
-      "sourceValue": 57446,
+      "sources": [
+        "U+E066"
+      ],
       "defaultTargets": [
         "Hr:medi"
       ],
@@ -1686,12 +1720,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E067",
+      "defaultSources": [
         "U+E067"
       ],
-      "sourceName": "Hr f",
-      "sourceConst": "HR_FINA",
-      "sourceValue": 57447,
+      "sources": [
+        "U+E067"
+      ],
       "defaultTargets": [
         "Hr:fina"
       ],
@@ -1702,12 +1737,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E034",
+      "defaultSources": [
         "U+E034"
       ],
-      "sourceName": "Hx i",
-      "sourceConst": "HX_INIT",
-      "sourceValue": 57396,
+      "sources": [
+        "U+E034"
+      ],
       "defaultTargets": [
         "Hx:init"
       ],
@@ -1718,12 +1754,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E09D",
+      "defaultSources": [
         "U+E09D"
       ],
-      "sourceName": "Hx f Aa f",
-      "sourceConst": "HX_AA_FINA",
-      "sourceValue": 57501,
+      "sources": [
+        "U+E09D"
+      ],
       "defaultTargets": [
         "Hx:fina",
         "Aa:fina"
@@ -1736,12 +1773,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E01A",
+      "defaultSources": [
         "U+E01A"
       ],
-      "sourceName": "I isol",
-      "sourceConst": "I_ISOL",
-      "sourceValue": 57370,
+      "sources": [
+        "U+E01A"
+      ],
       "defaultTargets": [
         "I:isol"
       ],
@@ -1752,12 +1790,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04D",
+      "defaultSources": [
         "U+E04D"
       ],
-      "sourceName": "I i",
-      "sourceConst": "I_INIT",
-      "sourceValue": 57421,
+      "sources": [
+        "U+E04D"
+      ],
       "defaultTargets": [
         "I:init"
       ],
@@ -1768,12 +1807,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E006",
+      "defaultSources": [
         "U+E006"
       ],
-      "sourceName": "I m",
-      "sourceConst": "I_MEDI",
-      "sourceValue": 57350,
+      "sources": [
+        "U+E006"
+      ],
       "defaultTargets": [
         "I:medi"
       ],
@@ -1784,12 +1824,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E00E",
+      "defaultSources": [
         "U+E00E"
       ],
-      "sourceName": "I f",
-      "sourceConst": "I_FINA",
-      "sourceValue": 57358,
+      "sources": [
+        "U+E00E"
+      ],
       "defaultTargets": [
         "I:fina"
       ],
@@ -1800,12 +1841,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04E",
+      "defaultSources": [
         "U+E04E"
       ],
-      "sourceName": "J m",
-      "sourceConst": "J_MEDI",
-      "sourceValue": 57422,
+      "sources": [
+        "U+E04E"
+      ],
       "defaultTargets": [
         "J:medi"
       ],
@@ -1816,12 +1858,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E04F",
+      "defaultSources": [
         "U+E04F"
       ],
-      "sourceName": "J f",
-      "sourceConst": "J_FINA",
-      "sourceValue": 57423,
+      "sources": [
+        "U+E04F"
+      ],
       "defaultTargets": [
         "J:fina"
       ],
@@ -1832,12 +1875,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E05C",
+      "defaultSources": [
         "U+E05C"
       ],
-      "sourceName": "K i",
-      "sourceConst": "K_INIT",
-      "sourceValue": 57436,
+      "sources": [
+        "U+E05C"
+      ],
       "defaultTargets": [
         "K:init"
       ],
@@ -1848,12 +1892,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E05D",
+      "defaultSources": [
         "U+E05D"
       ],
-      "sourceName": "K m",
-      "sourceConst": "K_MEDI",
-      "sourceValue": 57437,
+      "sources": [
+        "U+E05D"
+      ],
       "defaultTargets": [
         "K:medi"
       ],
@@ -1864,12 +1909,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E05E",
+      "defaultSources": [
         "U+E05E"
       ],
-      "sourceName": "K f",
-      "sourceConst": "K_FINA",
-      "sourceValue": 57438,
+      "sources": [
+        "U+E05E"
+      ],
       "defaultTargets": [
         "K:fina"
       ],
@@ -1880,228 +1926,13 @@
       "note": ""
     },
     {
-      "source": [
-        "U+E0AD"
-      ],
-      "sourceName": "K i I f",
-      "sourceConst": "K_I_ISOL",
-      "sourceValue": 57517,
-      "defaultTargets": [
-        "K:init",
-        "I:fina"
-      ],
-      "targets": [
-        "K:init",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0AE"
-      ],
-      "sourceName": "K i O f",
-      "sourceConst": "K_O_ISOL",
-      "sourceValue": 57518,
-      "defaultTargets": [
-        "K:init",
-        "O:fina"
-      ],
-      "targets": [
-        "K:init",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0AF"
-      ],
-      "sourceName": "K i Ue f",
-      "sourceConst": "K_UE_ISOL",
-      "sourceValue": 57519,
-      "defaultTargets": [
-        "K:init",
-        "Ue:fina"
-      ],
-      "targets": [
-        "K:init",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B0"
-      ],
-      "sourceName": "K i A m",
-      "sourceConst": "K_A_INIT",
-      "sourceValue": 57520,
-      "defaultTargets": [
-        "K:init",
-        "A:medi"
-      ],
-      "targets": [
-        "K:init",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B6"
-      ],
-      "sourceName": "K i I m",
-      "sourceConst": "K_I_INIT",
-      "sourceValue": 57526,
-      "defaultTargets": [
-        "K:init",
-        "I:medi"
-      ],
-      "targets": [
-        "K:init",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B9"
-      ],
-      "sourceName": "K i O m",
-      "sourceConst": "K_O_INIT",
-      "sourceValue": 57529,
-      "defaultTargets": [
-        "K:init",
-        "O:medi"
-      ],
-      "targets": [
-        "K:init",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B1"
-      ],
-      "sourceName": "K m A m",
-      "sourceConst": "K_A_MEDI",
-      "sourceValue": 57521,
-      "defaultTargets": [
-        "K:medi",
-        "A:medi"
-      ],
-      "targets": [
-        "K:medi",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B7"
-      ],
-      "sourceName": "K m I m",
-      "sourceConst": "K_I_MEDI",
-      "sourceValue": 57527,
-      "defaultTargets": [
-        "K:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "K:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0BA"
-      ],
-      "sourceName": "K m O m",
-      "sourceConst": "K_O_MEDI",
-      "sourceValue": 57530,
-      "defaultTargets": [
-        "K:medi",
-        "O:medi"
-      ],
-      "targets": [
-        "K:medi",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0B8"
-      ],
-      "sourceName": "K m I f",
-      "sourceConst": "K_I_FINA",
-      "sourceValue": 57528,
-      "defaultTargets": [
-        "K:medi",
-        "I:fina"
-      ],
-      "targets": [
-        "K:medi",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0BB"
-      ],
-      "sourceName": "K m O f",
-      "sourceConst": "K_O_FINA",
-      "sourceValue": 57531,
-      "defaultTargets": [
-        "K:medi",
-        "O:fina"
-      ],
-      "targets": [
-        "K:medi",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0BC"
-      ],
-      "sourceName": "K m Ue f",
-      "sourceConst": "K_UE_FINA",
-      "sourceValue": 57532,
-      "defaultTargets": [
-        "K:medi",
-        "Ue:fina"
-      ],
-      "targets": [
-        "K:medi",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
+      "id": "source:U+E039",
+      "defaultSources": [
         "U+E039"
       ],
-      "sourceName": "L i",
-      "sourceConst": "L_INIT",
-      "sourceValue": 57401,
+      "sources": [
+        "U+E039"
+      ],
       "defaultTargets": [
         "L:init"
       ],
@@ -2112,12 +1943,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03A",
+      "defaultSources": [
         "U+E03A"
       ],
-      "sourceName": "L m",
-      "sourceConst": "L_MEDI",
-      "sourceValue": 57402,
+      "sources": [
+        "U+E03A"
+      ],
       "defaultTargets": [
         "L:medi"
       ],
@@ -2128,12 +1960,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03B",
+      "defaultSources": [
         "U+E03B"
       ],
-      "sourceName": "L f",
-      "sourceConst": "L_FINA",
-      "sourceValue": 57403,
+      "sources": [
+        "U+E03B"
+      ],
       "defaultTargets": [
         "L:fina"
       ],
@@ -2144,12 +1977,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E036",
+      "defaultSources": [
         "U+E036"
       ],
-      "sourceName": "M i",
-      "sourceConst": "M_INIT",
-      "sourceValue": 57398,
+      "sources": [
+        "U+E036"
+      ],
       "defaultTargets": [
         "M:init"
       ],
@@ -2160,12 +1994,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E037",
+      "defaultSources": [
         "U+E037"
       ],
-      "sourceName": "M m",
-      "sourceConst": "M_MEDI",
-      "sourceValue": 57399,
+      "sources": [
+        "U+E037"
+      ],
       "defaultTargets": [
         "M:medi"
       ],
@@ -2176,12 +2011,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E038",
+      "defaultSources": [
         "U+E038"
       ],
-      "sourceName": "M f",
-      "sourceConst": "M_FINA",
-      "sourceValue": 57400,
+      "sources": [
+        "U+E038"
+      ],
       "defaultTargets": [
         "M:fina"
       ],
@@ -2192,12 +2028,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E027",
+      "defaultSources": [
         "U+E027"
       ],
-      "sourceName": "N i",
-      "sourceConst": "N_INIT",
-      "sourceValue": 57383,
+      "sources": [
+        "U+E027"
+      ],
       "defaultTargets": [
         "N:init"
       ],
@@ -2208,12 +2045,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E028",
+      "defaultSources": [
         "U+E028"
       ],
-      "sourceName": "N m",
-      "sourceConst": "N_MEDI",
-      "sourceValue": 57384,
+      "sources": [
+        "U+E028"
+      ],
       "defaultTargets": [
         "N:medi"
       ],
@@ -2224,12 +2062,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E077",
+      "defaultSources": [
         "U+E077"
       ],
-      "sourceName": "N f Aa f",
-      "sourceConst": "N_AA_FINA",
-      "sourceValue": 57463,
+      "sources": [
+        "U+E077"
+      ],
       "defaultTargets": [
         "N:fina",
         "Aa:fina"
@@ -2242,12 +2081,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E001",
+      "defaultSources": [
         "U+E001"
       ],
-      "sourceName": "O i",
-      "sourceConst": "O_INIT",
-      "sourceValue": 57345,
+      "sources": [
+        "U+E001"
+      ],
       "defaultTargets": [
         "O:init"
       ],
@@ -2258,12 +2098,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E008",
+      "defaultSources": [
         "U+E008"
       ],
-      "sourceName": "O m",
-      "sourceConst": "O_MEDI",
-      "sourceValue": 57352,
+      "sources": [
+        "U+E008"
+      ],
       "defaultTargets": [
         "O:medi"
       ],
@@ -2274,12 +2115,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E00F",
+      "defaultSources": [
         "U+E00F"
       ],
-      "sourceName": "O f",
-      "sourceConst": "O_FINA",
-      "sourceValue": 57359,
+      "sources": [
+        "U+E00F"
+      ],
       "defaultTargets": [
         "O:fina"
       ],
@@ -2290,12 +2132,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E02C",
+      "defaultSources": [
         "U+E02C"
       ],
-      "sourceName": "P i",
-      "sourceConst": "P_INIT",
-      "sourceValue": 57388,
+      "sources": [
+        "U+E02C"
+      ],
       "defaultTargets": [
         "P:init"
       ],
@@ -2306,12 +2149,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E02D",
+      "defaultSources": [
         "U+E02D"
       ],
-      "sourceName": "P m",
-      "sourceConst": "P_MEDI",
-      "sourceValue": 57389,
+      "sources": [
+        "U+E02D"
+      ],
       "defaultTargets": [
         "P:medi"
       ],
@@ -2322,12 +2166,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E02E",
+      "defaultSources": [
         "U+E02E"
       ],
-      "sourceName": "P f",
-      "sourceConst": "P_FINA",
-      "sourceValue": 57390,
+      "sources": [
+        "U+E02E"
+      ],
       "defaultTargets": [
         "P:fina"
       ],
@@ -2338,228 +2183,13 @@
       "note": ""
     },
     {
-      "source": [
-        "U+E086"
-      ],
-      "sourceName": "P i I f",
-      "sourceConst": "P_I_ISOL",
-      "sourceValue": 57478,
-      "defaultTargets": [
-        "P:init",
-        "I:fina"
-      ],
-      "targets": [
-        "P:init",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E087"
-      ],
-      "sourceName": "P i O f",
-      "sourceConst": "P_O_ISOL",
-      "sourceValue": 57479,
-      "defaultTargets": [
-        "P:init",
-        "O:fina"
-      ],
-      "targets": [
-        "P:init",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E088"
-      ],
-      "sourceName": "P i Ue f",
-      "sourceConst": "P_UE_ISOL",
-      "sourceValue": 57480,
-      "defaultTargets": [
-        "P:init",
-        "Ue:fina"
-      ],
-      "targets": [
-        "P:init",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E089"
-      ],
-      "sourceName": "P i A m",
-      "sourceConst": "P_A_INIT",
-      "sourceValue": 57481,
-      "defaultTargets": [
-        "P:init",
-        "A:medi"
-      ],
-      "targets": [
-        "P:init",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E08C"
-      ],
-      "sourceName": "P i I m",
-      "sourceConst": "P_I_INIT",
-      "sourceValue": 57484,
-      "defaultTargets": [
-        "P:init",
-        "I:medi"
-      ],
-      "targets": [
-        "P:init",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E08F"
-      ],
-      "sourceName": "P i O m",
-      "sourceConst": "P_O_INIT",
-      "sourceValue": 57487,
-      "defaultTargets": [
-        "P:init",
-        "O:medi"
-      ],
-      "targets": [
-        "P:init",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E08A"
-      ],
-      "sourceName": "P m A m",
-      "sourceConst": "P_A_MEDI",
-      "sourceValue": 57482,
-      "defaultTargets": [
-        "P:medi",
-        "A:medi"
-      ],
-      "targets": [
-        "P:medi",
-        "A:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E08D"
-      ],
-      "sourceName": "P m I m",
-      "sourceConst": "P_I_MEDI",
-      "sourceValue": 57485,
-      "defaultTargets": [
-        "P:medi",
-        "I:medi"
-      ],
-      "targets": [
-        "P:medi",
-        "I:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E090"
-      ],
-      "sourceName": "P m O m",
-      "sourceConst": "P_O_MEDI",
-      "sourceValue": 57488,
-      "defaultTargets": [
-        "P:medi",
-        "O:medi"
-      ],
-      "targets": [
-        "P:medi",
-        "O:medi"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E08E"
-      ],
-      "sourceName": "P m I f",
-      "sourceConst": "P_I_FINA",
-      "sourceValue": 57486,
-      "defaultTargets": [
-        "P:medi",
-        "I:fina"
-      ],
-      "targets": [
-        "P:medi",
-        "I:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E091"
-      ],
-      "sourceName": "P m O f",
-      "sourceConst": "P_O_FINA",
-      "sourceValue": 57489,
-      "defaultTargets": [
-        "P:medi",
-        "O:fina"
-      ],
-      "targets": [
-        "P:medi",
-        "O:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
-        "U+E0CE"
-      ],
-      "sourceName": "P m Ue f",
-      "sourceConst": "P_UE_FINA",
-      "sourceValue": 57550,
-      "defaultTargets": [
-        "P:medi",
-        "Ue:fina"
-      ],
-      "targets": [
-        "P:medi",
-        "Ue:fina"
-      ],
-      "mode": "direct",
-      "note": ""
-    },
-    {
-      "source": [
+      "id": "source:U+E053",
+      "defaultSources": [
         "U+E053"
       ],
-      "sourceName": "R i",
-      "sourceConst": "R_INIT",
-      "sourceValue": 57427,
+      "sources": [
+        "U+E053"
+      ],
       "defaultTargets": [
         "R:init"
       ],
@@ -2570,12 +2200,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E054",
+      "defaultSources": [
         "U+E054"
       ],
-      "sourceName": "R m",
-      "sourceConst": "R_MEDI",
-      "sourceValue": 57428,
+      "sources": [
+        "U+E054"
+      ],
       "defaultTargets": [
         "R:medi"
       ],
@@ -2586,12 +2217,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E055",
+      "defaultSources": [
         "U+E055"
       ],
-      "sourceName": "R f",
-      "sourceConst": "R_FINA",
-      "sourceValue": 57429,
+      "sources": [
+        "U+E055"
+      ],
       "defaultTargets": [
         "R:fina"
       ],
@@ -2602,12 +2234,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E068",
+      "defaultSources": [
         "U+E068"
       ],
-      "sourceName": "Rh i",
-      "sourceConst": "RH_INIT",
-      "sourceValue": 57448,
+      "sources": [
+        "U+E068"
+      ],
       "defaultTargets": [
         "Rh:init"
       ],
@@ -2618,12 +2251,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E069",
+      "defaultSources": [
         "U+E069"
       ],
-      "sourceName": "Rh m",
-      "sourceConst": "RH_MEDI",
-      "sourceValue": 57449,
+      "sources": [
+        "U+E069"
+      ],
       "defaultTargets": [
         "Rh:medi"
       ],
@@ -2634,12 +2268,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E06A",
+      "defaultSources": [
         "U+E06A"
       ],
-      "sourceName": "Rh f",
-      "sourceConst": "RH_FINA",
-      "sourceValue": 57450,
+      "sources": [
+        "U+E06A"
+      ],
       "defaultTargets": [
         "Rh:fina"
       ],
@@ -2650,12 +2285,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03C",
+      "defaultSources": [
         "U+E03C"
       ],
-      "sourceName": "S i",
-      "sourceConst": "S_INIT",
-      "sourceValue": 57404,
+      "sources": [
+        "U+E03C"
+      ],
       "defaultTargets": [
         "S:init"
       ],
@@ -2666,12 +2302,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03D",
+      "defaultSources": [
         "U+E03D"
       ],
-      "sourceName": "S m",
-      "sourceConst": "S_MEDI",
-      "sourceValue": 57405,
+      "sources": [
+        "U+E03D"
+      ],
       "defaultTargets": [
         "S:medi"
       ],
@@ -2682,12 +2319,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03E",
+      "defaultSources": [
         "U+E03E"
       ],
-      "sourceName": "S f",
-      "sourceConst": "S_FINA",
-      "sourceValue": 57406,
+      "sources": [
+        "U+E03E"
+      ],
       "defaultTargets": [
         "S:fina"
       ],
@@ -2698,12 +2336,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E03F",
+      "defaultSources": [
         "U+E03F"
       ],
-      "sourceName": "Sh i",
-      "sourceConst": "SH_INIT",
-      "sourceValue": 57407,
+      "sources": [
+        "U+E03F"
+      ],
       "defaultTargets": [
         "Sh:init"
       ],
@@ -2714,12 +2353,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E040",
+      "defaultSources": [
         "U+E040"
       ],
-      "sourceName": "Sh m",
-      "sourceConst": "SH_MEDI",
-      "sourceValue": 57408,
+      "sources": [
+        "U+E040"
+      ],
       "defaultTargets": [
         "Sh:medi"
       ],
@@ -2730,12 +2370,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E041",
+      "defaultSources": [
         "U+E041"
       ],
-      "sourceName": "Sh f",
-      "sourceConst": "SH_FINA",
-      "sourceValue": 57409,
+      "sources": [
+        "U+E041"
+      ],
       "defaultTargets": [
         "Sh:fina"
       ],
@@ -2746,12 +2387,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E042",
+      "defaultSources": [
         "U+E042"
       ],
-      "sourceName": "T i",
-      "sourceConst": "T_INIT",
-      "sourceValue": 57410,
+      "sources": [
+        "U+E042"
+      ],
       "defaultTargets": [
         "T:init"
       ],
@@ -2762,12 +2404,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E043",
+      "defaultSources": [
         "U+E043"
       ],
-      "sourceName": "T m",
-      "sourceConst": "T_MEDI",
-      "sourceValue": 57411,
+      "sources": [
+        "U+E043"
+      ],
       "defaultTargets": [
         "T:medi"
       ],
@@ -2778,12 +2421,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E044",
+      "defaultSources": [
         "U+E044"
       ],
-      "sourceName": "T f",
-      "sourceConst": "T_FINA",
-      "sourceValue": 57412,
+      "sources": [
+        "U+E044"
+      ],
       "defaultTargets": [
         "T:fina"
       ],
@@ -2794,12 +2438,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E01B",
+      "defaultSources": [
         "U+E01B"
       ],
-      "sourceName": "U isol",
-      "sourceConst": "U_ISOL",
-      "sourceValue": 57371,
+      "sources": [
+        "U+E01B"
+      ],
       "defaultTargets": [
         "U:isol"
       ],
@@ -2810,12 +2455,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E011",
+      "defaultSources": [
         "U+E011"
       ],
-      "sourceName": "U f",
-      "sourceConst": "U_FINA",
-      "sourceValue": 57361,
+      "sources": [
+        "U+E011"
+      ],
       "defaultTargets": [
         "U:fina"
       ],
@@ -2826,12 +2472,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E010",
+      "defaultSources": [
         "U+E010"
       ],
-      "sourceName": "Ue f",
-      "sourceConst": "UE_FINA",
-      "sourceValue": 57360,
+      "sources": [
+        "U+E010"
+      ],
       "defaultTargets": [
         "Ue:fina"
       ],
@@ -2842,12 +2489,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E056",
+      "defaultSources": [
         "U+E056"
       ],
-      "sourceName": "W i",
-      "sourceConst": "W_INIT",
-      "sourceValue": 57430,
+      "sources": [
+        "U+E056"
+      ],
       "defaultTargets": [
         "W:init"
       ],
@@ -2858,12 +2506,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E057",
+      "defaultSources": [
         "U+E057"
       ],
-      "sourceName": "W m",
-      "sourceConst": "W_MEDI",
-      "sourceValue": 57431,
+      "sources": [
+        "U+E057"
+      ],
       "defaultTargets": [
         "W:medi"
       ],
@@ -2874,12 +2523,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E058",
+      "defaultSources": [
         "U+E058"
       ],
-      "sourceName": "W f",
-      "sourceConst": "W_FINA",
-      "sourceValue": 57432,
+      "sources": [
+        "U+E058"
+      ],
       "defaultTargets": [
         "W:fina"
       ],
@@ -2890,12 +2540,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E050",
+      "defaultSources": [
         "U+E050"
       ],
-      "sourceName": "Y i",
-      "sourceConst": "Y_INIT",
-      "sourceValue": 57424,
+      "sources": [
+        "U+E050"
+      ],
       "defaultTargets": [
         "Y:init"
       ],
@@ -2906,12 +2557,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E051",
+      "defaultSources": [
         "U+E051"
       ],
-      "sourceName": "Y m",
-      "sourceConst": "Y_MEDI",
-      "sourceValue": 57425,
+      "sources": [
+        "U+E051"
+      ],
       "defaultTargets": [
         "Y:medi"
       ],
@@ -2922,12 +2574,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E062",
+      "defaultSources": [
         "U+E062"
       ],
-      "sourceName": "Z i",
-      "sourceConst": "Z_INIT",
-      "sourceValue": 57442,
+      "sources": [
+        "U+E062"
+      ],
       "defaultTargets": [
         "Z:init"
       ],
@@ -2938,12 +2591,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E063",
+      "defaultSources": [
         "U+E063"
       ],
-      "sourceName": "Z m",
-      "sourceConst": "Z_MEDI",
-      "sourceValue": 57443,
+      "sources": [
+        "U+E063"
+      ],
       "defaultTargets": [
         "Z:medi"
       ],
@@ -2954,12 +2608,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E064",
+      "defaultSources": [
         "U+E064"
       ],
-      "sourceName": "Z f",
-      "sourceConst": "Z_FINA",
-      "sourceValue": 57444,
+      "sources": [
+        "U+E064"
+      ],
       "defaultTargets": [
         "Z:fina"
       ],
@@ -2970,12 +2625,13 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E0E7",
+      "defaultSources": [
         "U+E0E7"
       ],
-      "sourceName": "Zr i",
-      "sourceConst": "ZR_INIT",
-      "sourceValue": 57575,
+      "sources": [
+        "U+E0E7"
+      ],
       "defaultTargets": [
         "Zr:init"
       ],
@@ -2986,26 +2642,249 @@
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E0E5",
+      "defaultSources": [
         "U+E0E5"
       ],
-      "sourceName": "Nirugu",
-      "sourceConst": "NIRUGU",
-      "sourceValue": 57573,
+      "sources": [
+        "U+E0E5"
+      ],
       "defaultTargets": [],
       "targets": [],
       "mode": "unmapped",
       "note": ""
     },
     {
-      "source": [
+      "id": "source:U+E0E6",
+      "defaultSources": [
         "U+E0E6"
       ],
-      "sourceName": "Ir f",
-      "sourceConst": "IR_FINA",
-      "sourceValue": 57574,
+      "sources": [
+        "U+E0E6"
+      ],
       "defaultTargets": [],
       "targets": [],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:A:isol",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "A:isol"
+      ],
+      "targets": [
+        "A:isol"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Aa:isol",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Aa:isol"
+      ],
+      "targets": [
+        "Aa:isol"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:B2:fina",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "B2:fina"
+      ],
+      "targets": [
+        "B2:fina"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Cr:init",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Cr:init"
+      ],
+      "targets": [
+        "Cr:init"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Dd:medi",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Dd:medi"
+      ],
+      "targets": [
+        "Dd:medi"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Dd:fina",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Dd:fina"
+      ],
+      "targets": [
+        "Dd:fina"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:G:fina",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "G:fina"
+      ],
+      "targets": [
+        "G:fina"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Gx:init",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Gx:init"
+      ],
+      "targets": [
+        "Gx:init"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Gx:medi",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Gx:medi"
+      ],
+      "targets": [
+        "Gx:medi"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:H:medi",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "H:medi"
+      ],
+      "targets": [
+        "H:medi"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Hx:medi",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Hx:medi"
+      ],
+      "targets": [
+        "Hx:medi"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Ix:isol",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Ix:isol"
+      ],
+      "targets": [
+        "Ix:isol"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:K2:init",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "K2:init"
+      ],
+      "targets": [
+        "K2:init"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:K2:medi",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "K2:medi"
+      ],
+      "targets": [
+        "K2:medi"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:K2:fina",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "K2:fina"
+      ],
+      "targets": [
+        "K2:fina"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Sz:fina",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Sz:fina"
+      ],
+      "targets": [
+        "Sz:fina"
+      ],
+      "mode": "unmapped",
+      "note": ""
+    },
+    {
+      "id": "target:Ux:isol",
+      "defaultSources": [],
+      "sources": [],
+      "defaultTargets": [
+        "Ux:isol"
+      ],
+      "targets": [
+        "Ux:isol"
+      ],
       "mode": "unmapped",
       "note": ""
     }

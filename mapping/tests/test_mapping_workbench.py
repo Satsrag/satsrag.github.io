@@ -17,23 +17,37 @@ class MappingDataTests(unittest.TestCase):
     def load_mapping(self) -> dict:
         return json.loads(MAPPING_JSON.read_text())
 
-    def test_default_mapping_covers_every_zvvnmod_code_once(self) -> None:
+    def test_default_mapping_excludes_decomposed_merged_codes_and_aligns_unmatched_sides(self) -> None:
         mapping = self.load_mapping()
         codes = json.loads(CODES_JSON.read_text())
-        expected = sorted(
+        retained_merged = {"N_AA_FINA", "HX_AA_FINA"}
+        expected_sources = [
             code["codepoint"]
             for group in codes["groups"]
-            for family in ("single", "merged")
-            for entries in group[family].values()
+            for entries in group["single"].values()
             for code in entries
-        ) + sorted(code["codepoint"] for group in codes["groups"] for code in group["special"])
-        actual = [entry["source"][0] for entry in mapping["mappings"]]
+        ] + [
+            code["codepoint"]
+            for group in codes["groups"]
+            for entries in group["merged"].values()
+            for code in entries
+            if code["const"] in retained_merged
+        ] + [code["codepoint"] for group in codes["groups"] for code in group["special"]]
+        source_ids = [source["id"] for source in mapping["sources"]]
 
-        self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v1")
-        self.assertEqual(len(actual), 139)
-        self.assertEqual(sorted(actual), sorted(expected))
-        self.assertEqual(len(actual), len(set(actual)))
-        self.assertTrue(all(len(entry["source"]) == 1 for entry in mapping["mappings"]))
+        self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v2")
+        self.assertEqual(len(source_ids), 80)
+        self.assertEqual(set(source_ids), set(expected_sources))
+        self.assertEqual(
+            {source["const"] for source in mapping["sources"] if source["const"] in retained_merged},
+            retained_merged,
+        )
+        self.assertEqual(len(mapping["mappings"]), 97)
+        self.assertEqual(sum(not entry["defaultSources"] for entry in mapping["mappings"]), 17)
+        self.assertEqual(sum(not entry["defaultTargets"] for entry in mapping["mappings"]), 2)
+        self.assertTrue(all(entry["defaultSources"] or entry["defaultTargets"] for entry in mapping["mappings"]))
+        self.assertTrue(all(entry["sources"] == entry["defaultSources"] for entry in mapping["mappings"]))
+        self.assertTrue(all(entry["targets"] == entry["defaultTargets"] for entry in mapping["mappings"]))
 
     def test_targets_are_ordered_and_every_mapping_target_exists(self) -> None:
         mapping = self.load_mapping()
@@ -68,6 +82,19 @@ class MappingDataTests(unittest.TestCase):
 
     def test_controller_guards_async_import_and_restores_editor_focus(self) -> None:
         controller = (ROOT / "mapping/workbench.js").read_text()
+        self.assertIn("function sourceSequence(", controller)
+        self.assertIn("function sourceOptionList(", controller)
+        self.assertIn("draft = { sources: [...entry.sources], targets: [...entry.targets]", controller)
+        self.assertIn('`add-${side}`', controller)
+        self.assertIn('`change-${side}`', controller)
+        self.assertIn('`remove-${side}`', controller)
+        self.assertIn("draft.sources,", controller)
+        self.assertIn("draft.targets,", controller)
+        self.assertIn("draft.note,", controller)
+        self.assertIn('select.setAttribute("aria-label", `${noun} ${position + 1}`)', controller)
+        self.assertIn('addSelect.setAttribute("aria-label", `${noun} to add`)', controller)
+        self.assertIn('panel.id = `mapping-editor-${index}`', controller)
+        self.assertIn('connector.setAttribute("aria-controls", `mapping-editor-${index}`)', controller)
         self.assertIn("function focusDraftTarget(", controller)
         self.assertIn("function focusEditButton(", controller)
         self.assertIn("function setWorkbenchControlsEnabled(", controller)
@@ -78,8 +105,8 @@ class MappingDataTests(unittest.TestCase):
         self.assertIn("function guardActiveDraft(", controller)
         self.assertGreaterEqual(controller.count("guardActiveDraft("), 6)
         self.assertIn("Save or cancel the open mapping before", controller)
-        self.assertIn("Move target ${position + 1} up", controller)
-        self.assertIn("Move target ${position + 1} down", controller)
+        self.assertIn("Move ${noun} ${position + 1} up", controller)
+        self.assertIn("Move ${noun} ${position + 1} down", controller)
         self.assertIn("function beginOperation()", controller)
         self.assertIn("function finishOperation()", controller)
         self.assertIn("let operationInProgress = false;", controller)
@@ -95,6 +122,14 @@ class MappingDataTests(unittest.TestCase):
 
         verifier = (ROOT / "mapping/scripts/verify-static-page.py").read_text()
         self.assertIn("flutter_service_worker.js?v=2026071702", verifier)
+
+    def test_dual_sequence_editor_has_aligned_styles(self) -> None:
+        styles = (ROOT / "mapping/styles.css").read_text()
+        self.assertIn(".mapping-source-sequence, .mapping-target-sequence", styles)
+        self.assertIn(".mapping-editor-grid", styles)
+        self.assertIn(".sequence-editor-row", styles)
+        self.assertIn(".source-select", styles)
+        self.assertIn(".mapping-empty-source", styles)
 
     def test_ultra_narrow_header_has_explicit_containment(self) -> None:
         styles = (ROOT / "mapping/styles.css").read_text()
@@ -123,22 +158,30 @@ class MappingDataTests(unittest.TestCase):
 
     def test_verifier_accepts_a_downloaded_special_override(self) -> None:
         payload = self.load_mapping()
-        entry = next(item for item in payload["mappings"] if item["sourceConst"] == "N_MEDI")
-        entry["targets"] = ["Hx:medi"]
+        n_medi = next(source["id"] for source in payload["sources"] if source["const"] == "N_MEDI")
+        entry = next(item for item in payload["mappings"] if item["sources"] == [n_medi])
+        entry["sources"] = [n_medi, "U+E000"]
+        entry["targets"] = ["Hx:medi", "Aa:fina"]
         entry["mode"] = "special"
         entry["note"] = "Reviewed exception"
 
         result = self.run_verifier_with(payload)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
-    def test_verifier_rejects_unknown_targets_in_supplied_json(self) -> None:
-        payload = self.load_mapping()
-        payload["mappings"][0]["targets"] = ["Unknown:medi"]
-        payload["mappings"][0]["mode"] = "special"
-
-        result = self.run_verifier_with(payload)
+    def test_verifier_rejects_unknown_source_and_target_ids(self) -> None:
+        unknown_target = self.load_mapping()
+        unknown_target["mappings"][0]["targets"] = ["Unknown:medi"]
+        unknown_target["mappings"][0]["mode"] = "special"
+        result = self.run_verifier_with(unknown_target)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("unknown UTN57 target", result.stdout + result.stderr)
+
+        unknown_source = self.load_mapping()
+        unknown_source["mappings"][0]["sources"] = ["U+FFFF"]
+        unknown_source["mappings"][0]["mode"] = "special"
+        result = self.run_verifier_with(unknown_source)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unknown ZVVNMOD source", result.stdout + result.stderr)
 
     def test_verifier_rejects_unknown_schema_fields_and_changed_root_metadata(self) -> None:
         mutations = []
@@ -147,6 +190,10 @@ class MappingDataTests(unittest.TestCase):
         extra_root = json.loads(json.dumps(base))
         extra_root["extra"] = True
         mutations.append(("extra root field", extra_root))
+
+        extra_source = json.loads(json.dumps(base))
+        extra_source["sources"][0]["extra"] = True
+        mutations.append(("extra source field", extra_source))
 
         extra_target = json.loads(json.dumps(base))
         extra_target["targets"][0]["extra"] = True
@@ -170,8 +217,12 @@ class MappingDataTests(unittest.TestCase):
         mutations = []
 
         changed_source = json.loads(json.dumps(base))
-        changed_source["mappings"][0]["sourceName"] = "tampered"
-        mutations.append(("generated source metadata", changed_source))
+        changed_source["sources"][0]["glyph"] = "tampered"
+        mutations.append(("source catalogue", changed_source))
+
+        changed_defaults = json.loads(json.dumps(base))
+        changed_defaults["mappings"][0]["defaultSources"] = ["U+E001"]
+        mutations.append(("generated default sources", changed_defaults))
 
         reordered = json.loads(json.dumps(base))
         reordered["mappings"][0], reordered["mappings"][1] = reordered["mappings"][1], reordered["mappings"][0]
@@ -191,20 +242,34 @@ class MappingDataTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
 
     def test_semantic_names_pre_generate_direct_target_sequences(self) -> None:
-        entries = {entry["source"][0]: entry for entry in self.load_mapping()["mappings"]}
+        payload = self.load_mapping()
+        entries = {
+            entry["defaultSources"][0]: entry
+            for entry in payload["mappings"]
+            if entry["defaultSources"]
+        }
+        sources = {source["id"]: source for source in payload["sources"]}
 
         self.assertEqual(entries["U+E000"]["defaultTargets"], ["A:init"])
-        self.assertEqual(entries["U+E079"]["defaultTargets"], ["B:init", "I:fina"])
-        self.assertEqual(entries["U+E09D"]["sourceName"], "Hx f Aa f")
+        self.assertNotIn("U+E079", entries)
+        self.assertEqual(sources["U+E09D"]["name"], "Hx f Aa f")
         self.assertEqual(entries["U+E09D"]["defaultTargets"], ["Hx:fina", "Aa:fina"])
         self.assertEqual(entries["U+E0E5"]["defaultTargets"], [])
         self.assertEqual(entries["U+E0E6"]["defaultTargets"], [])
 
-        for entry in entries.values():
-            if entry["targets"] != entry["defaultTargets"]:
+        for entry in payload["mappings"]:
+            changed = (
+                entry["sources"] != entry["defaultSources"]
+                or entry["targets"] != entry["defaultTargets"]
+            )
+            if changed:
                 expected_mode = "special"
             else:
-                expected_mode = "direct" if entry["defaultTargets"] else "unmapped"
+                expected_mode = (
+                    "direct"
+                    if entry["defaultSources"] and entry["defaultTargets"]
+                    else "unmapped"
+                )
             self.assertEqual(entry["mode"], expected_mode)
             self.assertIsInstance(entry["note"], str)
 
