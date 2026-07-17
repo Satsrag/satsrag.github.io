@@ -3,10 +3,11 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"flutter_bootstrap.js": "d6424c18bd9253ed7182b64400893f10",
+const RESOURCES = {"flutter_bootstrap.js": "1d140063ea84c806507b74c678b1643c",
 "version.json": "1e98a4f7390d2e9d9ad60c99fb0aff05",
-"index.html": "ae9b734ab9d00995489ebd0331ed8824",
-"/": "ae9b734ab9d00995489ebd0331ed8824",
+"index.html": "740caae0df468ea42e171434d47b6a26",
+"/": "740caae0df468ea42e171434d47b6a26",
+"flutter.html": "ae9b734ab9d00995489ebd0331ed8824",
 "main.dart.js": "b2775648ff506dfa6aa829794777f437",
 "flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
@@ -14,7 +15,7 @@ const RESOURCES = {"flutter_bootstrap.js": "d6424c18bd9253ed7182b64400893f10",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
-"manifest.json": "c81f25a8d1362ede544c1913a9c96ac1",
+"manifest.json": "9740d3e4d88dc8df60b79c7e3772e922",
 "assets/AssetManifest.json": "355836fdaf92f49c07209cd4f2a805bf",
 "assets/NOTICES": "b2ab0e4696e0a5bbabd92cfa858be3c4",
 "assets/FontManifest.json": "f1b75ad9fa09d24c89fc15f7490c6444",
@@ -41,7 +42,7 @@ const RESOURCES = {"flutter_bootstrap.js": "d6424c18bd9253ed7182b64400893f10",
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
-"index.html",
+"flutter.html",
 "flutter_bootstrap.js",
 "assets/AssetManifest.bin.json",
 "assets/FontManifest.json"];
@@ -136,7 +137,7 @@ self.addEventListener("fetch", (event) => {
   if (!RESOURCES[key]) {
     return;
   }
-  // If the URL is the index.html, perform an online-first request.
+  // Keep the site landing page network-first so it is not replaced by the Flutter shell.
   if (key == '/') {
     return onlineFirst(event);
   }
