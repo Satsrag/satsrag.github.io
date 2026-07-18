@@ -24,6 +24,7 @@
   --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 html { scroll-behavior: smooth; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); }
 a { color: var(--accent); text-underline-offset: 3px; }
@@ -39,6 +40,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .site-header nav { display: flex; align-items: center; gap: 6px; }
 .site-header nav a { min-height: 40px; display: grid; place-items: center; padding: 0 12px; color: var(--muted); border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 600; }
 .site-header nav a:hover { color: var(--ink); background: var(--soft); }
+.nav-compact { display: none; }
 main, footer { width: min(1320px, calc(100% - 48px)); margin-inline: auto; }
 .page-heading { padding: 76px 0 42px; border-bottom: 1px solid var(--line); }
 .eyebrow, .section-index { color: var(--accent); font: 600 12px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
@@ -158,6 +160,31 @@ h2 { margin: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.035em; }
 .mapping-editor-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .mapping-message { min-height: 22px; margin: 10px 2px 0; color: var(--muted); font-size: 12px; }
 .mapping-message.error { color: #9d2f2f; }
+.particle-table-shell { overflow-x: auto; max-height: min(78vh, 980px); }
+.particle-table { width: 100%; min-width: 1040px; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.particle-table th, .particle-table td { padding: 13px; vertical-align: middle; text-align: left; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.particle-table th { position: sticky; top: 0; z-index: 4; color: #42534b; background: #edf5f1; font: 650 11px/1.4 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+.particle-table th:first-child, .particle-table td:first-child { width: 22%; min-width: 220px; }
+.particle-table th:nth-child(2), .particle-table td:nth-child(2) { width: 38%; min-width: 380px; }
+.particle-table th:nth-child(3), .particle-table td:nth-child(3) { width: 40%; min-width: 400px; border-right: 0; }
+.particle-table tbody tr:last-child td { border-bottom: 0; }
+.particle-pattern, .particle-sequence { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.pattern-token { padding: 5px 7px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 6px; font: 650 12px/1 var(--mono); }
+mark.pattern-token { color: #694409; background: #fff0c9; border-color: #e7cb88; }
+.particle-codepoints { margin-top: 8px; color: var(--muted); font: 10px/1.45 var(--mono); }
+.particle-chip { min-width: 104px; display: grid; grid-template-columns: 52px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; column-gap: 8px; padding: 7px; background: var(--paper); border: 1px solid var(--line); border-radius: 9px; }
+.particle-glyph { grid-row: 1 / 3; min-width: 52px; min-height: 56px; display: grid; place-items: center; color: #111; background: var(--soft); border-radius: 7px; }
+.zvvnmod-font { font: 46px/1 "ZVVNMOD"; }
+.utn-font { font: 44px/1 "Written Units"; }
+.particle-chip-name { overflow-wrap: anywhere; font: 650 11px/1.3 var(--mono); }
+.particle-chip-code { color: var(--muted); font: 10px/1.3 var(--mono); }
+.structural-chip { grid-template-columns: 1fr; min-width: 76px; text-align: center; background: #eef5fb; border-color: #c8dceb; }
+.particle-structural-glyph { padding: 8px; color: #305f7f; border-radius: 6px; font: 700 12px/1 var(--mono); }
+.ambiguity-badge { display: inline-flex; margin-top: 9px; padding: 5px 8px; color: #7a4d0a; background: #fff0c9; border: 1px solid #e7cb88; border-radius: 999px; font: 650 10px/1 var(--mono); }
+.ambiguous-particle-row td { background: #fffdf6; }
+.ambiguous-particle-row:hover td { background: #fff8e7; }
+.particle-load-error { padding: 36px !important; color: #9d2f2f; text-align: center !important; }
+#particle-mapping-status.error { color: #9d2f2f; }
 [hidden] { display: none !important; }
 footer { margin-top: 72px; padding: 26px 0 50px; color: var(--muted); border-top: 1px solid var(--line); font-size: 13px; line-height: 1.6; }
 footer p { margin: 4px 0; }
@@ -183,5 +210,7 @@ footer p { margin: 4px 0; }
   .brand::before { content: "S"; font-size: 14px; }
   .site-header nav { flex: 1; min-width: 0; justify-content: space-between; gap: 0; }
   .site-header nav a { flex: none; padding-inline: 4px; white-space: nowrap; font-size: 11px; }
+  .nav-full { display: none; }
+  .nav-compact { display: inline; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

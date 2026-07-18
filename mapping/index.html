@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="UTN57 and ZVVNMOD inventories with an editable JSON mapping workbench.">
   <title>UTN57 ↔ ZVVNMOD mapping workbench</title>
+  <link rel="icon" href="../favicon.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="../" aria-label="Back to Satsrag tools">Satsrag <span>/ Mapping reference</span></a>
     <nav aria-label="Page navigation">
-      <a href="#utn57">UTN57</a>
-      <a href="#zvvnmod">ZVVNMOD</a>
-      <a href="#mapping-workbench">Mapping editor</a>
-      <a href="../flutter.html">Flutter app</a>
+      <a href="#utn57" aria-label="UTN57"><span class="nav-full">UTN57</span><span class="nav-compact" aria-hidden="true">U</span></a>
+      <a href="#zvvnmod" aria-label="ZVVNMOD"><span class="nav-full">ZVVNMOD</span><span class="nav-compact" aria-hidden="true">Z</span></a>
+      <a href="#mapping-workbench" aria-label="Mapping editor"><span class="nav-full">Mapping editor</span><span class="nav-compact" aria-hidden="true">Map</span></a>
+      <a href="#particle-mappings" aria-label="Particle mappings"><span class="nav-full">Particles</span><span class="nav-compact" aria-hidden="true">Part</span></a>
+      <a href="../flutter.html" aria-label="Flutter app"><span class="nav-full">Flutter app</span><span class="nav-compact" aria-hidden="true">App</span></a>
     </nav>
   </header>
 
@@ -102,6 +104,31 @@
       </div>
       <p id="mapping-message" class="mapping-message" aria-live="polite">Edits stay in this browser tab until you download the JSON.</p>
     </section>
+
+    <section id="particle-mappings" class="inventory-section particle-section" aria-labelledby="particle-mapping-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">04</p>
+          <h2 id="particle-mapping-title">Particle mappings</h2>
+          <p>Mongfontbuilder MNG particle patterns aligned from canonical ZVVNMOD shape sequences to UTN57 shape sequences. Legacy MVS is consumed on the ZVVNMOD side and reconstructed as the UTN57 MVS structural unit.</p>
+        </div>
+        <a href="https://github.com/Kushim-Jiang/mongfontbuilder/blob/539b455075486f70889e6de9909eac5dea839d8a/data/particles.ts" target="_blank" rel="noreferrer">Open particle source ↗</a>
+      </div>
+      <p id="particle-mapping-status" role="status" class="mapping-summary" aria-live="polite">Loading particle mappings…</p>
+      <div class="table-shell particle-table-shell" aria-busy="true">
+        <table class="particle-table" aria-label="Mongfontbuilder particle mappings">
+          <caption class="visually-hidden">Nominal-context ZVVNMOD to UTN57 particle mappings</caption>
+          <thead>
+            <tr>
+              <th scope="col">Mongfontbuilder particle</th>
+              <th scope="col">ZVVNMOD particle sequence</th>
+              <th scope="col">UTN57 shape sequence</th>
+            </tr>
+          </thead>
+          <tbody id="particle-mapping-rows"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -109,6 +136,7 @@
     <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
   </footer>
   <script src="app.js?v=2" defer></script>
-  <script src="workbench.js?v=2" type="module"></script>
+  <script src="workbench.js?v=3" type="module"></script>
+  <script src="particle-mappings.js?v=1" type="module"></script>
 </body>
 </html>
