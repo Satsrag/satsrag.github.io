@@ -32,6 +32,30 @@ MAPPING_FIELDS = {
     "mode",
     "note",
 }
+PARTICLE_ROOT_FIELDS = {"schema", "description", "sources", "mappings"}
+PARTICLE_MAPPING_FIELDS = {
+    "id",
+    "pattern",
+    "particleIndices",
+    "nominalCodePoints",
+    "rawZvvnmodCodes",
+    "defaultZvvnmodCodes",
+    "zvvnmodCodes",
+    "utn57Shapes",
+    "utn57GlyphNames",
+    "mode",
+    "note",
+}
+PARTICLE_IMMUTABLE_FIELDS = (
+    "id",
+    "pattern",
+    "particleIndices",
+    "nominalCodePoints",
+    "rawZvvnmodCodes",
+    "defaultZvvnmodCodes",
+    "utn57Shapes",
+    "utn57GlyphNames",
+)
 
 
 def check(condition: object, message: str) -> None:
@@ -125,18 +149,30 @@ def main() -> None:
             capture_output=True,
             text=True,
         )
-        check(
-            args.particle_json.read_bytes() == generated_particles_path.read_bytes(),
-            "particle mapping differs from generated artifact",
-        )
-        particle_mapping = json.loads(generated_particles_path.read_text())
+        generated_particles = json.loads(generated_particles_path.read_text())
+        source_particle_path = MAPPING / "data/zvvnmod-utn57-particles.json"
+        if args.particle_json.resolve() == source_particle_path.resolve():
+            check(
+                args.particle_json.read_bytes() == generated_particles_path.read_bytes(),
+                "particle mapping differs from generated artifact",
+            )
+        particle_mapping = json.loads(args.particle_json.read_text())
 
-    check(particle_mapping["schema"] == "zvvnmod-utn57-particles-v1", "particle schema mismatch")
-    check(len(particle_mapping["mappings"]) == 47, "particle mapping must contain 47 rows")
+    check(isinstance(particle_mapping, dict), "particle mapping root must be an object")
     check(
-        sum(bool(row["ambiguous"]) for row in particle_mapping["mappings"]) == 10,
-        "particle ambiguity count must be 10",
+        set(particle_mapping) == PARTICLE_ROOT_FIELDS,
+        "particle mapping root fields differ from schema",
     )
+    check(particle_mapping["schema"] == "zvvnmod-utn57-particles-v2", "particle schema mismatch")
+    check(
+        particle_mapping["description"] == generated_particles["description"],
+        "particle description differs from generated scaffold",
+    )
+    check(
+        particle_mapping["sources"] == generated_particles["sources"],
+        "particle provenance differs from generated scaffold",
+    )
+    check(len(particle_mapping["mappings"]) == 47, "particle mapping must contain 47 rows")
 
     check(mapping["description"] == generated["description"], "mapping description differs from generated scaffold")
 
@@ -158,6 +194,61 @@ def main() -> None:
     check(len(target_ids) == len(set(target_ids)) == 95, "mapping must contain 95 unique UTN57 targets")
     check(target_ids[0] == "A:isol", "UTN57 target catalogue must start at A:isol")
     valid_targets = set(target_ids)
+    particle_valid_targets = valid_targets | {"MVS"}
+    particle_ids: set[str] = set()
+    for index, (row, default_row) in enumerate(
+        zip(particle_mapping["mappings"], generated_particles["mappings"], strict=True)
+    ):
+        check(isinstance(row, dict), f"particle mapping {index} must be an object")
+        check(
+            set(row) == PARTICLE_MAPPING_FIELDS,
+            f"particle mapping {index} fields differ from schema",
+        )
+        for field in PARTICLE_IMMUTABLE_FIELDS:
+            check(
+                row.get(field) == default_row[field],
+                f"particle mapping {index} changed generated field {field}",
+            )
+        row_id = row["id"]
+        check(row_id not in particle_ids, f"duplicate particle mapping id: {row_id}")
+        particle_ids.add(row_id)
+
+        slots = row.get("zvvnmodCodes")
+        shapes = row["utn57Shapes"]
+        check(
+            isinstance(slots, list) and len(slots) == len(shapes),
+            f"particle mapping {index} must have one ZVVNMOD slot per UTN57 shape",
+        )
+        for slot in slots:
+            check(
+                slot is None or isinstance(slot, str),
+                f"particle mapping {index} slots must be strings or null",
+            )
+            if slot is not None:
+                check(slot in valid_sources, f"unknown particle ZVVNMOD source: {slot}")
+                value = int(slot[2:], 16)
+                check(
+                    not 0xE140 <= value <= 0xE143,
+                    f"particle mapping {index} contains a legacy control",
+                )
+        check(
+            all(shape in particle_valid_targets for shape in shapes),
+            f"particle mapping {index} contains an unknown UTN57 shape",
+        )
+        changed = slots != row["defaultZvvnmodCodes"]
+        expected_mode = (
+            "special" if changed else "direct" if all(slots) else "unmapped"
+        )
+        check(
+            row.get("mode") == expected_mode,
+            f"particle mapping {index} mode must be {expected_mode}",
+        )
+        check(
+            isinstance(row.get("note"), str),
+            f"particle mapping {index} note must be a string",
+        )
+
+    check(len(particle_ids) == 47, "particle mapping IDs must be unique")
 
     check(len(mapping["mappings"]) == len(generated["mappings"]) == 97, "mapping must contain 97 alignment rows")
     row_ids: set[str] = set()
@@ -259,21 +350,21 @@ def main() -> None:
         utn_index < zvvnmod_index < workbench_index < particle_index,
         "particle mappings must follow the workbench and both inventories",
     )
-    check('src="workbench.js?v=3"' in mapping_page, "mapping page has stale workbench controller")
+    check('src="workbench.js?v=4"' in mapping_page, "mapping page has stale workbench controller")
     check(
-        'src="particle-mappings.js?v=1"' in mapping_page,
+        'src="particle-mappings.js?v=2"' in mapping_page,
         "mapping page does not load particle controller",
     )
     workbench_controller = (MAPPING / "workbench.js").read_text()
     check(
-        'from "./workbench-model.mjs?v=3"' in workbench_controller,
-        "workbench model import is not cache-busted with its controller",
+        'from "./combined-workbench-model.mjs?v=1"' in workbench_controller,
+        "combined workbench model import is not cache-busted with its controller",
     )
 
     print(
         "verified: 38 UTN57 rows, 32 ZVVNMOD groups, 139 font-backed codes, "
         "80 editable ZVVNMOD sources, 95 UTN57 targets, 97 alignment rows, "
-        "47 particle rows (10 context-dependent), and Flutter PWA routing"
+        "47 editable particle rows (44 with unresolved semantic slots), and Flutter PWA routing"
     )
 
 

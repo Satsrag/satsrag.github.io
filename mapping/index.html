@@ -70,13 +70,13 @@
         <div>
           <p class="section-index">03</p>
           <h2 id="mapping-title">Editable mapping workbench</h2>
-          <p>The left catalogue contains decomposed ZVVNMOD codes plus the two retained chachlag forms. Rows align generated matches; when either inventory has no match, the opposite side stays blank. Edit either side as an ordered sequence of one or more codes, then download the resulting JSON.</p>
+          <p>The left catalogue contains decomposed ZVVNMOD codes plus the two retained chachlag forms. Rows align generated matches; when either inventory has no match, the opposite side stays blank. Edit either side as an ordered sequence. Particle edits below are included in the same downloaded JSON.</p>
         </div>
         <div class="mapping-actions" aria-label="Mapping file actions">
-          <button id="download-mapping" class="primary-action" type="button" disabled>Download JSON</button>
-          <button id="import-mapping-trigger" type="button" disabled>Import JSON</button>
+          <button id="download-mapping" class="primary-action" type="button" disabled>Download all JSON</button>
+          <button id="import-mapping-trigger" type="button" disabled>Import combined JSON</button>
           <input id="import-mapping" type="file" accept="application/json,.json" hidden disabled>
-          <button id="reset-mapping" type="button" disabled>Reload source JSON</button>
+          <button id="reset-mapping" type="button" disabled>Reload source JSON files</button>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
         </div>
         <div id="mapping-rows"><p class="loading">Loading mapping workbench…</p></div>
       </div>
-      <p id="mapping-message" class="mapping-message" aria-live="polite">Edits stay in this browser tab until you download the JSON.</p>
+      <p id="mapping-message" class="mapping-message" aria-live="polite">Main and particle edits stay in this browser tab until you download one combined JSON.</p>
     </section>
 
     <section id="particle-mappings" class="inventory-section particle-section" aria-labelledby="particle-mapping-title">
@@ -110,7 +110,7 @@
         <div>
           <p class="section-index">04</p>
           <h2 id="particle-mapping-title">Particle mappings</h2>
-          <p>Mongfontbuilder MNG particle patterns aligned from canonical ZVVNMOD shape sequences to UTN57 shape sequences. Legacy MVS is consumed on the ZVVNMOD side and reconstructed as the UTN57 MVS structural unit.</p>
+          <p>Each ZVVNMOD slot corresponds by semantic form and position to the UTN57 shape with the same number. Unknown counterparts stay blank for manual editing. Particle edits download and import together with the mapping workbench above.</p>
         </div>
         <a href="https://github.com/Kushim-Jiang/mongfontbuilder/blob/539b455075486f70889e6de9909eac5dea839d8a/data/particles.ts" target="_blank" rel="noreferrer">Open particle source ↗</a>
       </div>
@@ -136,7 +136,7 @@
     <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
   </footer>
   <script src="app.js?v=2" defer></script>
-  <script src="workbench.js?v=3" type="module"></script>
-  <script src="particle-mappings.js?v=1" type="module"></script>
+  <script src="workbench.js?v=4" type="module"></script>
+  <script src="particle-mappings.js?v=2" type="module"></script>
 </body>
 </html>

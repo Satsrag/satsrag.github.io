@@ -116,9 +116,14 @@ class MappingDataTests(unittest.TestCase):
         self.assertGreaterEqual(controller.count("if (shellElement.inert) return;"), 3)
         render_body = controller.split("function render()", 1)[1].split("function focusDraftTarget", 1)[0]
         self.assertNotIn("aria-busy", render_body)
-        self.assertEqual(controller.count("setWorkbenchControlsEnabled(hasSource);"), 1)
+        self.assertIn("setWorkbenchControlsEnabled(hasSource && !particleDraftOpen);", controller)
         self.assertGreaterEqual(controller.count("finishOperation();"), 2)
         self.assertEqual(controller.count('shellElement.setAttribute("aria-busy", "true");'), 1)
+        self.assertIn('const DOWNLOAD_NAME = "zvvnmod-utn57-workbench.json";', controller)
+        self.assertIn("serializeCombinedPayload(combinedPayload)", controller)
+        self.assertIn("normalizeCombinedPayload(JSON.parse(await file.text()))", controller)
+        self.assertIn("particle-mapping-payload", controller)
+        self.assertIn("particle-mapping-updated", controller)
 
         verifier = (ROOT / "mapping/scripts/verify-static-page.py").read_text()
         self.assertIn("flutter_service_worker.js?v=2026071702", verifier)

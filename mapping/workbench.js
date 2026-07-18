@@ -1,12 +1,13 @@
 import {
-  hasSameGeneratedScaffold,
-  normalizeMappingPayload,
-  serializeMappingPayload,
-  updateMappingEntry,
-} from "./workbench-model.mjs?v=3";
+  hasSameCombinedScaffold,
+  normalizeCombinedPayload,
+  serializeCombinedPayload,
+} from "./combined-workbench-model.mjs?v=1";
+import { updateMappingEntry } from "./workbench-model.mjs?v=3";
 
-const DATA_URL = "data/zvvnmod-utn57-map.json";
-const DOWNLOAD_NAME = "zvvnmod-utn57-map.json";
+const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.json";
+const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.json";
+const DOWNLOAD_NAME = "zvvnmod-utn57-workbench.json";
 
 const rowsElement = document.getElementById("mapping-rows");
 const shellElement = document.getElementById("mapping-shell");
@@ -19,13 +20,15 @@ const importTriggerElement = document.getElementById("import-mapping-trigger");
 const downloadElement = document.getElementById("download-mapping");
 const resetElement = document.getElementById("reset-mapping");
 
-let sourcePayload;
+let sourceCombinedPayload;
+let combinedPayload;
 let payload;
 let sourceById = new Map();
 let targetById = new Map();
 let editingIndex = -1;
 let draft = null;
 let operationInProgress = false;
+let particleDraftOpen = false;
 
 function make(tag, className, text) {
   const node = document.createElement(tag);
@@ -334,10 +337,17 @@ function focusEditButton(index) {
 }
 
 function guardActiveDraft(action) {
-  if (editingIndex === -1) return false;
-  setMessage(`Save or cancel the open mapping before ${action}.`, true);
-  focusDraftSource(editingIndex);
-  return true;
+  if (editingIndex !== -1) {
+    setMessage(`Save or cancel the open mapping before ${action}.`, true);
+    focusDraftSource(editingIndex);
+    return true;
+  }
+  if (particleDraftOpen) {
+    setMessage(`Save or cancel the open particle mapping before ${action}.`, true);
+    window.dispatchEvent(new CustomEvent("particle-mapping-focus-draft"));
+    return true;
+  }
+  return false;
 }
 
 function beginEdit(index) {
@@ -347,6 +357,7 @@ function beginEdit(index) {
   draft = { sources: [...entry.sources], targets: [...entry.targets], note: entry.note || "" };
   render();
   setDraftSensitiveControlsEnabled(false);
+  window.dispatchEvent(new CustomEvent("main-mapping-draft-state", { detail: { open: true } }));
   focusDraftSource(index);
 }
 
@@ -355,7 +366,8 @@ function closeEditor() {
   editingIndex = -1;
   draft = null;
   render();
-  setDraftSensitiveControlsEnabled(true);
+  setDraftSensitiveControlsEnabled(!particleDraftOpen);
+  window.dispatchEvent(new CustomEvent("main-mapping-draft-state", { detail: { open: false } }));
   focusEditButton(closedIndex);
 }
 
@@ -383,30 +395,49 @@ function beginOperation() {
   operationInProgress = true;
   setWorkbenchControlsEnabled(false);
   shellElement.setAttribute("aria-busy", "true");
+  window.dispatchEvent(new CustomEvent("combined-workbench-busy", { detail: { busy: true } }));
   return true;
 }
 
 function finishOperation() {
   operationInProgress = false;
-  const hasSource = Boolean(sourcePayload);
-  setWorkbenchControlsEnabled(hasSource);
+  const hasSource = Boolean(sourceCombinedPayload);
+  setWorkbenchControlsEnabled(hasSource && !particleDraftOpen);
   if (!hasSource) resetElement.disabled = false;
   shellElement.setAttribute("aria-busy", "false");
+  window.dispatchEvent(new CustomEvent("combined-workbench-busy", { detail: { busy: false } }));
 }
 
 async function loadSourceMapping() {
   if (guardActiveDraft("reloading source JSON")) return;
   if (!beginOperation()) return;
   try {
-    const response = await fetch(DATA_URL, { cache: "no-cache" });
-    if (!response.ok) throw new Error(`Mapping JSON could not be loaded (${response.status}).`);
-    const loaded = normalizeMappingPayload(await response.json());
-    sourcePayload = structuredClone(loaded);
-    payload = loaded;
+    const [mappingResponse, particleResponse] = await Promise.all([
+      fetch(MAPPING_DATA_URL, { cache: "no-cache" }),
+      fetch(PARTICLE_DATA_URL, { cache: "no-cache" }),
+    ]);
+    if (!mappingResponse.ok || !particleResponse.ok) {
+      throw new Error(
+        `Workbench JSON could not be loaded (${mappingResponse.status}/${particleResponse.status}).`,
+      );
+    }
+    const loaded = normalizeCombinedPayload({
+      schema: "zvvnmod-utn57-workbench-v1",
+      mapping: await mappingResponse.json(),
+      particleMappings: await particleResponse.json(),
+    });
+    sourceCombinedPayload = structuredClone(loaded);
+    combinedPayload = loaded;
+    payload = combinedPayload.mapping;
     editingIndex = -1;
     draft = null;
     render();
-    setMessage("Source JSON loaded. Edits stay in this browser tab until you download the JSON.");
+    window.dispatchEvent(
+      new CustomEvent("particle-mapping-payload", {
+        detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+      }),
+    );
+    setMessage("Source JSON loaded. Main and particle edits stay in this browser tab until you download one combined JSON.");
   } finally {
     finishOperation();
   }
@@ -497,20 +528,45 @@ function renderIfReady() {
 searchElement.addEventListener("input", renderIfReady);
 modeElement.addEventListener("change", renderIfReady);
 
+window.addEventListener("particle-mapping-request-payload", () => {
+  if (!combinedPayload) return;
+  window.dispatchEvent(
+    new CustomEvent("particle-mapping-payload", {
+      detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+    }),
+  );
+});
+
+window.addEventListener("particle-mapping-updated", (event) => {
+  if (!combinedPayload) return;
+  combinedPayload = normalizeCombinedPayload({
+    ...combinedPayload,
+    particleMappings: event.detail.payload,
+  });
+  payload = combinedPayload.mapping;
+  setMessage("Saved particle mapping edit. Download the combined JSON to keep it.");
+});
+
+window.addEventListener("particle-mapping-draft-state", (event) => {
+  particleDraftOpen = Boolean(event.detail.open);
+  setDraftSensitiveControlsEnabled(!particleDraftOpen && editingIndex === -1);
+  shellElement.inert = particleDraftOpen || operationInProgress;
+});
+
 downloadElement.addEventListener("click", () => {
   if (guardActiveDraft("downloading JSON")) return;
-  if (!payload) {
-    setMessage("Mapping JSON is not ready. Reload the source JSON before downloading.", true);
+  if (!combinedPayload) {
+    setMessage("Workbench JSON is not ready. Reload the source JSON before downloading.", true);
     return;
   }
-  const blob = new Blob([serializeMappingPayload(payload)], { type: "application/json" });
+  const blob = new Blob([serializeCombinedPayload(combinedPayload)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = DOWNLOAD_NAME;
   link.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  setMessage(`Downloaded ${DOWNLOAD_NAME}. Replace mapping/data/${DOWNLOAD_NAME} in the source to publish these mappings.`);
+  setMessage(`Downloaded ${DOWNLOAD_NAME} with both main and particle mappings.`);
 });
 
 resetElement.addEventListener("click", () => {
@@ -524,23 +580,29 @@ importElement.addEventListener("change", async () => {
   importElement.value = "";
   if (!file) return;
   if (guardActiveDraft("importing JSON")) return;
-  if (!sourcePayload) {
-    setMessage("Source JSON must load before importing a mapping.", true);
+  if (!sourceCombinedPayload) {
+    setMessage("Source JSON must load before importing a workbench file.", true);
     return;
   }
   if (!beginOperation()) return;
   setMessage(`Importing ${file.name}…`);
   try {
     if (file.size > 5_000_000) throw new Error("Mapping JSON must be smaller than 5 MB.");
-    const imported = normalizeMappingPayload(JSON.parse(await file.text()));
-    if (!hasSameGeneratedScaffold(sourcePayload, imported)) {
-      throw new Error("Imported JSON does not match the current generated inventory scaffold.");
+    const imported = normalizeCombinedPayload(JSON.parse(await file.text()));
+    if (!hasSameCombinedScaffold(sourceCombinedPayload, imported)) {
+      throw new Error("Imported JSON does not match the current generated workbench scaffold.");
     }
-    payload = imported;
+    combinedPayload = imported;
+    payload = combinedPayload.mapping;
     editingIndex = -1;
     draft = null;
     render();
-    setMessage(`Imported ${file.name}. Download JSON after any further edits.`);
+    window.dispatchEvent(
+      new CustomEvent("particle-mapping-payload", {
+        detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+      }),
+    );
+    setMessage(`Imported ${file.name}, including main and particle mapping edits.`);
   } catch (error) {
     setMessage(`Import failed: ${error.message}`, true);
   } finally {
@@ -552,5 +614,8 @@ loadSourceMapping().catch((error) => {
   rowsElement.replaceChildren(make("p", "empty-state", error.message));
   shellElement.setAttribute("aria-busy", "false");
   setMessage(error.message, true);
+  window.dispatchEvent(
+    new CustomEvent("particle-mapping-unavailable", { detail: { message: error.message } }),
+  );
   console.error(error);
 });
