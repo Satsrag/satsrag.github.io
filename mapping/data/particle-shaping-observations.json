@@ -1,0 +1,1161 @@
+{
+  "schema": "zvvnmod-utn57-particle-observations-v1",
+  "sources": {
+    "mongfontbuilder": {
+      "repository": "https://github.com/Kushim-Jiang/mongfontbuilder",
+      "commit": "539b455075486f70889e6de9909eac5dea839d8a",
+      "particlesPath": "lib/mongfontbuilder/data/particles.json",
+      "aliasesPath": "lib/mongfontbuilder/data/aliases.json"
+    },
+    "meco": {
+      "repository": "https://github.com/Satsrag/meco",
+      "commit": "7edff334d33fc367596d1d33406b33bccb8ddc60"
+    }
+  },
+  "observations": [
+    {
+      "pattern": "u u",
+      "particleIndices": [
+        0
+      ],
+      "nominalCodePoints": [
+        "U+1824",
+        "U+1824"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E008",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "u1824.O.init",
+        "u1824.U.fina"
+      ]
+    },
+    {
+      "pattern": "ue ue",
+      "particleIndices": [
+        0
+      ],
+      "nominalCodePoints": [
+        "U+1826",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E008",
+        "U+E006",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "u1826.O.init",
+        "u1826.U.fina"
+      ]
+    },
+    {
+      "pattern": "b ue ue",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+182A",
+        "U+1826",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E082",
+        "U+E006",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "u182A_u1826.BO.init",
+        "u1826.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs a ch a",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1820",
+        "U+1834",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E005",
+        "U+E04B",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1820.A.init",
+        "u1834.Ch.medi",
+        "u1820.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs a ch a g a n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1820",
+        "U+1834",
+        "U+1820",
+        "U+182D",
+        "U+1820",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E005",
+        "U+E04B",
+        "U+E005",
+        "U+E028",
+        "U+E028",
+        "U+E005",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1820.A.init",
+        "u1834.Ch.medi",
+        "u1820.A.medi",
+        "u182D.Hx.medi",
+        "u1820.A.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs i",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E00E"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1822.I.isol"
+      ]
+    },
+    {
+      "pattern": "mvs i y a r",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1822",
+        "U+1836",
+        "U+1820",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E006",
+        "U+E051",
+        "U+E005",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1822.I.init",
+        "u1836.I.medi",
+        "u1820.A.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs i y e r",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1822",
+        "U+1836",
+        "U+1821",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E006",
+        "U+E051",
+        "U+E005",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1822.I.init",
+        "u1836.I.medi",
+        "u1821.A.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs i y a n",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1822",
+        "U+1836",
+        "U+1820",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E006",
+        "U+E051",
+        "U+E005",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1822.I.init",
+        "u1836.I.medi",
+        "u1820.A.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs i y e n",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1822",
+        "U+1836",
+        "U+1821",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E006",
+        "U+E051",
+        "U+E005",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1822.I.init",
+        "u1836.I.medi",
+        "u1821.A.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs u",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1824"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1824.U.isol"
+      ]
+    },
+    {
+      "pattern": "mvs ue",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1826.U.isol"
+      ]
+    },
+    {
+      "pattern": "mvs u n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1824",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E008",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1824.O.init",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs ue n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1826",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E008",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1826.O.init",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs u d",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1824",
+        "U+1833"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E008",
+        "U+E008",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1824.O.init",
+        "u1833.Dd.fina"
+      ]
+    },
+    {
+      "pattern": "mvs ue d",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1826",
+        "U+1833"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E008",
+        "U+E008",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1826.O.init",
+        "u1833.Dd.fina"
+      ]
+    },
+    {
+      "pattern": "mvs ch u",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1834",
+        "U+1824"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E04B",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1834.Ch.init",
+        "u1824.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs ch ue",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1834",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E04B",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1834.Ch.init",
+        "u1826.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs t u",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1832",
+        "U+1824"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1832.T.init",
+        "u1824.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs t ue",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1832",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1832.T.init",
+        "u1826.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs t ue r",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1832",
+        "U+1826",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1832.T.init",
+        "u1826.O.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs t ue n i",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1832",
+        "U+1826",
+        "U+1828",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1832.T.init",
+        "u1826.O.medi",
+        "u1828.N.medi",
+        "u1822.I.fina"
+      ]
+    },
+    {
+      "pattern": "mvs y ue g e n",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1836",
+        "U+1826",
+        "U+182D",
+        "U+1821",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E051",
+        "U+E008",
+        "U+E095",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1836.Y.init",
+        "u1826.O.medi",
+        "u182D_u1821.GA.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs l ue g e",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+182F",
+        "U+1826",
+        "U+182D",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E03A",
+        "U+E008",
+        "U+E095",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u182F.L.init",
+        "u1826.O.medi",
+        "u182D_u1821.GAa.fina"
+      ]
+    },
+    {
+      "pattern": "mvs n ue g ue d",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1828",
+        "U+1826",
+        "U+182D",
+        "U+1826",
+        "U+1833"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E028",
+        "U+E008",
+        "U+E09B",
+        "U+E008",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1828.N.init",
+        "u1826.O.medi",
+        "u182D_u1826.GO.medi",
+        "u1833.Dd.fina"
+      ]
+    },
+    {
+      "pattern": "mvs n ue g e n",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1828",
+        "U+1826",
+        "U+182D",
+        "U+1821",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E028",
+        "U+E008",
+        "U+E095",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1828.N.init",
+        "u1826.O.medi",
+        "u182D_u1821.GA.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs y ue m",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1836",
+        "U+1826",
+        "U+182E"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E051",
+        "U+E008",
+        "U+E038"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1836.Y.init",
+        "u1826.O.medi",
+        "u182E.M.fina"
+      ]
+    },
+    {
+      "pattern": "mvs y ue m s e n",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1836",
+        "U+1826",
+        "U+182E",
+        "U+1830",
+        "U+1821",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E051",
+        "U+E008",
+        "U+E037",
+        "U+E03D",
+        "U+E005",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1836.Y.init",
+        "u1826.O.medi",
+        "u182E.M.medi",
+        "u1830.S.medi",
+        "u1821.A.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs h ue",
+      "particleIndices": [
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+182C",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E09C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u182C_u1826.GO.isol"
+      ]
+    },
+    {
+      "pattern": "mvs y i",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1836",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E051",
+        "U+E00E"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1836.I.init",
+        "u1822.I.fina"
+      ]
+    },
+    {
+      "pattern": "mvs y i n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1836",
+        "U+1822",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E051",
+        "U+E006",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1836.I.init",
+        "u1822.I.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d a g a n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1820",
+        "U+182D",
+        "U+1820",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E028",
+        "U+E028",
+        "U+E005",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1820.A.medi",
+        "u182D.Hx.medi",
+        "u1820.A.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d e g e n",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1821",
+        "U+182D",
+        "U+1821",
+        "U+1828"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E095",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1821.A.medi",
+        "u182D_u1821.GA.medi",
+        "u1828.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d u",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1824"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1824.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d ue",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1826"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E011"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1826.U.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d a g",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1820",
+        "U+182D"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E032"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1820.A.medi",
+        "u182D.H.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d e g",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1821",
+        "U+182D"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E006",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1821.A.medi",
+        "u182D.G.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d a h i",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1820",
+        "U+182C",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E099"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1820.A.medi",
+        "u182C_u1822.GI.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d e h i",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1821",
+        "U+182C",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E005",
+        "U+E099"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1821.A.medi",
+        "u182C_u1822.GI.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d u r",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1824",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1824.O.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d ue r",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1826",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1826.O.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d u n i",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1824",
+        "U+1828",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1824.O.medi",
+        "u1828.N.medi",
+        "u1822.I.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d ue n i",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1826",
+        "U+1828",
+        "U+1822"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1826.O.medi",
+        "u1828.N.medi",
+        "u1822.I.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d u g a r",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1824",
+        "U+182D",
+        "U+1820",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E028",
+        "U+E028",
+        "U+E005",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1824.O.medi",
+        "u182D.Hx.medi",
+        "u1820.A.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d ue g e r",
+      "particleIndices": [
+        1,
+        2
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1826",
+        "U+182D",
+        "U+1821",
+        "U+1837"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E008",
+        "U+E095",
+        "U+E055"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1826.O.medi",
+        "u182D_u1821.GA.medi",
+        "u1837.R.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d a",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1820.A.fina"
+      ]
+    },
+    {
+      "pattern": "mvs d e",
+      "particleIndices": [
+        1
+      ],
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1833",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E143",
+        "U+E046",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "mvs.wide",
+        "u1833.D.init",
+        "u1821.A.fina"
+      ]
+    }
+  ]
+}

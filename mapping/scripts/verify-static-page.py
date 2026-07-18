@@ -55,6 +55,12 @@ def main() -> None:
         default=MAPPING / "data/zvvnmod-utn57-map.json",
         help="editable mapping JSON to validate",
     )
+    parser.add_argument(
+        "--particle-json",
+        type=Path,
+        default=MAPPING / "data/zvvnmod-utn57-particles.json",
+        help="generated particle mapping JSON to validate",
+    )
     args = parser.parse_args()
 
     rows = list(csv.DictReader((MAPPING / "data/zvvnmod-unicode-names.csv").open()))
@@ -106,6 +112,31 @@ def main() -> None:
             text=True,
         )
         generated = json.loads(generated_path.read_text())
+
+        generated_particles_path = Path(temporary) / "particles.json"
+        subprocess.run(
+            [
+                sys.executable,
+                str(MAPPING / "scripts/generate-particle-mapping.py"),
+                "--output",
+                str(generated_particles_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        check(
+            args.particle_json.read_bytes() == generated_particles_path.read_bytes(),
+            "particle mapping differs from generated artifact",
+        )
+        particle_mapping = json.loads(generated_particles_path.read_text())
+
+    check(particle_mapping["schema"] == "zvvnmod-utn57-particles-v1", "particle schema mismatch")
+    check(len(particle_mapping["mappings"]) == 47, "particle mapping must contain 47 rows")
+    check(
+        sum(bool(row["ambiguous"]) for row in particle_mapping["mappings"]) == 10,
+        "particle ambiguity count must be 10",
+    )
 
     check(mapping["description"] == generated["description"], "mapping description differs from generated scaffold")
 
@@ -223,13 +254,26 @@ def main() -> None:
     utn_index = mapping_page.index('id="utn57"')
     zvvnmod_index = mapping_page.index('id="zvvnmod"')
     workbench_index = mapping_page.index('id="mapping-workbench"')
-    check(utn_index < zvvnmod_index < workbench_index, "workbench must follow both inventory tables")
-    check('src="workbench.js' in mapping_page, "mapping page does not load workbench controller")
+    particle_index = mapping_page.index('id="particle-mappings"')
+    check(
+        utn_index < zvvnmod_index < workbench_index < particle_index,
+        "particle mappings must follow the workbench and both inventories",
+    )
+    check('src="workbench.js?v=3"' in mapping_page, "mapping page has stale workbench controller")
+    check(
+        'src="particle-mappings.js?v=1"' in mapping_page,
+        "mapping page does not load particle controller",
+    )
+    workbench_controller = (MAPPING / "workbench.js").read_text()
+    check(
+        'from "./workbench-model.mjs?v=3"' in workbench_controller,
+        "workbench model import is not cache-busted with its controller",
+    )
 
     print(
         "verified: 38 UTN57 rows, 32 ZVVNMOD groups, 139 font-backed codes, "
         "80 editable ZVVNMOD sources, 95 UTN57 targets, 97 alignment rows, "
-        "and Flutter PWA routing"
+        "47 particle rows (10 context-dependent), and Flutter PWA routing"
     )
 
 

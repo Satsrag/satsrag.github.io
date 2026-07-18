@@ -3,7 +3,7 @@ import {
   normalizeMappingPayload,
   serializeMappingPayload,
   updateMappingEntry,
-} from "./workbench-model.mjs";
+} from "./workbench-model.mjs?v=3";
 
 const DATA_URL = "data/zvvnmod-utn57-map.json";
 const DOWNLOAD_NAME = "zvvnmod-utn57-map.json";
