@@ -169,6 +169,8 @@ h2 { margin: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.035em; }
 .particle-table th:nth-child(3), .particle-table td:nth-child(3) { width: 40%; min-width: 400px; border-right: 0; }
 .particle-table tbody tr:last-child td { border-bottom: 0; }
 .particle-pattern, .particle-sequence { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.particle-aligned-slot { position: relative; display: inline-grid; padding-top: 16px; }
+.particle-slot-number { position: absolute; top: 0; left: 4px; color: var(--muted); font: 650 9px/1 var(--mono); }
 .pattern-token { padding: 5px 7px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 6px; font: 650 12px/1 var(--mono); }
 mark.pattern-token { color: #694409; background: #fff0c9; border-color: #e7cb88; }
 .particle-codepoints { margin-top: 8px; color: var(--muted); font: 10px/1.45 var(--mono); }
@@ -180,9 +182,18 @@ mark.pattern-token { color: #694409; background: #fff0c9; border-color: #e7cb88;
 .particle-chip-code { color: var(--muted); font: 10px/1.3 var(--mono); }
 .structural-chip { grid-template-columns: 1fr; min-width: 76px; text-align: center; background: #eef5fb; border-color: #c8dceb; }
 .particle-structural-glyph { padding: 8px; color: #305f7f; border-radius: 6px; font: 700 12px/1 var(--mono); }
-.ambiguity-badge { display: inline-flex; margin-top: 9px; padding: 5px 8px; color: #7a4d0a; background: #fff0c9; border: 1px solid #e7cb88; border-radius: 999px; font: 650 10px/1 var(--mono); }
-.ambiguous-particle-row td { background: #fffdf6; }
-.ambiguous-particle-row:hover td { background: #fff8e7; }
+.blank-particle-chip { grid-template-columns: 1fr; min-width: 118px; color: #875a16; background: #fffaf0; border-style: dashed; border-color: #d9b97d; }
+.particle-blank-glyph { font: 650 11px/1.3 var(--mono); }
+.particle-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 10px; }
+.particle-edit-button { min-height: 34px; padding: 0 10px; color: var(--ink); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; font: 650 11px/1 var(--sans); cursor: pointer; }
+.particle-editor-row > td { padding: 0 !important; background: #f7faf8; border-right: 0 !important; }
+.particle-editor { border-top: 0; }
+.particle-editor h3 { margin: 0; font-size: 15px; }
+.particle-editor-help { margin: 6px 0 12px; color: var(--muted); font-size: 12px; }
+.particle-slot-editor-list { display: grid; gap: 8px; }
+.particle-slot-editor-row { display: grid; grid-template-columns: 28px minmax(116px, auto) 24px minmax(280px, 1fr); align-items: center; gap: 8px; }
+.particle-slot-arrow { color: var(--muted); text-align: center; font: 700 14px var(--mono); }
+.particle-slot-select { min-width: 0; }
 .particle-load-error { padding: 36px !important; color: #9d2f2f; text-align: center !important; }
 #particle-mapping-status.error { color: #9d2f2f; }
 [hidden] { display: none !important; }

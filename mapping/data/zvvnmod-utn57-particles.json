@@ -1,6 +1,6 @@
 {
-  "schema": "zvvnmod-utn57-particles-v1",
-  "description": "Mongfontbuilder MNG particle patterns aligned from canonical ZVVNMOD shape sequences to UTN57 shape sequences; nominal pattern context is retained because some canonical ZVVNMOD sequences are ambiguous.",
+  "schema": "zvvnmod-utn57-particles-v2",
+  "description": "Mongfontbuilder MNG particle patterns with editable ZVVNMOD slots aligned one-for-one to observed UTN57 shapes; unmatched semantic counterparts remain null for review.",
   "sources": {
     "mongfontbuilder": {
       "repository": "https://github.com/Kushim-Jiang/mongfontbuilder",
@@ -29,9 +29,12 @@
         "U+E008",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        "U+E001",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E000",
-        "U+E008",
+        "U+E001",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -42,7 +45,8 @@
         "u1824.O.init",
         "u1824.U.fina"
       ],
-      "ambiguous": false
+      "mode": "direct",
+      "note": ""
     },
     {
       "id": "particle:02",
@@ -60,10 +64,12 @@
         "U+E006",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        "U+E001",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E000",
-        "U+E008",
-        "U+E006",
+        "U+E001",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -74,7 +80,8 @@
         "u1826.O.init",
         "u1826.U.fina"
       ],
-      "ambiguous": false
+      "mode": "direct",
+      "note": ""
     },
     {
       "id": "particle:03",
@@ -92,10 +99,14 @@
         "U+E006",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        "U+E029",
+        "U+E008",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
         "U+E029",
         "U+E008",
-        "U+E006",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -107,7 +118,8 @@
         "u182A_u1826.BO.init",
         "u1826.U.fina"
       ],
-      "ambiguous": false
+      "mode": "direct",
+      "note": ""
     },
     {
       "id": "particle:04",
@@ -127,8 +139,15 @@
         "U+E04B",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E000",
+        "U+E04B",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E005",
+        null,
+        "U+E000",
         "U+E04B",
         "U+E00C"
       ],
@@ -144,7 +163,8 @@
         "u1834.Ch.medi",
         "u1820.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:05",
@@ -171,12 +191,21 @@
         "U+E005",
         "U+E00C"
       ],
-      "zvvnmodCodes": [
-        "U+E005",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E000",
         "U+E04B",
         "U+E005",
-        "U+E028",
-        "U+E028",
+        null,
+        "U+E005",
+        "U+E00C"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E000",
+        "U+E04B",
+        "U+E005",
+        null,
         "U+E005",
         "U+E00C"
       ],
@@ -198,7 +227,8 @@
         "u1820.A.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:06",
@@ -214,8 +244,13 @@
         "U+E143",
         "U+E00E"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E01A"
+      ],
       "zvvnmodCodes": [
-        "U+E00E"
+        null,
+        "U+E01A"
       ],
       "utn57Shapes": [
         "MVS",
@@ -225,7 +260,8 @@
         "mvs.wide",
         "u1822.I.isol"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:07",
@@ -248,9 +284,17 @@
         "U+E005",
         "U+E055"
       ],
-      "zvvnmodCodes": [
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
         "U+E006",
-        "U+E051",
+        "U+E005",
+        "U+E055"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E006",
         "U+E005",
         "U+E055"
       ],
@@ -268,7 +312,8 @@
         "u1820.A.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:08",
@@ -291,9 +336,17 @@
         "U+E005",
         "U+E055"
       ],
-      "zvvnmodCodes": [
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
         "U+E006",
-        "U+E051",
+        "U+E005",
+        "U+E055"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E006",
         "U+E005",
         "U+E055"
       ],
@@ -311,7 +364,8 @@
         "u1821.A.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:09",
@@ -334,9 +388,17 @@
         "U+E005",
         "U+E00C"
       ],
-      "zvvnmodCodes": [
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
         "U+E006",
-        "U+E051",
+        "U+E005",
+        "U+E00C"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E006",
         "U+E005",
         "U+E00C"
       ],
@@ -354,7 +416,8 @@
         "u1820.A.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:10",
@@ -377,9 +440,17 @@
         "U+E005",
         "U+E00C"
       ],
-      "zvvnmodCodes": [
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
         "U+E006",
-        "U+E051",
+        "U+E005",
+        "U+E00C"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E006",
         "U+E005",
         "U+E00C"
       ],
@@ -397,7 +468,8 @@
         "u1821.A.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:11",
@@ -413,8 +485,13 @@
         "U+E143",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E01B"
+      ],
       "zvvnmodCodes": [
-        "U+E011"
+        null,
+        "U+E01B"
       ],
       "utn57Shapes": [
         "MVS",
@@ -424,7 +501,8 @@
         "mvs.wide",
         "u1824.U.isol"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:12",
@@ -440,8 +518,13 @@
         "U+E143",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E01B"
+      ],
       "zvvnmodCodes": [
-        "U+E011"
+        null,
+        "U+E01B"
       ],
       "utn57Shapes": [
         "MVS",
@@ -451,7 +534,8 @@
         "mvs.wide",
         "u1826.U.isol"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:13",
@@ -469,8 +553,14 @@
         "U+E008",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E001",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E008",
+        null,
+        "U+E001",
         "U+E00C"
       ],
       "utn57Shapes": [
@@ -483,7 +573,8 @@
         "u1824.O.init",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:14",
@@ -501,8 +592,14 @@
         "U+E008",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E001",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E008",
+        null,
+        "U+E001",
         "U+E00C"
       ],
       "utn57Shapes": [
@@ -515,7 +612,8 @@
         "u1826.O.init",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:15",
@@ -534,10 +632,15 @@
         "U+E008",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E001",
+        null
+      ],
       "zvvnmodCodes": [
-        "U+E008",
-        "U+E008",
-        "U+E00C"
+        null,
+        "U+E001",
+        null
       ],
       "utn57Shapes": [
         "MVS",
@@ -549,7 +652,8 @@
         "u1824.O.init",
         "u1833.Dd.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:16",
@@ -568,10 +672,15 @@
         "U+E008",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E001",
+        null
+      ],
       "zvvnmodCodes": [
-        "U+E008",
-        "U+E008",
-        "U+E00C"
+        null,
+        "U+E001",
+        null
       ],
       "utn57Shapes": [
         "MVS",
@@ -583,7 +692,8 @@
         "u1826.O.init",
         "u1833.Dd.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:17",
@@ -601,8 +711,14 @@
         "U+E04B",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04A",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E04B",
+        null,
+        "U+E04A",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -615,7 +731,8 @@
         "u1834.Ch.init",
         "u1824.U.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:18",
@@ -633,8 +750,14 @@
         "U+E04B",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04A",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E04B",
+        null,
+        "U+E04A",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -647,7 +770,8 @@
         "u1834.Ch.init",
         "u1826.U.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:19",
@@ -665,8 +789,14 @@
         "U+E046",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E042",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E042",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -679,7 +809,8 @@
         "u1832.T.init",
         "u1824.U.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:20",
@@ -697,8 +828,14 @@
         "U+E046",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E042",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E042",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -711,7 +848,8 @@
         "u1832.T.init",
         "u1826.U.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:21",
@@ -731,8 +869,15 @@
         "U+E008",
         "U+E055"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E042",
+        "U+E008",
+        "U+E055"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E042",
         "U+E008",
         "U+E055"
       ],
@@ -748,7 +893,8 @@
         "u1826.O.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:22",
@@ -770,8 +916,16 @@
         "U+E028",
         "U+E00E"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E042",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E042",
         "U+E008",
         "U+E028",
         "U+E00E"
@@ -790,7 +944,8 @@
         "u1828.N.medi",
         "u1822.I.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:23",
@@ -813,8 +968,17 @@
         "U+E095",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E050",
+        "U+E008",
+        "U+E031",
+        "U+E005",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E051",
+        null,
+        "U+E050",
         "U+E008",
         "U+E031",
         "U+E005",
@@ -835,7 +999,8 @@
         "u182D_u1821.GA.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:24",
@@ -857,11 +1022,18 @@
         "U+E095",
         "U+E00D"
       ],
-      "zvvnmodCodes": [
-        "U+E03A",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E039",
         "U+E008",
         "U+E031",
-        "U+E005",
+        "U+E00D"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E039",
+        "U+E008",
+        "U+E031",
         "U+E00D"
       ],
       "utn57Shapes": [
@@ -877,7 +1049,8 @@
         "u1826.O.medi",
         "u182D_u1821.GAa.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:25",
@@ -901,13 +1074,21 @@
         "U+E008",
         "U+E00C"
       ],
-      "zvvnmodCodes": [
-        "U+E028",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E027",
         "U+E008",
         "U+E031",
         "U+E008",
+        null
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E027",
         "U+E008",
-        "U+E00C"
+        "U+E031",
+        "U+E008",
+        null
       ],
       "utn57Shapes": [
         "MVS",
@@ -924,7 +1105,8 @@
         "u182D_u1826.GO.medi",
         "u1833.Dd.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:26",
@@ -947,8 +1129,17 @@
         "U+E095",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E027",
+        "U+E008",
+        "U+E031",
+        "U+E005",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E028",
+        null,
+        "U+E027",
         "U+E008",
         "U+E031",
         "U+E005",
@@ -969,7 +1160,8 @@
         "u182D_u1821.GA.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:27",
@@ -989,8 +1181,15 @@
         "U+E008",
         "U+E038"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E050",
+        "U+E008",
+        "U+E038"
+      ],
       "zvvnmodCodes": [
-        "U+E051",
+        null,
+        "U+E050",
         "U+E008",
         "U+E038"
       ],
@@ -1006,7 +1205,8 @@
         "u1826.O.medi",
         "u182E.M.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:28",
@@ -1032,8 +1232,18 @@
         "U+E005",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E050",
+        "U+E008",
+        "U+E037",
+        "U+E03D",
+        "U+E005",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E051",
+        null,
+        "U+E050",
         "U+E008",
         "U+E037",
         "U+E03D",
@@ -1058,7 +1268,8 @@
         "u1821.A.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:29",
@@ -1075,8 +1286,14 @@
         "U+E143",
         "U+E09C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E030",
+        "U+E00F"
+      ],
       "zvvnmodCodes": [
-        "U+E031",
+        null,
+        "U+E030",
         "U+E00F"
       ],
       "utn57Shapes": [
@@ -1088,7 +1305,8 @@
         "mvs.wide",
         "u182C_u1826.GO.isol"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:30",
@@ -1106,8 +1324,14 @@
         "U+E051",
         "U+E00E"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E051",
+        null,
+        "U+E04D",
         "U+E00E"
       ],
       "utn57Shapes": [
@@ -1120,7 +1344,8 @@
         "u1836.I.init",
         "u1822.I.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:31",
@@ -1140,8 +1365,15 @@
         "U+E006",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E04D",
+        "U+E006",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E051",
+        null,
+        "U+E04D",
         "U+E006",
         "U+E00C"
       ],
@@ -1157,7 +1389,8 @@
         "u1822.I.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:32",
@@ -1182,11 +1415,19 @@
         "U+E005",
         "U+E00C"
       ],
-      "zvvnmodCodes": [
-        "U+E046",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
         "U+E005",
-        "U+E028",
-        "U+E028",
+        null,
+        "U+E005",
+        "U+E00C"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        null,
         "U+E005",
         "U+E00C"
       ],
@@ -1206,7 +1447,8 @@
         "u1820.A.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:33",
@@ -1229,8 +1471,17 @@
         "U+E095",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        "U+E031",
+        "U+E005",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E005",
         "U+E031",
         "U+E005",
@@ -1251,7 +1502,8 @@
         "u182D_u1821.GA.medi",
         "u1828.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:34",
@@ -1270,8 +1522,14 @@
         "U+E046",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -1284,7 +1542,8 @@
         "u1833.D.init",
         "u1824.U.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:35",
@@ -1303,8 +1562,14 @@
         "U+E046",
         "U+E011"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E011"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E011"
       ],
       "utn57Shapes": [
@@ -1317,7 +1582,8 @@
         "u1833.D.init",
         "u1826.U.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:36",
@@ -1337,8 +1603,15 @@
         "U+E005",
         "U+E032"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        "U+E032"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E005",
         "U+E032"
       ],
@@ -1354,7 +1627,8 @@
         "u1820.A.medi",
         "u182D.H.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:37",
@@ -1375,11 +1649,17 @@
         "U+E006",
         "U+E00D"
       ],
-      "zvvnmodCodes": [
-        "U+E046",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
         "U+E005",
-        "U+E006",
-        "U+E00D"
+        null
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        null
       ],
       "utn57Shapes": [
         "MVS",
@@ -1393,7 +1673,8 @@
         "u1821.A.medi",
         "u182D.G.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:38",
@@ -1414,8 +1695,16 @@
         "U+E005",
         "U+E099"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        "U+E031",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E005",
         "U+E031",
         "U+E00E"
@@ -1433,7 +1722,8 @@
         "u1820.A.medi",
         "u182C_u1822.GI.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:39",
@@ -1454,8 +1744,16 @@
         "U+E005",
         "U+E099"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E005",
+        "U+E031",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E005",
         "U+E031",
         "U+E00E"
@@ -1473,7 +1771,8 @@
         "u1821.A.medi",
         "u182C_u1822.GI.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:40",
@@ -1493,8 +1792,15 @@
         "U+E008",
         "U+E055"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        "U+E055"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E008",
         "U+E055"
       ],
@@ -1510,7 +1816,8 @@
         "u1824.O.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:41",
@@ -1531,8 +1838,15 @@
         "U+E008",
         "U+E055"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        "U+E055"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E008",
         "U+E055"
       ],
@@ -1548,7 +1862,8 @@
         "u1826.O.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:42",
@@ -1570,8 +1885,16 @@
         "U+E028",
         "U+E00E"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E008",
         "U+E028",
         "U+E00E"
@@ -1590,7 +1913,8 @@
         "u1828.N.medi",
         "u1822.I.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:43",
@@ -1613,8 +1937,16 @@
         "U+E028",
         "U+E00E"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        "U+E028",
+        "U+E00E"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E008",
         "U+E028",
         "U+E00E"
@@ -1633,7 +1965,8 @@
         "u1828.N.medi",
         "u1822.I.fina"
       ],
-      "ambiguous": true
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:44",
@@ -1658,11 +1991,19 @@
         "U+E005",
         "U+E055"
       ],
-      "zvvnmodCodes": [
-        "U+E046",
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
         "U+E008",
-        "U+E028",
-        "U+E028",
+        null,
+        "U+E005",
+        "U+E055"
+      ],
+      "zvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        null,
         "U+E005",
         "U+E055"
       ],
@@ -1682,7 +2023,8 @@
         "u1820.A.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:45",
@@ -1706,8 +2048,17 @@
         "U+E095",
         "U+E055"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E008",
+        "U+E031",
+        "U+E005",
+        "U+E055"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E008",
         "U+E031",
         "U+E005",
@@ -1728,7 +2079,8 @@
         "u182D_u1821.GA.medi",
         "u1837.R.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:46",
@@ -1746,8 +2098,14 @@
         "U+E046",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E00C"
       ],
       "utn57Shapes": [
@@ -1760,7 +2118,8 @@
         "u1833.D.init",
         "u1820.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     },
     {
       "id": "particle:47",
@@ -1778,8 +2137,14 @@
         "U+E046",
         "U+E00C"
       ],
+      "defaultZvvnmodCodes": [
+        null,
+        "U+E045",
+        "U+E00C"
+      ],
       "zvvnmodCodes": [
-        "U+E046",
+        null,
+        "U+E045",
         "U+E00C"
       ],
       "utn57Shapes": [
@@ -1792,7 +2157,8 @@
         "u1833.D.init",
         "u1821.A.fina"
       ],
-      "ambiguous": false
+      "mode": "unmapped",
+      "note": ""
     }
   ]
 }
