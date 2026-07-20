@@ -19,33 +19,26 @@ The two inventory tables remain unchanged above an aligned three-column mapping 
 
 ## Mapping JSON workflow
 
-Generate the default name-matched draft from both checked-in inventories:
+Generate the initial name-matched rows from both checked-in inventories:
 
 ```bash
 python3 mapping/scripts/generate-default-mapping.py
 ```
 
-Every alignment uses ordered sequence arrays on both sides:
+ZVVNMOD catalogue IDs and mapping values use the Rust constant names; PUA code points remain catalogue metadata. Every row stores only its current ordered sequences and note:
 
 ```json
 {
-  "id": "source:U+E000",
-  "defaultSources": ["U+E000"],
-  "sources": ["U+E000"],
-  "defaultTargets": ["A:init"],
+  "id": "source:A_INIT",
+  "sources": ["A_INIT"],
   "targets": ["A:init"],
-  "mode": "direct",
   "note": ""
 }
 ```
 
-Either `sources` or `targets` may be empty for an unmatched inventory item, but both cannot be empty in the same row. The browser can add, remove, reorder, or replace multiple codes on either side; restore both generated defaults; import a complete v2 JSON file; or download the current alignments. To publish an edited mapping, replace `mapping/data/zvvnmod-utn57-map.json` with the downloaded file. The next page load uses that file directly.
+Either `sources` or `targets` may be empty for an unmatched inventory item, but both cannot be empty in the same row. Their lengths are independent. The browser can add, remove, reorder, or replace values on either side. The checked-in Git rows are the Restore baseline, and `direct`, `unmapped`, and `special` are runtime display states derived by comparing the current row with that baseline; they are not serialized.
 
-Modes are recomputed from both current sequences when JSON is loaded:
-
-- `direct`: both current sequences equal their generated defaults and both sides are non-empty.
-- `unmapped`: both current sequences equal their generated defaults and one side is empty.
-- `special`: either current sequence differs from its generated default.
+Main and particle edits download together as `zvvnmod-utn57-workbench-v2`. The combined root contains one `sha256:…` digest of the exact Git-loaded mapping and particle payloads. Import rejects a file made against a different baseline while avoiding duplicated per-row default arrays. To publish reviewed values, replace the corresponding checked-in JSON payload; Git provides history.
 
 ## Particle mapping generation
 
@@ -54,8 +47,9 @@ The page appends 47 MNG particle patterns from Mongfontbuilder below the editabl
 1. building Mongfontbuilder's Hudum test font with its own `MongFeaComposer` and `ufo2ft` pipeline;
 2. shaping every MNG particle nominal sequence with HarfBuzz to obtain UTN57 glyph/written-unit shapes;
 3. converting the same nominal sequence through meco's `delehi → zvvnmod` path;
-4. discarding meco's legacy `E140–E143` controls and decomposing merged ZVVNMOD codes into the current editable source catalogue;
-5. preserving the nominal particle pattern because one canonical ZVVNMOD sequence can have multiple UTN57 outcomes.
+4. retaining those meco outputs as implementation-specific, checksum-locked provenance rather than treating them as the editable mapping;
+5. deriving the initial editable ZVVNMOD sequence from UTN57 shape semantics and omitting shapes without a unique ZVVNMOD counterpart;
+6. removing leading particle context (`MVS` in the UTN model and `NNBSP` in a 2010/vendor-side model) from the compact mapping body.
 
 The observations can be independently rebuilt. With Docker available, run the capture script inside the pinned Mongfontbuilder development environment:
 
@@ -70,13 +64,26 @@ uv run --group dev python /path/to/satsrag.github.io/mapping/scripts/capture-par
 
 The capture script rejects dirty checkouts or either checkout unless `HEAD` is exactly Mongfontbuilder `539b455075486f70889e6de9909eac5dea839d8a` and meco `7edff334d33fc367596d1d33406b33bccb8ddc60`. It requires the checked-in particle and alias snapshots to be byte-identical to the pinned Mongfontbuilder files, forces a fresh Hudum font build, builds meco itself in a digest-pinned Maven/JDK container, and immediately launches that artifact in a digest-pinned JRE container. It does not accept an external meco service URL or JAR. The downstream generator locks SHA-256 digests for all input snapshots and derives nominal Unicode code points from the alias snapshot, so changing raw nominal code points, HarfBuzz glyph output, meco output, source objects, or paths fails verification until the reviewed locks are intentionally updated.
 
-Regenerate the checked-in particle alignment from the reviewed snapshot and recorded observations:
+Regenerate the initial compact particle rows from the reviewed snapshots and observations:
 
 ```bash
 python3 mapping/scripts/generate-particle-mapping.py
 ```
 
-The generator currently emits 47 rows. Ten rows are marked context-dependent because their canonical ZVVNMOD sequence is shared with a different UTN57 shape sequence. These rows are not presented as a context-free conversion function.
+Particle rows use the same compact current-value model:
+
+```json
+{
+  "id": "particle:07",
+  "pattern": "i y a r",
+  "particleIndices": [0, 1],
+  "sources": ["I_INIT", "I_MEDI", "A_MEDI", "R_FINA"],
+  "targets": ["I:init", "I:medi", "A:medi", "R:fina"],
+  "note": ""
+}
+```
+
+The two ordered sequences are independently editable and may have different lengths. The current generated snapshot contains 47 rows, including seven unequal-length rows.
 
 ## Font regeneration
 

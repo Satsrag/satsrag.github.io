@@ -1,14 +1,15 @@
 import {
   hasSameParticleScaffold,
   normalizeParticlePayload,
-} from "./particle-model.mjs?v=2";
+} from "./particle-model.mjs?v=4";
 import {
   hasSameGeneratedScaffold,
   normalizeMappingPayload,
-} from "./workbench-model.mjs?v=3";
+} from "./workbench-model.mjs?v=4";
 
-const SCHEMA = "zvvnmod-utn57-workbench-v1";
-const ROOT_FIELDS = ["schema", "mapping", "particleMappings"];
+const SCHEMA = "zvvnmod-utn57-workbench-v2";
+const ROOT_FIELDS = ["schema", "baseline", "mapping", "particleMappings"];
+const BASELINE = /^sha256:[0-9a-f]{64}$/;
 
 function requireExactFields(value, expected, label) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -21,15 +22,21 @@ function requireExactFields(value, expected, label) {
   }
 }
 
-export function normalizeCombinedPayload(input) {
+export function normalizeCombinedPayload(input, { expectedBaseline } = {}) {
   requireExactFields(input, ROOT_FIELDS, "combined root fields");
   if (input.schema !== SCHEMA) throw new TypeError(`combined schema must be ${SCHEMA}`);
+  if (typeof input.baseline !== "string" || !BASELINE.test(input.baseline)) {
+    throw new TypeError("combined baseline must be a sha256 digest");
+  }
+  if (expectedBaseline !== undefined && input.baseline !== expectedBaseline) {
+    throw new TypeError("combined baseline does not match the loaded Git baseline");
+  }
   const mapping = normalizeMappingPayload(input.mapping);
   const particleMappings = normalizeParticlePayload(input.particleMappings, {
     sourceIds: new Set(mapping.sources.map((source) => source.id)),
-    targetIds: new Set(["MVS", ...mapping.targets.map((target) => target.id)]),
+    targetIds: new Set(mapping.targets.map((target) => target.id)),
   });
-  return { schema: SCHEMA, mapping, particleMappings };
+  return { schema: SCHEMA, baseline: input.baseline, mapping, particleMappings };
 }
 
 export function hasSameCombinedScaffold(source, candidate) {
@@ -38,6 +45,7 @@ export function hasSameCombinedScaffold(source, candidate) {
     && candidate
     && source.schema === SCHEMA
     && candidate.schema === SCHEMA
+    && source.baseline === candidate.baseline
     && hasSameGeneratedScaffold(source.mapping, candidate.mapping)
     && hasSameParticleScaffold(source.particleMappings, candidate.particleMappings)
   );

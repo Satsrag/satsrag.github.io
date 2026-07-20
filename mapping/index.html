@@ -70,7 +70,7 @@
         <div>
           <p class="section-index">03</p>
           <h2 id="mapping-title">Editable mapping workbench</h2>
-          <p>The left catalogue contains decomposed ZVVNMOD codes plus the two retained chachlag forms. Rows align generated matches; when either inventory has no match, the opposite side stays blank. Edit either side as an ordered sequence. Particle edits below are included in the same downloaded JSON.</p>
+          <p>The left catalogue contains Rust-named decomposed ZVVNMOD codes plus the two retained chachlag forms. Git-hosted rows are the restore baseline; downloaded rows store only current ordered sequences and notes, plus one root SHA-256 baseline digest for safe re-import. Either side may contain a different number of values. Particle edits below are included in the same downloaded JSON.</p>
         </div>
         <div class="mapping-actions" aria-label="Mapping file actions">
           <button id="download-mapping" class="primary-action" type="button" disabled>Download all JSON</button>
@@ -86,7 +86,7 @@
           <input id="mapping-search" type="search" placeholder="Try A_INIT, Hx medi, U+E09D…" autocomplete="off" disabled>
           <select id="mapping-mode-filter" aria-label="Filter by mapping mode" disabled>
             <option value="all">All mappings</option>
-            <option value="direct">Generated direct</option>
+            <option value="direct">Git baseline direct</option>
             <option value="special">Edited special</option>
             <option value="unmapped">Unmapped</option>
           </select>
@@ -110,7 +110,7 @@
         <div>
           <p class="section-index">04</p>
           <h2 id="particle-mapping-title">Particle mappings</h2>
-          <p>Each ZVVNMOD slot corresponds by semantic form and position to the UTN57 shape with the same number. Unknown counterparts stay blank for manual editing. Particle edits download and import together with the mapping workbench above.</p>
+          <p>Leading MVS/NNBSP context is omitted. ZVVNMOD Rust constants and UTN57 shapes are independent ordered sequences: add, remove, or reorder either side, and their lengths may differ. Particle edits download and import together with the mapping workbench above.</p>
         </div>
         <a href="https://github.com/Kushim-Jiang/mongfontbuilder/blob/539b455075486f70889e6de9909eac5dea839d8a/data/particles.ts" target="_blank" rel="noreferrer">Open particle source ↗</a>
       </div>
@@ -136,7 +136,7 @@
     <p><a href="NOTICE.md">Third-party notices</a> · Inventory snapshot for mapping preparation.</p>
   </footer>
   <script src="app.js?v=2" defer></script>
-  <script src="workbench.js?v=4" type="module"></script>
-  <script src="particle-mappings.js?v=2" type="module"></script>
+  <script src="workbench.js?v=6" type="module"></script>
+  <script src="particle-mappings.js?v=4" type="module"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   hasSameGeneratedScaffold,
+  mappingMode,
   normalizeMappingPayload,
   serializeMappingPayload,
   updateMappingEntry,
@@ -13,60 +14,68 @@ const fixture = JSON.parse(
   await readFile(new URL("../data/zvvnmod-utn57-map.json", import.meta.url), "utf8"),
 );
 
-test("editing both sides preserves ordered multi-code sequences", () => {
+const ROW_KEYS = ["id", "note", "sources", "targets"];
+
+function assertCompactRow(row) {
+  assert.deepEqual(Object.keys(row).sort(), ROW_KEYS);
+  assert.equal(Object.hasOwn(row, "defaultSources"), false);
+  assert.equal(Object.hasOwn(row, "defaultTargets"), false);
+  assert.equal(Object.hasOwn(row, "mode"), false);
+}
+
+test("v3 uses Rust constants as ZVVNMOD IDs and compact mapping rows", () => {
+  const normalized = normalizeMappingPayload(structuredClone(fixture));
+  assert.equal(normalized.schema, "zvvnmod-utn57-map-v3");
+  assert.equal(normalized.sources[0].id, "A_INIT");
+  assert.equal(normalized.sources[0].codepoint, "U+E000");
+  assert.equal(Object.hasOwn(normalized.sources[0], "const"), false);
+  assert.equal(normalized.mappings[0].id, "source:A_INIT");
+  assert.deepEqual(normalized.mappings[0].sources, ["A_INIT"]);
+  normalized.mappings.forEach(assertCompactRow);
+});
+
+test("editing both sides preserves independent ordered sequences of different lengths", () => {
   const row = fixture.mappings.find((entry) => entry.id === "target:A:isol");
   const edited = updateMappingEntry(
     row,
-    ["U+E000", "U+E001"],
-    ["A:isol", "Aa:isol"],
+    ["A_INIT", "O_INIT", "I_MEDI"],
+    ["A:isol"],
     "manual alignment",
   );
-
-  assert.deepEqual(edited.sources, ["U+E000", "U+E001"]);
-  assert.deepEqual(edited.targets, ["A:isol", "Aa:isol"]);
-  assert.equal(edited.mode, "special");
-  assert.equal(edited.note, "manual alignment");
+  assert.deepEqual(edited, {
+    id: "target:A:isol",
+    sources: ["A_INIT", "O_INIT", "I_MEDI"],
+    targets: ["A:isol"],
+    note: "manual alignment",
+  });
 });
 
-test("restoring both generated sides restores direct or unmapped mode", () => {
-  const direct = fixture.mappings.find((entry) => entry.id === "source:U+E000");
-  const edited = updateMappingEntry(direct, ["U+E001"], ["Hx:medi"], "temporary");
-  const restored = updateMappingEntry(
-    edited,
-    direct.defaultSources,
-    direct.defaultTargets,
-    "",
-  );
-  assert.equal(restored.mode, "direct");
+test("mode is derived against the Git-loaded baseline and never serialized", () => {
+  const direct = fixture.mappings.find((entry) => entry.id === "source:A_INIT");
+  assert.equal(mappingMode(direct, direct), "direct");
 
   const rightOnly = fixture.mappings.find((entry) => entry.id === "target:A:isol");
-  const restoredRightOnly = updateMappingEntry(
-    rightOnly,
-    rightOnly.defaultSources,
-    rightOnly.defaultTargets,
-    "",
-  );
-  assert.deepEqual(restoredRightOnly.sources, []);
-  assert.equal(restoredRightOnly.mode, "unmapped");
+  assert.equal(mappingMode(rightOnly, rightOnly), "unmapped");
+
+  const edited = updateMappingEntry(direct, ["O_INIT"], ["O:init"], "");
+  assert.equal(mappingMode(direct, edited), "special");
+  assertCompactRow(edited);
 });
 
-test("normalization accepts left-only and right-only rows", () => {
+test("normalization accepts left-only and right-only rows but rejects both empty", () => {
   const normalized = normalizeMappingPayload(structuredClone(fixture));
   assert.ok(normalized.mappings.some((entry) => entry.sources.length === 0 && entry.targets.length));
   assert.ok(normalized.mappings.some((entry) => entry.sources.length && entry.targets.length === 0));
-});
 
-test("normalization rejects a row with both current sides empty", () => {
   const empty = structuredClone(fixture);
   empty.mappings[0].sources = [];
   empty.mappings[0].targets = [];
-  empty.mappings[0].mode = "special";
   assert.throws(() => normalizeMappingPayload(empty), /both sides empty/i);
 });
 
-test("normalization rejects unknown source and target IDs", () => {
+test("normalization rejects unknown Rust source constants and target IDs", () => {
   const unknownSource = structuredClone(fixture);
-  unknownSource.mappings[0].sources = ["U+FFFF"];
+  unknownSource.mappings[0].sources = ["NOT_A_RUST_CONST"];
   assert.throws(() => normalizeMappingPayload(unknownSource), /unknown ZVVNMOD source/i);
 
   const unknownTarget = structuredClone(fixture);
@@ -74,77 +83,56 @@ test("normalization rejects unknown source and target IDs", () => {
   assert.throws(() => normalizeMappingPayload(unknownTarget), /unknown UTN57 target/i);
 });
 
-test("normalization rejects tampered catalogue order", () => {
+test("normalization is fail-closed for compact schema fields and catalogue order", () => {
+  const extraMapping = structuredClone(fixture);
+  extraMapping.mappings[0].mode = "direct";
+  assert.throws(() => normalizeMappingPayload(extraMapping), /mapping fields/i);
+
+  const extraSource = structuredClone(fixture);
+  extraSource.sources[0].const = "A_INIT";
+  assert.throws(() => normalizeMappingPayload(extraSource), /source fields/i);
+
   const sourceOrder = structuredClone(fixture);
   sourceOrder.sources[0].order = 99;
   assert.throws(() => normalizeMappingPayload(sourceOrder), /source order/i);
-
-  const targetOrder = structuredClone(fixture);
-  targetOrder.targets[0].order = 99;
-  assert.throws(() => normalizeMappingPayload(targetOrder), /target order/i);
 });
 
-test("normalization rejects non-string notes and unknown schema fields", () => {
-  const malformed = structuredClone(fixture);
-  malformed.mappings[0].note = 42;
-  assert.throws(() => normalizeMappingPayload(malformed), /note must be a string/i);
-
-  const extraRoot = structuredClone(fixture);
-  extraRoot.extra = true;
-  assert.throws(() => normalizeMappingPayload(extraRoot), /root fields/i);
-
-  const extraSource = structuredClone(fixture);
-  extraSource.sources[0].extra = true;
-  assert.throws(() => normalizeMappingPayload(extraSource), /source fields/i);
-
-  const extraTarget = structuredClone(fixture);
-  extraTarget.targets[0].extra = true;
-  assert.throws(() => normalizeMappingPayload(extraTarget), /target fields/i);
-
-  const extraMapping = structuredClone(fixture);
-  extraMapping.mappings[0].extra = true;
-  assert.throws(() => normalizeMappingPayload(extraMapping), /mapping fields/i);
-});
-
-test("import scaffold permits both-side overrides but rejects generated changes", () => {
+test("Git baseline scaffold permits value edits but rejects catalogue or row identity changes", () => {
   const override = structuredClone(fixture);
   override.mappings[0] = updateMappingEntry(
     override.mappings[0],
-    ["U+E001", "U+E002"],
+    ["O_INIT", "I_MEDI"],
     ["Hx:medi"],
     "reviewed",
   );
   assert.equal(hasSameGeneratedScaffold(fixture, override), true);
 
-  const changedSourceCatalogue = structuredClone(override);
-  changedSourceCatalogue.sources[0].glyph = "tampered";
-  assert.equal(hasSameGeneratedScaffold(fixture, changedSourceCatalogue), false);
+  const changedCatalogue = structuredClone(override);
+  changedCatalogue.sources[0].glyph = "tampered";
+  assert.equal(hasSameGeneratedScaffold(fixture, changedCatalogue), false);
 
-  const changedTargetCatalogue = structuredClone(override);
-  changedTargetCatalogue.targets[0].glyph = "tampered";
-  assert.equal(hasSameGeneratedScaffold(fixture, changedTargetCatalogue), false);
-
-  const changedDefaults = structuredClone(override);
-  changedDefaults.mappings[0].defaultSources = ["U+E001"];
-  assert.equal(hasSameGeneratedScaffold(fixture, changedDefaults), false);
+  const changedId = structuredClone(override);
+  changedId.mappings[0].id = "source:O_INIT";
+  assert.equal(hasSameGeneratedScaffold(fixture, changedId), false);
 
   const reordered = structuredClone(override);
   [reordered.mappings[0], reordered.mappings[1]] = [reordered.mappings[1], reordered.mappings[0]];
   assert.equal(hasSameGeneratedScaffold(fixture, reordered), false);
 });
 
-test("download serialization round-trips a multi-code special alignment", () => {
+test("serialization round-trips compact variable-length alignments", () => {
   const payload = normalizeMappingPayload(structuredClone(fixture));
   payload.mappings[0] = updateMappingEntry(
     payload.mappings[0],
-    ["U+E000", "U+E001"],
-    ["A:init", "Aa:fina"],
+    ["A_INIT", "O_INIT"],
+    ["A:init"],
     "manual mapping",
   );
-
   const roundTrip = normalizeMappingPayload(JSON.parse(serializeMappingPayload(payload)));
-  assert.deepEqual(roundTrip.mappings[0].sources, ["U+E000", "U+E001"]);
-  assert.deepEqual(roundTrip.mappings[0].targets, ["A:init", "Aa:fina"]);
-  assert.equal(roundTrip.mappings[0].mode, "special");
-  assert.equal(roundTrip.mappings[0].note, "manual mapping");
+  assert.deepEqual(roundTrip.mappings[0], {
+    id: "source:A_INIT",
+    sources: ["A_INIT", "O_INIT"],
+    targets: ["A:init"],
+    note: "manual mapping",
+  });
 });

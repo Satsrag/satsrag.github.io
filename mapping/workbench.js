@@ -2,8 +2,8 @@ import {
   hasSameCombinedScaffold,
   normalizeCombinedPayload,
   serializeCombinedPayload,
-} from "./combined-workbench-model.mjs?v=1";
-import { updateMappingEntry } from "./workbench-model.mjs?v=3";
+} from "./combined-workbench-model.mjs?v=3";
+import { mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=4";
 
 const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.json";
 const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.json";
@@ -37,6 +37,15 @@ function make(tag, className, text) {
   return node;
 }
 
+async function gitBaselineDigest(mapping, particleMappings) {
+  const bytes = new TextEncoder().encode(JSON.stringify({ mapping, particleMappings }));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const hex = [...new Uint8Array(digest)]
+    .map((value) => value.toString(16).padStart(2, "0"))
+    .join("");
+  return `sha256:${hex}`;
+}
+
 function targetLabel(target) {
   return `${target.unit} · ${target.position}`;
 }
@@ -50,7 +59,7 @@ function mappingSearchText(entry) {
   const sourceText = entry.sources
     .map((sourceId) => {
       const source = sourceById.get(sourceId);
-      return source ? `${source.id} ${source.name} ${source.const}` : sourceId;
+      return source ? `${source.id} ${source.name} ${source.codepoint}` : sourceId;
     })
     .join(" ");
   const targetText = entry.targets
@@ -75,8 +84,8 @@ function sourceCard(sourceId) {
   const meta = make("span", "mapping-source-meta");
   meta.append(
     make("strong", "mapping-source-name", source.name),
-    make("span", "mapping-source-code", source.id),
-    make("span", "mapping-source-const", source.const),
+    make("span", "mapping-source-code", source.codepoint),
+    make("span", "mapping-source-const", source.id),
   );
   card.append(glyph, meta);
   return card;
@@ -133,7 +142,7 @@ function sourceOptionList(selectedValue = "") {
   payload.sources.forEach((source) => {
     const option = document.createElement("option");
     option.value = source.id;
-    option.textContent = `${source.name} · ${source.id}`;
+    option.textContent = `${source.id} · ${source.name} · ${source.codepoint}`;
     option.selected = source.id === selectedValue;
     select.append(option);
   });
@@ -246,7 +255,7 @@ function editor(entry, index) {
   const actions = make("div", "mapping-editor-actions");
   for (const [label, action, className] of [
     ["Save mapping", "save-entry", "primary-action"],
-    ["Restore generated", "restore-entry", "button-like"],
+    ["Restore Git baseline", "restore-entry", "button-like"],
     ["Cancel", "cancel-entry", "button-like"],
   ]) {
     const button = make("button", className, label);
@@ -259,9 +268,10 @@ function editor(entry, index) {
 }
 
 function row(entry, index) {
-  const item = make("article", `mapping-row mode-${entry.mode}`);
+  const mode = mappingMode(sourceCombinedPayload.mapping.mappings[index], entry);
+  const item = make("article", `mapping-row mode-${mode}`);
   item.dataset.index = String(index);
-  item.dataset.mode = entry.mode;
+  item.dataset.mode = mode;
   item.dataset.search = mappingSearchText(entry);
 
   item.append(sourceSequence(entry));
@@ -276,7 +286,7 @@ function row(entry, index) {
   }
   connector.append(
     make("span", "connector-line"),
-    make("span", `mode-badge ${entry.mode}`, entry.mode === "special" ? "special" : entry.mode),
+    make("span", `mode-badge ${mode}`, mode),
     make("span", "edit-label", "Edit"),
   );
   item.append(connector, targetSequence(entry));
@@ -294,9 +304,10 @@ function render() {
   let visible = 0;
 
   payload.mappings.forEach((entry, index) => {
-    counts[entry.mode] += 1;
+    const mode = mappingMode(sourceCombinedPayload.mapping.mappings[index], entry);
+    counts[mode] += 1;
     const matchesQuery = !query || mappingSearchText(entry).includes(query);
-    const matchesMode = requestedMode === "all" || entry.mode === requestedMode;
+    const matchesMode = requestedMode === "all" || mode === requestedMode;
     if (!matchesQuery || !matchesMode) return;
     fragment.append(row(entry, index));
     visible += 1;
@@ -421,10 +432,13 @@ async function loadSourceMapping() {
         `Workbench JSON could not be loaded (${mappingResponse.status}/${particleResponse.status}).`,
       );
     }
+    const mapping = await mappingResponse.json();
+    const particleMappings = await particleResponse.json();
     const loaded = normalizeCombinedPayload({
-      schema: "zvvnmod-utn57-workbench-v1",
-      mapping: await mappingResponse.json(),
-      particleMappings: await particleResponse.json(),
+      schema: "zvvnmod-utn57-workbench-v2",
+      baseline: await gitBaselineDigest(mapping, particleMappings),
+      mapping,
+      particleMappings,
     });
     sourceCombinedPayload = structuredClone(loaded);
     combinedPayload = loaded;
@@ -434,7 +448,11 @@ async function loadSourceMapping() {
     render();
     window.dispatchEvent(
       new CustomEvent("particle-mapping-payload", {
-        detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+        detail: {
+          payload: combinedPayload.particleMappings,
+          baseline: sourceCombinedPayload.particleMappings,
+          catalogue: payload,
+        },
       }),
     );
     setMessage("Source JSON loaded. Main and particle edits stay in this browser tab until you download one combined JSON.");
@@ -465,18 +483,20 @@ rowsElement.addEventListener("click", (event) => {
       draft.targets,
       draft.note,
     );
-    setMessage(`Saved ${payload.mappings[index].id} as ${payload.mappings[index].mode}. Download JSON to keep this edit.`);
+    const mode = mappingMode(sourceCombinedPayload.mapping.mappings[index], payload.mappings[index]);
+    setMessage(`Saved ${payload.mappings[index].id} as ${mode}. Download JSON to keep this edit.`);
     return closeEditor();
   }
   if (action === "restore-entry") {
     const entry = payload.mappings[index];
+    const baseline = sourceCombinedPayload.mapping.mappings[index];
     payload.mappings[index] = updateMappingEntry(
       entry,
-      entry.defaultSources,
-      entry.defaultTargets,
-      "",
+      baseline.sources,
+      baseline.targets,
+      baseline.note,
     );
-    setMessage(`Restored generated alignment ${entry.id}.`);
+    setMessage(`Restored Git baseline mapping ${entry.id}.`);
     return closeEditor();
   }
 
@@ -532,7 +552,11 @@ window.addEventListener("particle-mapping-request-payload", () => {
   if (!combinedPayload) return;
   window.dispatchEvent(
     new CustomEvent("particle-mapping-payload", {
-      detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+      detail: {
+        payload: combinedPayload.particleMappings,
+        baseline: sourceCombinedPayload.particleMappings,
+        catalogue: payload,
+      },
     }),
   );
 });
@@ -588,7 +612,9 @@ importElement.addEventListener("change", async () => {
   setMessage(`Importing ${file.name}…`);
   try {
     if (file.size > 5_000_000) throw new Error("Mapping JSON must be smaller than 5 MB.");
-    const imported = normalizeCombinedPayload(JSON.parse(await file.text()));
+    const imported = normalizeCombinedPayload(JSON.parse(await file.text()), {
+      expectedBaseline: sourceCombinedPayload.baseline,
+    });
     if (!hasSameCombinedScaffold(sourceCombinedPayload, imported)) {
       throw new Error("Imported JSON does not match the current generated workbench scaffold.");
     }
@@ -599,7 +625,11 @@ importElement.addEventListener("change", async () => {
     render();
     window.dispatchEvent(
       new CustomEvent("particle-mapping-payload", {
-        detail: { payload: combinedPayload.particleMappings, catalogue: payload },
+        detail: {
+          payload: combinedPayload.particleMappings,
+          baseline: sourceCombinedPayload.particleMappings,
+          catalogue: payload,
+        },
       }),
     );
     setMessage(`Imported ${file.name}, including main and particle mapping edits.`);
