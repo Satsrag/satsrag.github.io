@@ -50,6 +50,59 @@ class MappingDataTests(unittest.TestCase):
         self.assertTrue(all("const" not in source for source in mapping["sources"]))
         self.assertEqual(mapping["sources"][0]["codepoint"], "U+E000")
 
+    def test_generator_preserves_all_published_chachlag_defaults(self) -> None:
+        with tempfile.NamedTemporaryFile(suffix=".json") as temporary:
+            subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "mapping/scripts/generate-default-mapping.py"),
+                    "--output",
+                    temporary.name,
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            generated = json.loads(Path(temporary.name).read_text())
+        entries = {entry["id"]: entry for entry in generated["mappings"]}
+        expected = {
+            "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
+            "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
+            "chachlag:I_MEDI_AA_FINA_AA_FINA": (
+                ["I_MEDI", "AA_FINA", "AA_FINA"],
+                ["G:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:AA_FINA_AA_FINA": (
+                ["AA_FINA", "AA_FINA"],
+                ["Aa:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:A_FINA_AA_FINA": (
+                ["A_FINA", "AA_FINA"],
+                ["A:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:I_ISOL_AA_FINA": (
+                ["I_ISOL", "AA_FINA"],
+                ["I:isol", "MVS", "Aa:isol"],
+            ),
+            "chachlag:I_FINA_AA_FINA": (
+                ["I_FINA", "AA_FINA"],
+                ["I:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:U_FINA_AA_FINA": (
+                ["U_FINA", "AA_FINA"],
+                ["U:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:H_FINA_AA_FINA": (
+                ["H_FINA", "AA_FINA"],
+                ["H:fina", "MVS", "Aa:isol"],
+            ),
+        }
+        self.assertEqual(
+            {row_id: (entries[row_id]["sources"], entries[row_id]["targets"]) for row_id in expected},
+            expected,
+        )
+
     def test_targets_are_ordered_and_every_mapping_value_exists(self) -> None:
         mapping = self.load_mapping()
         source_ids = {source["id"] for source in mapping["sources"]}
@@ -301,6 +354,17 @@ class MappingDataTests(unittest.TestCase):
         entry["sources"] = ["N_MEDI", "A_INIT", "O_INIT"]
         entry["targets"] = ["Hx:medi"]
         entry["note"] = "Reviewed exception"
+        result = self.run_verifier_with(payload)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_verifier_accepts_chachlag_current_value_override(self) -> None:
+        payload = self.load_mapping()
+        entry = next(
+            item for item in payload["mappings"] if item["id"] == "chachlag:AA_FINA_AA_FINA"
+        )
+        entry["sources"] = ["AA_FINA", "A_FINA", "AA_FINA"]
+        entry["targets"] = ["A:fina"]
+        entry["note"] = "Reviewed chachlag exception"
         result = self.run_verifier_with(payload)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 

@@ -2139,6 +2139,14 @@
       "note": ""
     },
     {
+      "id": "target:Aa:fina",
+      "sources": [],
+      "targets": [
+        "Aa:fina"
+      ],
+      "note": ""
+    },
+    {
       "id": "target:B2:fina",
       "sources": [
         "O_MEDI",
@@ -2282,14 +2290,6 @@
       "sources": [],
       "targets": [
         "Ux:isol"
-      ],
-      "note": ""
-    },
-    {
-      "id": "target:MVS",
-      "sources": [],
-      "targets": [
-        "MVS"
       ],
       "note": ""
     },

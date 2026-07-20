@@ -526,7 +526,7 @@ def main() -> None:
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
 
     check(len(row_ids) == 104, "mapping must contain 104 unique alignment row IDs")
-    mappings_by_id = {entry["id"]: entry for entry in mapping["mappings"]}
+    generated_mappings_by_id = {entry["id"]: entry for entry in generated["mappings"]}
     expected_chachlag_mappings = {
         "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
         "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
@@ -560,15 +560,15 @@ def main() -> None:
         ),
     }
     for row_id, (expected_sources, expected_targets) in expected_chachlag_mappings.items():
-        check(row_id in mappings_by_id, f"missing chachlag mapping: {row_id}")
+        check(row_id in generated_mappings_by_id, f"missing generated chachlag default: {row_id}")
         check(
-            mappings_by_id[row_id]["sources"] == expected_sources
-            and mappings_by_id[row_id]["targets"] == expected_targets,
-            f"chachlag mapping differs: {row_id}",
+            generated_mappings_by_id[row_id]["sources"] == expected_sources
+            and generated_mappings_by_id[row_id]["targets"] == expected_targets,
+            f"generated chachlag default differs: {row_id}",
         )
     check(
-        mappings_by_id["source:AA_FINA"]["targets"] == ["Aa:isol"],
-        "standalone AA_FINA mapping differs",
+        generated_mappings_by_id["source:AA_FINA"]["targets"] == ["Aa:isol"],
+        "generated standalone AA_FINA default differs",
     )
     observed_chachlag_onsets: set[str] = set()
     for observation in observations:
@@ -587,13 +587,13 @@ def main() -> None:
         onset_match = re.search(r"\.([A-Za-z0-9]+)\.(isol|fina)$", glyph_names[onset_index])
         if onset_match:
             observed_chachlag_onsets.add(f"{onset_match.group(1)}:{onset_match.group(2)}")
-    published_chachlag_onsets = {
-        next(target for target in mappings_by_id[row_id]["targets"] if target not in {"MVS", "Aa:isol"})
+    generated_chachlag_onsets = {
+        next(target for target in generated_mappings_by_id[row_id]["targets"] if target not in {"MVS", "Aa:isol"})
         for row_id in expected_chachlag_mappings
     }
     check(
-        published_chachlag_onsets == observed_chachlag_onsets,
-        "published chachlag onset shapes do not exactly cover pinned shaping observations",
+        generated_chachlag_onsets == observed_chachlag_onsets,
+        "generated chachlag onset shapes do not exactly cover pinned shaping observations",
     )
 
     font_path = MAPPING / "assets/zvvnmod.ttf"
