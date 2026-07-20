@@ -96,9 +96,9 @@ def build_mapping(codes_path: Path, written_units_path: Path) -> dict[str, Any]:
     codes = editable_codes(code_payload)
     sources = [
         {
-            "id": code["codepoint"],
+            "id": code["const"],
             "name": code["name"],
-            "const": code["const"],
+            "codepoint": code["codepoint"],
             "value": code["value"],
             "glyph": chr(code["value"]),
             "order": order,
@@ -111,15 +111,12 @@ def build_mapping(codes_path: Path, written_units_path: Path) -> dict[str, Any]:
     for code in codes:
         target_sequence = semantic_targets(str(code["name"]), valid_targets)
         represented_targets.update(target_sequence)
-        source_sequence = [code["codepoint"]]
+        source_sequence = [code["const"]]
         mappings.append(
             {
-                "id": f"source:{code['codepoint']}",
-                "defaultSources": source_sequence,
+                "id": f"source:{code['const']}",
                 "sources": source_sequence,
-                "defaultTargets": target_sequence,
                 "targets": target_sequence,
-                "mode": "direct" if target_sequence else "unmapped",
                 "note": "",
             }
         )
@@ -130,18 +127,15 @@ def build_mapping(codes_path: Path, written_units_path: Path) -> dict[str, Any]:
         mappings.append(
             {
                 "id": f"target:{target['id']}",
-                "defaultSources": [],
                 "sources": [],
-                "defaultTargets": [target["id"]],
                 "targets": [target["id"]],
-                "mode": "unmapped",
                 "note": "",
             }
         )
 
     return {
-        "schema": "zvvnmod-utn57-map-v2",
-        "description": "Editable aligned ZVVNMOD and UTN57 code sequences; either side may be empty or contain multiple codes.",
+        "schema": "zvvnmod-utn57-map-v3",
+        "description": "Editable aligned Rust-named ZVVNMOD and UTN57 code sequences; either side may be empty or contain multiple codes.",
         "sources": sources,
         "targets": targets,
         "mappings": mappings,
@@ -163,7 +157,10 @@ def main() -> None:
 
     payload = build_mapping(args.codes, args.written_units)
     args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
-    direct = sum(entry["mode"] == "direct" for entry in payload["mappings"])  # type: ignore[index]
+    direct = sum(
+        bool(entry["sources"] and entry["targets"])
+        for entry in payload["mappings"]  # type: ignore[index]
+    )
     print(
         f"generated {len(payload['mappings'])} mappings "
         f"({direct} direct, {len(payload['mappings']) - direct} unmapped) "

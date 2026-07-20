@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 POSITIONS = {"isol", "init", "medi", "fina"}
-SCHEMA = "zvvnmod-utn57-particles-v2"
+SCHEMA = "zvvnmod-utn57-particles-v3"
 MONGFONTBUILDER_COMMIT = "539b455075486f70889e6de9909eac5dea839d8a"
 MECO_COMMIT = "7edff334d33fc367596d1d33406b33bccb8ddc60"
 PARTICLE_SNAPSHOT_SHA256 = "937392156ea469cc033ff70b2cc505a3342f5dc9df0afd0918d0c731ca8eb65b"
@@ -31,8 +31,8 @@ EXPECTED_SOURCES = {
     },
 }
 DESCRIPTION = (
-    "Mongfontbuilder MNG particle patterns with editable ZVVNMOD slots aligned one-for-one "
-    "to observed UTN57 shapes; unmatched semantic counterparts remain null for review."
+    "Compact editable Rust-named ZVVNMOD and UTN57 particle sequences with leading MVS/NNBSP "
+    "context omitted; either ordered side may contain a different number of values."
 )
 
 
@@ -69,19 +69,14 @@ def nominal_code_points(pattern: str, aliases: dict[str, Any]) -> list[str]:
     return code_points
 
 
-def semantic_zvvnmod_slots(
+def semantic_zvvnmod_sequence(
     utn_shapes: list[str], mapping_payload: dict[str, Any]
-) -> list[str | None]:
+) -> list[str]:
     targets = {str(target["id"]): target for target in mapping_payload["targets"]}
-    sources_by_const: dict[str, list[str]] = {}
-    for source in mapping_payload["sources"]:
-        sources_by_const.setdefault(str(source["const"]), []).append(str(source["id"]))
+    source_ids = {str(source["id"]) for source in mapping_payload["sources"]}
 
-    slots: list[str | None] = []
+    sequence: list[str] = []
     for shape_id in utn_shapes:
-        if shape_id == "MVS":
-            slots.append(None)
-            continue
         target = targets.get(shape_id)
         if target is None:
             raise ValueError(f"unknown UTN57 shape: {shape_id}")
@@ -89,9 +84,28 @@ def semantic_zvvnmod_slots(
             r"(?<=[a-z0-9])(?=[A-Z])", "_", str(target["unit"])
         ).upper()
         expected_const = f"{unit}_{str(target['position']).upper()}"
-        matches = sources_by_const.get(expected_const, [])
-        slots.append(matches[0] if len(matches) == 1 else None)
-    return slots
+        if expected_const in source_ids:
+            sequence.append(expected_const)
+    return sequence
+
+
+def strip_leading_particle_context(
+    pattern: str, particle_indices: list[int], utn_shapes: list[str]
+) -> tuple[str, list[int], list[str]]:
+    tokens = pattern.split()
+    if not tokens:
+        raise ValueError("particle pattern must not be empty")
+    if tokens[0] not in {"mvs", "nnbsp"}:
+        return pattern, list(particle_indices), list(utn_shapes)
+    if not utn_shapes or utn_shapes[0] != "MVS":
+        raise ValueError(f"{tokens[0]} context must shape to leading MVS")
+    if any(index < 1 for index in particle_indices):
+        raise ValueError("leading particle context cannot be a particle index")
+    return (
+        " ".join(tokens[1:]),
+        [index - 1 for index in particle_indices],
+        utn_shapes[1:],
+    )
 
 
 def positions_for_units(position: str, count: int) -> list[str]:
@@ -198,19 +212,17 @@ def build_particle_mapping(
         ):
             raise ValueError(f"observation {number}: invalid UTN57 glyph names")
         utn_shapes = utn57_shape_sequence(glyph_names, valid_targets)
-        default_slots = semantic_zvvnmod_slots(utn_shapes, mapping_payload)
+        compact_pattern, compact_indices, compact_targets = strip_leading_particle_context(
+            pattern, indices, utn_shapes
+        )
+        compact_sources = semantic_zvvnmod_sequence(compact_targets, mapping_payload)
         rows.append(
             {
                 "id": f"particle:{number:02d}",
-                "pattern": pattern,
-                "particleIndices": indices,
-                "nominalCodePoints": expected_nominal,
-                "rawZvvnmodCodes": raw_codes,
-                "defaultZvvnmodCodes": default_slots,
-                "zvvnmodCodes": list(default_slots),
-                "utn57Shapes": utn_shapes,
-                "utn57GlyphNames": glyph_names,
-                "mode": "direct" if all(default_slots) else "unmapped",
+                "pattern": compact_pattern,
+                "particleIndices": compact_indices,
+                "sources": compact_sources,
+                "targets": compact_targets,
                 "note": "",
             }
         )
@@ -218,7 +230,7 @@ def build_particle_mapping(
     return {
         "schema": SCHEMA,
         "description": DESCRIPTION,
-        "sources": observations["sources"],
+        "provenance": observations["sources"],
         "mappings": rows,
     }
 
@@ -249,13 +261,13 @@ def main() -> None:
         args.particles, args.aliases, args.observations, args.mapping
     )
     args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
-    unresolved = sum(
-        any(code is None for code in row["zvvnmodCodes"])
-        for row in payload["mappings"]
+    unequal = sum(
+        len(row["sources"]) != len(row["targets"])
+        for row in payload["mappings"]  # type: ignore[index]
     )
     print(
         f"generated {len(payload['mappings'])} particle rows "
-        f"({unresolved} with blank slots) -> {args.output}"
+        f"({unequal} with unequal sequence lengths) -> {args.output}"
     )
 
 

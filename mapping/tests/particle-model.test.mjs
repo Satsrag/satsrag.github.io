@@ -5,103 +5,123 @@ import test from "node:test";
 import {
   hasSameParticleScaffold,
   normalizeParticlePayload,
+  particleMode,
   serializeParticlePayload,
   updateParticleEntry,
 } from "../particle-model.mjs";
 
-const root = new URL("../../", import.meta.url);
+const particlePayload = JSON.parse(
+  await readFile(new URL("../data/zvvnmod-utn57-particles.json", import.meta.url), "utf8"),
+);
+const mappingPayload = JSON.parse(
+  await readFile(new URL("../data/zvvnmod-utn57-map.json", import.meta.url), "utf8"),
+);
+const catalogues = {
+  sourceIds: new Set(mappingPayload.sources.map((source) => source.id)),
+  targetIds: new Set(mappingPayload.targets.map((target) => target.id)),
+};
+const ROW_KEYS = ["id", "note", "particleIndices", "pattern", "sources", "targets"];
 
-async function currentPayload() {
-  return JSON.parse(await readFile(new URL("mapping/data/zvvnmod-utn57-particles.json", root), "utf8"));
-}
-
-async function currentCatalogues() {
-  const mapping = JSON.parse(await readFile(new URL("mapping/data/zvvnmod-utn57-map.json", root), "utf8"));
-  return {
-    sourceIds: new Set(mapping.sources.map((source) => source.id)),
-    targetIds: new Set(["MVS", ...mapping.targets.map((target) => target.id)]),
-  };
-}
-
-test("normalizes semantic ZVVNMOD slots aligned with all 47 UTN57 particle sequences", async () => {
-  const payload = await currentPayload();
-  const normalized = normalizeParticlePayload(payload, await currentCatalogues());
-
-  assert.equal(normalized.schema, "zvvnmod-utn57-particles-v2");
+test("v3 particle rows are compact Rust-name sequence mappings without leading MVS context", () => {
+  const normalized = normalizeParticlePayload(particlePayload, catalogues);
+  assert.equal(normalized.schema, "zvvnmod-utn57-particles-v3");
   assert.equal(normalized.mappings.length, 47);
-  const direct = normalized.mappings.find((row) => row.pattern === "u u");
-  assert.deepEqual(direct.zvvnmodCodes, ["U+E001", "U+E011"]);
-  assert.deepEqual(direct.utn57Shapes, ["O:init", "U:fina"]);
-  assert.equal(direct.mode, "direct");
+  for (const row of normalized.mappings) {
+    assert.deepEqual(Object.keys(row).sort(), ROW_KEYS);
+    assert.equal(row.pattern.startsWith("mvs "), false);
+    assert.equal(row.targets.includes("MVS"), false);
+    assert.equal(row.sources.some((value) => value.startsWith("U+")), false);
+    assert.ok(row.sources.length || row.targets.length);
+  }
 
-  const unresolved = normalized.mappings.find((row) => row.pattern === "mvs i");
-  assert.deepEqual(unresolved.zvvnmodCodes, [null, "U+E01A"]);
-  assert.deepEqual(unresolved.utn57Shapes, ["MVS", "I:isol"]);
-  assert.equal(unresolved.mode, "unmapped");
+  const sample = normalized.mappings.find((row) => row.id === "particle:07");
+  assert.deepEqual(sample, {
+    id: "particle:07",
+    pattern: "i y a r",
+    particleIndices: [0, 1],
+    sources: ["I_INIT", "I_MEDI", "A_MEDI", "R_FINA"],
+    targets: ["I:init", "I:medi", "A:medi", "R:fina"],
+    note: "",
+  });
 });
 
-test("fills or clears individual ZVVNMOD slots without changing the UTN57 sequence", async () => {
-  const payload = normalizeParticlePayload(await currentPayload(), await currentCatalogues());
-  const row = payload.mappings.find((entry) => entry.pattern === "mvs i");
-  const filled = updateParticleEntry(row, ["U+E000", "U+E01A"], "manual MVS correspondence");
-
-  assert.deepEqual(filled.zvvnmodCodes, ["U+E000", "U+E01A"]);
-  assert.deepEqual(filled.utn57Shapes, ["MVS", "I:isol"]);
-  assert.equal(filled.mode, "special");
-  assert.equal(filled.note, "manual MVS correspondence");
-
-  const restored = updateParticleEntry(filled, filled.defaultZvvnmodCodes, "");
-  assert.deepEqual(restored.zvvnmodCodes, [null, "U+E01A"]);
-  assert.equal(restored.mode, "unmapped");
+test("particle edits preserve independent ordered sequences with unequal lengths", () => {
+  const baseline = particlePayload.mappings.find((row) => row.id === "particle:07");
+  const edited = updateParticleEntry(
+    baseline,
+    ["I_INIT", "A_MEDI"],
+    ["I:init", "I:medi", "A:medi", "R:fina", "A:fina"],
+    "many-to-many review",
+  );
+  assert.deepEqual(edited.sources, ["I_INIT", "A_MEDI"]);
+  assert.deepEqual(edited.targets, ["I:init", "I:medi", "A:medi", "R:fina", "A:fina"]);
+  assert.equal(edited.note, "many-to-many review");
 });
 
-test("rejects malformed slots, unknown IDs, legacy controls, and changed alignment length", async () => {
-  const payload = await currentPayload();
-  const catalogues = await currentCatalogues();
-
-  const extra = structuredClone(payload);
-  extra.mappings[0].html = "<img src=x onerror=alert(1)>";
-  assert.throws(() => normalizeParticlePayload(extra, catalogues), /unexpected fields/);
-
-  const unknown = structuredClone(payload);
-  unknown.mappings[0].zvvnmodCodes[0] = "U+FFFF";
-  assert.throws(() => normalizeParticlePayload(unknown, catalogues), /unknown ZVVNMOD code/);
-
-  const legacy = structuredClone(payload);
-  legacy.mappings[0].zvvnmodCodes[0] = "U+E143";
-  assert.throws(() => normalizeParticlePayload(legacy, catalogues), /legacy control/);
-
-  const short = structuredClone(payload);
-  short.mappings[0].zvvnmodCodes.pop();
-  assert.throws(() => normalizeParticlePayload(short, catalogues), /one ZVVNMOD slot per UTN57 shape/);
-
-  const wrongMode = structuredClone(payload);
-  wrongMode.mappings[0].mode = "special";
-  assert.throws(() => normalizeParticlePayload(wrongMode, catalogues), /mode must be direct/);
+test("particle mode is derived from the Git baseline and is not serialized", () => {
+  const baseline = particlePayload.mappings[0];
+  assert.equal(particleMode(baseline, baseline), "direct");
+  const edited = updateParticleEntry(baseline, ["A_INIT"], baseline.targets, "");
+  assert.equal(particleMode(baseline, edited), "special");
+  assert.equal(Object.hasOwn(edited, "mode"), false);
 });
 
-test("particle scaffold permits slot and note edits but rejects generated changes", async () => {
-  const source = normalizeParticlePayload(await currentPayload(), await currentCatalogues());
-  const edited = structuredClone(source);
-  edited.mappings[0] = updateParticleEntry(
-    edited.mappings[0],
-    edited.mappings[0].zvvnmodCodes.map((code) => code || "U+E000"),
+test("particle normalization rejects unknown constants, targets, and both-empty rows", () => {
+  const unknownSource = structuredClone(particlePayload);
+  unknownSource.mappings[0].sources = ["UNKNOWN_CONST"];
+  assert.throws(() => normalizeParticlePayload(unknownSource, catalogues), /unknown ZVVNMOD source/);
+
+  const unknownTarget = structuredClone(particlePayload);
+  unknownTarget.mappings[0].targets = ["Unknown:medi"];
+  assert.throws(() => normalizeParticlePayload(unknownTarget, catalogues), /unknown UTN57 target/);
+
+  const empty = structuredClone(particlePayload);
+  empty.mappings[0].sources = [];
+  empty.mappings[0].targets = [];
+  assert.throws(() => normalizeParticlePayload(empty, catalogues), /both sides empty/);
+});
+
+test("particle schema is fail-closed and validates adjusted context indices", () => {
+  const legacyField = structuredClone(particlePayload);
+  legacyField.mappings[0].rawZvvnmodCodes = [];
+  assert.throws(() => normalizeParticlePayload(legacyField, catalogues), /unexpected fields/);
+
+  const invalidIndex = structuredClone(particlePayload);
+  invalidIndex.mappings[3].particleIndices = [99];
+  assert.throws(() => normalizeParticlePayload(invalidIndex, catalogues), /particleIndices/);
+});
+
+test("particle scaffold permits sequence and note edits but rejects identity/context changes", () => {
+  const edited = structuredClone(particlePayload);
+  edited.mappings[6] = updateParticleEntry(
+    edited.mappings[6],
+    ["I_INIT"],
+    ["I:init", "R:fina"],
     "reviewed",
   );
-  assert.equal(hasSameParticleScaffold(source, edited), true);
+  assert.equal(hasSameParticleScaffold(particlePayload, edited), true);
 
-  const changedDefault = structuredClone(edited);
-  changedDefault.mappings[0].defaultZvvnmodCodes[0] = null;
-  assert.equal(hasSameParticleScaffold(source, changedDefault), false);
+  const changedPattern = structuredClone(edited);
+  changedPattern.mappings[6].pattern = "tampered";
+  assert.equal(hasSameParticleScaffold(particlePayload, changedPattern), false);
 
-  const changedTarget = structuredClone(edited);
-  changedTarget.mappings[0].utn57Shapes[0] = "A:isol";
-  assert.equal(hasSameParticleScaffold(source, changedTarget), false);
+  const changedIndices = structuredClone(edited);
+  changedIndices.mappings[6].particleIndices = [0];
+  assert.equal(hasSameParticleScaffold(particlePayload, changedIndices), false);
 });
 
-test("particle serialization round-trips nullable aligned slots", async () => {
-  const catalogues = await currentCatalogues();
-  const payload = normalizeParticlePayload(await currentPayload(), catalogues);
-  const roundTrip = normalizeParticlePayload(JSON.parse(serializeParticlePayload(payload)), catalogues);
-  assert.deepEqual(roundTrip, payload);
+test("particle serialization round-trips variable-length compact mappings", () => {
+  const edited = structuredClone(particlePayload);
+  edited.mappings[6] = updateParticleEntry(
+    edited.mappings[6],
+    ["I_INIT"],
+    ["I:init", "I:medi", "R:fina"],
+    "reviewed",
+  );
+  const roundTrip = normalizeParticlePayload(
+    JSON.parse(serializeParticlePayload(edited, catalogues)),
+    catalogues,
+  );
+  assert.deepEqual(roundTrip.mappings[6].sources, ["I_INIT"]);
+  assert.deepEqual(roundTrip.mappings[6].targets, ["I:init", "I:medi", "R:fina"]);
 });

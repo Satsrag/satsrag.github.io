@@ -1,35 +1,13 @@
-const ROOT_KEYS = new Set(["schema", "description", "sources", "mappings"]);
-const SOURCE_KEYS = new Set(["mongfontbuilder", "meco"]);
+const ROOT_KEYS = new Set(["schema", "description", "provenance", "mappings"]);
+const PROVENANCE_KEYS = new Set(["mongfontbuilder", "meco"]);
 const MONGFONTBUILDER_KEYS = new Set(["repository", "commit", "particlesPath", "aliasesPath"]);
 const MECO_KEYS = new Set(["repository", "commit"]);
-const ROW_KEYS = new Set([
-  "id",
-  "pattern",
-  "particleIndices",
-  "nominalCodePoints",
-  "rawZvvnmodCodes",
-  "defaultZvvnmodCodes",
-  "zvvnmodCodes",
-  "utn57Shapes",
-  "utn57GlyphNames",
-  "mode",
-  "note",
-]);
-const GENERATED_ROW_KEYS = [
-  "id",
-  "pattern",
-  "particleIndices",
-  "nominalCodePoints",
-  "rawZvvnmodCodes",
-  "defaultZvvnmodCodes",
-  "utn57Shapes",
-  "utn57GlyphNames",
-];
-const SCHEMA = "zvvnmod-utn57-particles-v2";
+const ROW_KEYS = new Set(["id", "pattern", "particleIndices", "sources", "targets", "note"]);
+const GENERATED_ROW_KEYS = ["id", "pattern", "particleIndices"];
+const SCHEMA = "zvvnmod-utn57-particles-v3";
 const DESCRIPTION =
-  "Mongfontbuilder MNG particle patterns with editable ZVVNMOD slots aligned one-for-one " +
-  "to observed UTN57 shapes; unmatched semantic counterparts remain null for review.";
-const CODE_ID = /^U\+[0-9A-F]{4,6}$/;
+  "Compact editable Rust-named ZVVNMOD and UTN57 particle sequences with leading MVS/NNBSP "
+  + "context omitted; either ordered side may contain a different number of values.";
 const COMMIT = /^[0-9a-f]{40}$/;
 
 function sameSequence(left, right) {
@@ -54,52 +32,42 @@ function assertExactKeys(value, expected, label) {
   }
 }
 
-function stringArray(value, label, { nonempty = false, codeIds = false } = {}) {
+function stringArray(value, label) {
   if (!Array.isArray(value) || value.some((entry) => typeof entry !== "string")) {
     throw new TypeError(`${label} must be an array of strings`);
   }
-  if (nonempty && value.length === 0) throw new TypeError(`${label} cannot be empty`);
-  if (codeIds && value.some((entry) => !CODE_ID.test(entry))) {
-    throw new TypeError(`${label} contains an invalid code ID`);
-  }
   return [...value];
 }
 
-function slotArray(value, label) {
-  if (
-    !Array.isArray(value)
-    || value.some((entry) => entry !== null && (typeof entry !== "string" || !CODE_ID.test(entry)))
-  ) {
-    throw new TypeError(`${label} must be an array of ZVVNMOD code IDs or null slots`);
+export function particleMode(baseline, current) {
+  if (!sameSequence(baseline.sources, current.sources)
+      || !sameSequence(baseline.targets, current.targets)) {
+    return "special";
   }
-  return [...value];
+  return baseline.sources.length && baseline.targets.length ? "direct" : "unmapped";
 }
 
-function normalizedMode(defaultSlots, slots) {
-  if (!sameSequence(defaultSlots, slots)) return "special";
-  return slots.every((slot) => slot !== null) ? "direct" : "unmapped";
-}
-
-export function updateParticleEntry(entry, slots, note = entry.note || "") {
-  const defaultZvvnmodCodes = slotArray(entry.defaultZvvnmodCodes, "defaultZvvnmodCodes");
-  const zvvnmodCodes = slotArray(slots, "zvvnmodCodes");
-  if (zvvnmodCodes.length !== entry.utn57Shapes.length) {
-    throw new TypeError("particle row must contain one ZVVNMOD slot per UTN57 shape");
+export function updateParticleEntry(entry, sources, targets, note = entry.note || "") {
+  const nextSources = stringArray(sources, "sources");
+  const nextTargets = stringArray(targets, "targets");
+  if (!nextSources.length && !nextTargets.length) {
+    throw new TypeError("particle row cannot have both sides empty");
   }
   return {
-    ...entry,
-    defaultZvvnmodCodes,
-    zvvnmodCodes,
-    mode: normalizedMode(defaultZvvnmodCodes, zvvnmodCodes),
+    id: entry.id,
+    pattern: entry.pattern,
+    particleIndices: [...entry.particleIndices],
+    sources: nextSources,
+    targets: nextTargets,
     note: String(note),
   };
 }
 
-function normalizeSources(sources) {
-  assertExactKeys(sources, SOURCE_KEYS, "sources");
-  assertExactKeys(sources.mongfontbuilder, MONGFONTBUILDER_KEYS, "sources.mongfontbuilder");
-  assertExactKeys(sources.meco, MECO_KEYS, "sources.meco");
-  for (const [label, source] of Object.entries(sources)) {
+function normalizeProvenance(provenance) {
+  assertExactKeys(provenance, PROVENANCE_KEYS, "provenance");
+  assertExactKeys(provenance.mongfontbuilder, MONGFONTBUILDER_KEYS, "provenance.mongfontbuilder");
+  assertExactKeys(provenance.meco, MECO_KEYS, "provenance.meco");
+  for (const [label, source] of Object.entries(provenance)) {
     if (typeof source.repository !== "string" || !source.repository.startsWith("https://github.com/")) {
       throw new TypeError(`${label} repository must be a GitHub URL`);
     }
@@ -108,28 +76,15 @@ function normalizeSources(sources) {
     }
   }
   for (const pathKey of ["particlesPath", "aliasesPath"]) {
-    if (
-      typeof sources.mongfontbuilder[pathKey] !== "string"
-      || sources.mongfontbuilder[pathKey].length === 0
-    ) {
+    if (typeof provenance.mongfontbuilder[pathKey] !== "string"
+        || provenance.mongfontbuilder[pathKey].length === 0) {
       throw new TypeError(`Mongfontbuilder ${pathKey} must be a nonempty string`);
     }
   }
   return {
-    mongfontbuilder: { ...sources.mongfontbuilder },
-    meco: { ...sources.meco },
+    mongfontbuilder: { ...provenance.mongfontbuilder },
+    meco: { ...provenance.meco },
   };
-}
-
-function validateSlots(slots, sourceIds, label) {
-  for (const code of slots) {
-    if (code === null) continue;
-    const value = Number.parseInt(code.slice(2), 16);
-    if (value >= 0xe140 && value <= 0xe143) {
-      throw new TypeError(`${label} contains a legacy control`);
-    }
-    if (!sourceIds.has(code)) throw new TypeError(`${label} contains unknown ZVVNMOD code ${code}`);
-  }
 }
 
 function normalizeRow(row, index, sourceIds, targetIds) {
@@ -140,71 +95,34 @@ function normalizeRow(row, index, sourceIds, targetIds) {
   if (typeof row.pattern !== "string" || row.pattern.trim() !== row.pattern || !row.pattern) {
     throw new TypeError(`${label} pattern must be a nonempty normalized string`);
   }
-  const nominalCodePoints = stringArray(row.nominalCodePoints, `${label}.nominalCodePoints`, {
-    nonempty: true,
-    codeIds: true,
-  });
-  if (row.pattern.split(" ").length !== nominalCodePoints.length) {
-    throw new TypeError(`${label} pattern and nominal code-point lengths differ`);
+  if (row.pattern.split(" ")[0] === "mvs" || row.pattern.split(" ")[0] === "nnbsp") {
+    throw new TypeError(`${label} must omit leading MVS/NNBSP context`);
   }
-  if (
-    !Array.isArray(row.particleIndices)
-    || row.particleIndices.length === 0
-    || row.particleIndices.some(
-      (value) => !Number.isInteger(value) || value < 0 || value >= nominalCodePoints.length,
-    )
-  ) {
+  const patternLength = row.pattern.split(" ").length;
+  if (!Array.isArray(row.particleIndices)
+      || row.particleIndices.length === 0
+      || row.particleIndices.some(
+        (value) => !Number.isInteger(value) || value < 0 || value >= patternLength,
+      )) {
     throw new TypeError(`${label}.particleIndices is invalid`);
   }
-  const rawZvvnmodCodes = stringArray(row.rawZvvnmodCodes, `${label}.rawZvvnmodCodes`, {
-    nonempty: true,
-    codeIds: true,
-  });
-  const defaultZvvnmodCodes = slotArray(row.defaultZvvnmodCodes, `${label}.defaultZvvnmodCodes`);
-  const zvvnmodCodes = slotArray(row.zvvnmodCodes, `${label}.zvvnmodCodes`);
-  const utn57Shapes = stringArray(row.utn57Shapes, `${label}.utn57Shapes`, { nonempty: true });
-  if (
-    defaultZvvnmodCodes.length !== utn57Shapes.length
-    || zvvnmodCodes.length !== utn57Shapes.length
-  ) {
-    throw new TypeError(`${label} must contain one ZVVNMOD slot per UTN57 shape`);
+  const sources = stringArray(row.sources, `${label}.sources`);
+  const targets = stringArray(row.targets, `${label}.targets`);
+  if (!sources.length && !targets.length) throw new TypeError(`${label} has both sides empty`);
+  for (const source of sources) {
+    if (!sourceIds.has(source)) throw new TypeError(`${label} contains unknown ZVVNMOD source ${source}`);
   }
-  validateSlots(defaultZvvnmodCodes, sourceIds, `${label}.defaultZvvnmodCodes`);
-  validateSlots(zvvnmodCodes, sourceIds, `${label}.zvvnmodCodes`);
-  for (const shape of utn57Shapes) {
-    if (!targetIds.has(shape)) throw new TypeError(`${label} contains unknown UTN57 shape ${shape}`);
+  for (const target of targets) {
+    if (!targetIds.has(target)) throw new TypeError(`${label} contains unknown UTN57 target ${target}`);
   }
-  const utn57GlyphNames = stringArray(row.utn57GlyphNames, `${label}.utn57GlyphNames`, {
-    nonempty: true,
-  });
   if (typeof row.note !== "string") throw new TypeError(`${label}.note must be a string`);
-  const normalized = updateParticleEntry(
-    {
-      id: row.id,
-      pattern: row.pattern,
-      particleIndices: [...row.particleIndices],
-      nominalCodePoints,
-      rawZvvnmodCodes,
-      defaultZvvnmodCodes,
-      zvvnmodCodes,
-      utn57Shapes,
-      utn57GlyphNames,
-      mode: row.mode,
-      note: row.note,
-    },
-    zvvnmodCodes,
-    row.note,
-  );
-  if (row.mode !== normalized.mode) {
-    throw new TypeError(`${label}.mode must be ${normalized.mode}`);
-  }
-  return normalized;
+  return updateParticleEntry(row, sources, targets, row.note);
 }
 
 export function normalizeParticlePayload(payload, { sourceIds, targetIds }) {
   assertExactKeys(payload, ROOT_KEYS, "particle payload");
   if (payload.schema !== SCHEMA) throw new TypeError(`unsupported particle schema: ${payload.schema}`);
-  if (payload.description !== DESCRIPTION) throw new TypeError("particle description does not match v2");
+  if (payload.description !== DESCRIPTION) throw new TypeError("particle description does not match v3");
   if (!(sourceIds instanceof Set) || !(targetIds instanceof Set)) {
     throw new TypeError("particle catalogues must be Sets");
   }
@@ -219,7 +137,7 @@ export function normalizeParticlePayload(payload, { sourceIds, targetIds }) {
   return {
     schema: payload.schema,
     description: payload.description,
-    sources: normalizeSources(payload.sources),
+    provenance: normalizeProvenance(payload.provenance),
     mappings,
   };
 }
@@ -227,7 +145,7 @@ export function normalizeParticlePayload(payload, { sourceIds, targetIds }) {
 export function hasSameParticleScaffold(source, candidate) {
   if (!source || !candidate || source.schema !== candidate.schema) return false;
   if (source.description !== candidate.description) return false;
-  if (JSON.stringify(source.sources) !== JSON.stringify(candidate.sources)) return false;
+  if (JSON.stringify(source.provenance) !== JSON.stringify(candidate.provenance)) return false;
   if (!Array.isArray(source.mappings) || source.mappings.length !== candidate.mappings?.length) return false;
   return source.mappings.every((row, index) => {
     const candidateRow = candidate.mappings[index];

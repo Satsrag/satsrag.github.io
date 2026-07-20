@@ -1,17 +1,10 @@
-const SCHEMA = "zvvnmod-utn57-map-v2";
+const SCHEMA = "zvvnmod-utn57-map-v3";
 const ROOT_FIELDS = ["schema", "description", "sources", "targets", "mappings"];
-const SOURCE_FIELDS = ["id", "name", "const", "value", "glyph", "order"];
+const SOURCE_FIELDS = ["id", "name", "codepoint", "value", "glyph", "order"];
 const TARGET_FIELDS = ["id", "unit", "position", "glyph", "order"];
-const MAPPING_FIELDS = [
-  "id",
-  "defaultSources",
-  "sources",
-  "defaultTargets",
-  "targets",
-  "mode",
-  "note",
-];
-const GENERATED_MAPPING_FIELDS = ["id", "defaultSources", "defaultTargets"];
+const MAPPING_FIELDS = ["id", "sources", "targets", "note"];
+const RUST_CONST = /^[A-Z][A-Z0-9_]*$/;
+const CODEPOINT = /^U\+[0-9A-F]{4,6}$/;
 
 function sameSequence(left, right) {
   return left.length === right.length && left.every((value, index) => value === right[index]);
@@ -32,28 +25,24 @@ function requireStringArray(value, label) {
   return [...value];
 }
 
-function normalizedMode(defaultSources, defaultTargets, sources, targets) {
-  if (!sameSequence(defaultSources, sources) || !sameSequence(defaultTargets, targets)) {
+export function mappingMode(baseline, current) {
+  if (!sameSequence(baseline.sources, current.sources)
+      || !sameSequence(baseline.targets, current.targets)) {
     return "special";
   }
-  return defaultSources.length && defaultTargets.length ? "direct" : "unmapped";
+  return baseline.sources.length && baseline.targets.length ? "direct" : "unmapped";
 }
 
 export function updateMappingEntry(entry, sources, targets, note = entry.note || "") {
-  const defaultSources = requireStringArray(entry.defaultSources, "defaultSources");
-  const defaultTargets = requireStringArray(entry.defaultTargets, "defaultTargets");
   const nextSources = requireStringArray(sources, "sources");
   const nextTargets = requireStringArray(targets, "targets");
   if (!nextSources.length && !nextTargets.length) {
     throw new Error("mapping row cannot have both sides empty");
   }
   return {
-    ...entry,
-    defaultSources,
+    id: entry.id,
     sources: nextSources,
-    defaultTargets,
     targets: nextTargets,
-    mode: normalizedMode(defaultSources, defaultTargets, nextSources, nextTargets),
     note: String(note),
   };
 }
@@ -72,7 +61,7 @@ function normalizeCatalogue(items, fields, label, validate) {
     if (!Number.isInteger(item.order) || item.order !== order) {
       throw new Error(`${label} order mismatch at index ${order}`);
     }
-    validate(item, order);
+    validate(item);
     ids.add(item.id);
     return { ...item };
   });
@@ -88,8 +77,10 @@ export function normalizeMappingPayload(input) {
 
   const sources = normalizeCatalogue(input.sources, SOURCE_FIELDS, "ZVVNMOD source", (source) => {
     if (
-      typeof source.name !== "string"
-      || typeof source.const !== "string"
+      !RUST_CONST.test(source.id)
+      || typeof source.name !== "string"
+      || typeof source.codepoint !== "string"
+      || !CODEPOINT.test(source.codepoint)
       || !Number.isInteger(source.value)
       || typeof source.glyph !== "string"
     ) {
@@ -117,26 +108,18 @@ export function normalizeMappingPayload(input) {
     rowIds.add(entry.id);
     if (typeof entry.note !== "string") throw new Error(`mapping ${index} note must be a string`);
 
-    const defaultSources = requireStringArray(entry.defaultSources, `mapping ${index} defaultSources`);
     const currentSources = requireStringArray(entry.sources, `mapping ${index} sources`);
-    const defaultTargets = requireStringArray(entry.defaultTargets, `mapping ${index} defaultTargets`);
     const currentTargets = requireStringArray(entry.targets, `mapping ${index} targets`);
-    if (!defaultSources.length && !defaultTargets.length) {
-      throw new Error(`mapping ${index} generated row has both sides empty`);
+    if (!currentSources.length && !currentTargets.length) {
+      throw new Error(`mapping ${index} has both sides empty`);
     }
-    for (const source of [...defaultSources, ...currentSources]) {
+    for (const source of currentSources) {
       if (!sourceIds.has(source)) throw new Error(`unknown ZVVNMOD source: ${source}`);
     }
-    for (const target of [...defaultTargets, ...currentTargets]) {
+    for (const target of currentTargets) {
       if (!targetIds.has(target)) throw new Error(`unknown UTN57 target: ${target}`);
     }
-
-    return updateMappingEntry(
-      { ...entry, defaultSources, defaultTargets, note: entry.note },
-      currentSources,
-      currentTargets,
-      entry.note,
-    );
+    return updateMappingEntry(entry, currentSources, currentTargets, entry.note);
   });
 
   return {
@@ -154,12 +137,7 @@ export function hasSameGeneratedScaffold(source, candidate) {
   if (JSON.stringify(source.sources) !== JSON.stringify(candidate.sources)) return false;
   if (JSON.stringify(source.targets) !== JSON.stringify(candidate.targets)) return false;
   if (!Array.isArray(source.mappings) || source.mappings.length !== candidate.mappings?.length) return false;
-  return source.mappings.every((entry, index) => {
-    const candidateEntry = candidate.mappings[index];
-    return GENERATED_MAPPING_FIELDS.every(
-      (field) => JSON.stringify(entry[field]) === JSON.stringify(candidateEntry?.[field]),
-    );
-  });
+  return source.mappings.every((entry, index) => entry.id === candidate.mappings[index]?.id);
 }
 
 export function serializeMappingPayload(payload) {

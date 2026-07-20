@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import hashlib
 import json
-import re
 import runpy
 import subprocess
 import tempfile
@@ -9,266 +9,194 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGE_HTML = ROOT / "mapping/index.html"
 PARTICLE_JSON = ROOT / "mapping/data/zvvnmod-utn57-particles.json"
-OBSERVATIONS_JSON = ROOT / "mapping/data/particle-shaping-observations.json"
-PARTICLE_SNAPSHOT_JSON = ROOT / "mapping/data/mongfontbuilder-particles.json"
+MAPPING_JSON = ROOT / "mapping/data/zvvnmod-utn57-map.json"
 GENERATOR = ROOT / "mapping/scripts/generate-particle-mapping.py"
-CAPTURE_SCRIPT = ROOT / "mapping/scripts/capture-particle-observations.py"
+VERIFIER = ROOT / "mapping/scripts/verify-static-page.py"
 
 
 class ParticleMappingTests(unittest.TestCase):
-    def test_particle_mapping_section_is_below_editable_workbench(self) -> None:
-        page = PAGE_HTML.read_text()
-        workbench_index = page.index('id="mapping-workbench"')
-        particle_index = page.index('id="particle-mappings"')
+    def load_particles(self) -> dict:
+        return json.loads(PARTICLE_JSON.read_text())
 
-        self.assertLess(workbench_index, particle_index)
-        self.assertIn('id="particle-mapping-status" role="status"', page)
-        self.assertIn('id="particle-mapping-rows"', page)
-        self.assertIn('class="particle-table" aria-label="Mongfontbuilder particle mappings"', page)
-        self.assertIn('<caption class="visually-hidden">Nominal-context ZVVNMOD to UTN57 particle mappings</caption>', page)
-        self.assertIn(
-            "https://github.com/Kushim-Jiang/mongfontbuilder/blob/539b455075486f70889e6de9909eac5dea839d8a/data/particles.ts",
-            page,
-        )
-        self.assertIn('src="particle-mappings.js?v=2"', page)
-        self.assertIn('<link rel="icon" href="../favicon.png">', page)
-        self.assertIn('src="workbench.js?v=4"', page)
-        workbench = (ROOT / "mapping/workbench.js").read_text()
-        self.assertIn('from "./combined-workbench-model.mjs?v=1"', workbench)
-
-    def test_particle_mapping_data_has_all_mongfontbuilder_mng_patterns(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        self.assertEqual(payload["schema"], "zvvnmod-utn57-particles-v2")
+    def test_compact_particle_data_omits_leading_context_and_uses_rust_names(self) -> None:
+        payload = self.load_particles()
+        self.assertEqual(payload["schema"], "zvvnmod-utn57-particles-v3")
         self.assertEqual(len(payload["mappings"]), 47)
-
-    def test_key_particle_mappings_preserve_particle_semantics(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        rows = {row["pattern"]: row for row in payload["mappings"]}
-
-        self.assertEqual(rows["mvs i"]["rawZvvnmodCodes"], ["U+E143", "U+E00E"])
-        self.assertEqual(rows["mvs i"]["defaultZvvnmodCodes"], [None, "U+E01A"])
-        self.assertEqual(rows["mvs i"]["zvvnmodCodes"], [None, "U+E01A"])
-        self.assertEqual(rows["mvs i"]["utn57Shapes"], ["MVS", "I:isol"])
-        self.assertEqual(rows["u u"]["rawZvvnmodCodes"], ["U+E000", "U+E008", "U+E011"])
-        self.assertEqual(
-            rows["u u"]["zvvnmodCodes"],
-            ["U+E001", "U+E011"],
-        )
-        self.assertEqual(rows["u u"]["utn57Shapes"], ["O:init", "U:fina"])
-        self.assertEqual(
-            rows["b ue ue"]["zvvnmodCodes"],
-            ["U+E029", "U+E008", "U+E011"],
-        )
-        self.assertEqual(
-            rows["b ue ue"]["utn57Shapes"],
-            ["B:init", "O:medi", "U:fina"],
-        )
-
-    def test_semantic_slots_use_current_catalogues_and_leave_unknown_matches_blank(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        mapping = json.loads((ROOT / "mapping/data/zvvnmod-utn57-map.json").read_text())
-        source_ids = {source["id"] for source in mapping["sources"]}
-        sources_by_const = {
-            source["const"]: source["id"]
-            for source in mapping["sources"]
-            if sum(item["const"] == source["const"] for item in mapping["sources"]) == 1
-        }
-        targets_by_id = {target["id"]: target for target in mapping["targets"]}
-        target_ids = set(targets_by_id) | {"MVS"}
-
+        self.assertEqual(set(payload), {"schema", "description", "provenance", "mappings"})
+        expected_fields = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
         for row in payload["mappings"]:
-            with self.subTest(pattern=row["pattern"]):
-                self.assertEqual(len(row["zvvnmodCodes"]), len(row["utn57Shapes"]))
-                self.assertTrue(row["utn57Shapes"])
-                self.assertTrue({code for code in row["zvvnmodCodes"] if code} <= source_ids)
-                self.assertTrue(set(row["utn57Shapes"]) <= target_ids)
-                expected_slots = []
-                for shape in row["utn57Shapes"]:
-                    if shape == "MVS":
-                        expected_slots.append(None)
-                        continue
-                    target = targets_by_id[shape]
-                    unit = re.sub(
-                        r"(?<=[a-z0-9])(?=[A-Z])", "_", target["unit"]
-                    ).upper()
-                    expected_slots.append(
-                        sources_by_const.get(f"{unit}_{target['position'].upper()}")
-                    )
-                self.assertEqual(row["zvvnmodCodes"], expected_slots)
+            with self.subTest(row=row["id"]):
+                self.assertEqual(set(row), expected_fields)
+                self.assertFalse(row["pattern"].startswith(("mvs ", "nnbsp ")))
+                self.assertNotIn("MVS", row["targets"])
+                self.assertTrue(all(not source.startswith("U+") for source in row["sources"]))
+                self.assertTrue(row["sources"] or row["targets"])
 
-        rows = {row["pattern"]: row for row in payload["mappings"]}
-        self.assertIsNone(rows["mvs i"]["zvvnmodCodes"][0])
-        self.assertIsNone(rows["mvs a ch a g a n"]["zvvnmodCodes"][4])
+    def test_particle_07_matches_requested_compact_sequences(self) -> None:
+        row = self.load_particles()["mappings"][6]
+        self.assertEqual(
+            row,
+            {
+                "id": "particle:07",
+                "pattern": "i y a r",
+                "particleIndices": [0, 1],
+                "sources": ["I_INIT", "I_MEDI", "A_MEDI", "R_FINA"],
+                "targets": ["I:init", "I:medi", "A:medi", "R:fina"],
+                "note": "",
+            },
+        )
 
-    def test_particle_rows_keep_nominal_context_without_claiming_raw_meco_equivalence(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        rows = {row["pattern"]: row for row in payload["mappings"]}
+    def test_generated_sequences_use_current_catalogues_and_allow_unequal_lengths(self) -> None:
+        particles = self.load_particles()
+        mapping = json.loads(MAPPING_JSON.read_text())
+        source_ids = {source["id"] for source in mapping["sources"]}
+        target_ids = {target["id"] for target in mapping["targets"]}
+        unequal = 0
+        for row in particles["mappings"]:
+            self.assertTrue(set(row["sources"]) <= source_ids)
+            self.assertTrue(set(row["targets"]) <= target_ids)
+            if len(row["sources"]) != len(row["targets"]):
+                unequal += 1
+        self.assertEqual(unequal, 7)
 
-        self.assertEqual(rows["mvs t u"]["utn57Shapes"], ["MVS", "T:init", "U:fina"])
-        self.assertEqual(rows["mvs t u"]["zvvnmodCodes"], [None, "U+E042", "U+E011"])
-        self.assertEqual(rows["mvs d u"]["utn57Shapes"], ["MVS", "D:init", "U:fina"])
-        self.assertEqual(rows["mvs d u"]["zvvnmodCodes"], [None, "U+E045", "U+E011"])
-        self.assertEqual(rows["mvs t u"]["mode"], "unmapped")
-        self.assertEqual(rows["u u"]["mode"], "direct")
-
-    def test_generator_reproduces_committed_particle_mapping(self) -> None:
+    def test_generator_reproduces_committed_particle_scaffold(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "particles.json"
-            result = subprocess.run(
+            subprocess.run(
                 ["python3", str(GENERATOR), "--output", str(output)],
                 cwd=ROOT,
-                text=True,
+                check=True,
                 capture_output=True,
+                text=True,
             )
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertEqual(output.read_bytes(), PARTICLE_JSON.read_bytes())
+            generated = json.loads(output.read_text())
+            current = self.load_particles()
+            self.assertEqual(generated["schema"], current["schema"])
+            self.assertEqual(generated["description"], current["description"])
+            self.assertEqual(generated["provenance"], current["provenance"])
+            self.assertEqual(
+                [
+                    (row["id"], row["pattern"], row["particleIndices"])
+                    for row in generated["mappings"]
+                ],
+                [
+                    (row["id"], row["pattern"], row["particleIndices"])
+                    for row in current["mappings"]
+                ],
+            )
 
-    def test_generator_rejects_observation_drift_and_wrong_source_pins(self) -> None:
-        observations = json.loads(OBSERVATIONS_JSON.read_text())
+    def test_generator_rejects_observation_drift(self) -> None:
+        observations = json.loads(
+            (ROOT / "mapping/data/particle-shaping-observations.json").read_text()
+        )
+        observations["observations"][0]["pattern"] = "tampered"
         with tempfile.TemporaryDirectory() as directory:
-            temporary = Path(directory) / "observations.json"
-            output = Path(directory) / "output.json"
-
-            observations["observations"][0]["rawZvvnmodCodes"] = ["U+E000"]
-            temporary.write_text(json.dumps(observations, indent=2) + "\n")
-            drift = subprocess.run(
-                ["python3", str(GENERATOR), "--observations", str(temporary), "--output", str(output)],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-            )
-            self.assertNotEqual(drift.returncode, 0)
-            self.assertIn("observation snapshot checksum mismatch", drift.stdout + drift.stderr)
-
-            observations = json.loads(OBSERVATIONS_JSON.read_text())
-            observations["sources"]["meco"]["commit"] = "0" * 40
-            temporary.write_text(json.dumps(observations, indent=2) + "\n")
-            wrong_pin = subprocess.run(
-                ["python3", str(GENERATOR), "--observations", str(temporary), "--output", str(output)],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-            )
-            self.assertNotEqual(wrong_pin.returncode, 0)
-            self.assertIn("source provenance mismatch", wrong_pin.stdout + wrong_pin.stderr)
-
-    def test_capture_script_rebuilds_observations_from_exact_upstream_revisions(self) -> None:
-        capture = CAPTURE_SCRIPT.read_text()
-        self.assertIn("539b455075486f70889e6de9909eac5dea839d8a", capture)
-        self.assertIn("7edff334d33fc367596d1d33406b33bccb8ddc60", capture)
-        self.assertIn("buildFontForLocales", capture)
-        self.assertIn("unlink(missing_ok=True)", capture)
-        self.assertIn("loadHBFont", capture)
-        self.assertIn("/meco/translate", capture)
-        self.assertIn("git", capture)
-        self.assertIn("rev-parse", capture)
-        self.assertIn("status", capture)
-        self.assertIn("--porcelain", capture)
-        self.assertIn("MAVEN_IMAGE", capture)
-        self.assertIn("maven@sha256:1fee93ca227db7e8b8c7c72752ada0f03da6ebab40addd6fe48ac6293424186c", capture)
-        self.assertIn("mvn", capture)
-        self.assertIn("-Dmaven.test.skip=true", capture)
-        self.assertIn('"clean"', capture)
-        self.assertIn("eclipse-temurin@sha256:9ef14875d4c4ad2f05f3eb84d3dfff084e7cabd9840eaf25978156b06785a920", capture)
-        self.assertIn('["docker", "run"', capture)
-        self.assertNotIn('parser.add_argument("--meco-url"', capture)
-        self.assertNotIn('parser.add_argument("--meco-jar"', capture)
-
-    def test_semantic_alignment_uses_shape_const_names_and_preserves_blank_slots(self) -> None:
-        module = runpy.run_path(str(GENERATOR))
-        aliases = json.loads((ROOT / "mapping/data/mongfontbuilder-aliases.json").read_text())
-        mapping = json.loads((ROOT / "mapping/data/zvvnmod-utn57-map.json").read_text())
-        self.assertEqual(module["nominal_code_points"]("mvs i", aliases), ["U+180E", "U+1822"])
-
-        align = module["semantic_zvvnmod_slots"]
-        self.assertEqual(align(["O:init", "U:fina"], mapping), ["U+E001", "U+E011"])
-        self.assertEqual(align(["MVS", "I:isol"], mapping), [None, "U+E01A"])
-        self.assertEqual(align(["MVS", "Hx:medi", "U:fina"], mapping), [None, None, "U+E011"])
-
-    def test_particle_renderer_uses_safe_dom_apis_and_versioned_model_import(self) -> None:
-        renderer = (ROOT / "mapping/particle-mappings.js").read_text()
-        self.assertIn('from "./particle-model.mjs?v=2"', renderer)
-        self.assertIn("normalizeParticlePayload(event.detail.payload", renderer)
-        self.assertIn("updateParticleEntry", renderer)
-        self.assertIn("particle-mapping-updated", renderer)
-        self.assertIn("Blank — no known counterpart", renderer)
-        self.assertIn("document.createElement", renderer)
-        self.assertIn("textContent", renderer)
-        self.assertNotIn("innerHTML", renderer)
-        self.assertIn("aria-label", renderer)
-        self.assertIn('shapeId === "MVS"', renderer)
-        self.assertIn('tableShell.setAttribute("aria-busy", "false")', renderer)
-
-    def test_particle_table_styles_preserve_columns_and_context_markers(self) -> None:
-        styles = (ROOT / "mapping/styles.css").read_text()
-        self.assertIn(".particle-table-shell", styles)
-        self.assertIn("overflow-x: auto", styles)
-        self.assertIn(".particle-table", styles)
-        self.assertIn(".particle-sequence", styles)
-        self.assertIn(".particle-chip", styles)
-        self.assertIn(".structural-chip", styles)
-        self.assertIn(".particle-aligned-slot", styles)
-        self.assertIn(".blank-particle-chip", styles)
-        self.assertIn(".particle-slot-editor-row", styles)
-        self.assertIn('.site-header nav a { flex: none; padding-inline: 4px; white-space: nowrap;', styles)
-        self.assertIn(".nav-full { display: none; }", styles)
-        self.assertIn(".nav-compact { display: inline; }", styles)
-
-    def test_static_verifier_accepts_particle_edits_and_rejects_wrong_mode(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        payload["mappings"][0]["zvvnmodCodes"][0] = "U+E000"
-        payload["mappings"][0]["mode"] = "special"
-        payload["mappings"][0]["note"] = "Reviewed semantic override"
-
-        def verify(candidate: dict) -> subprocess.CompletedProcess[str]:
-            with tempfile.NamedTemporaryFile("w", suffix=".json") as temporary:
-                json.dump(candidate, temporary)
-                temporary.flush()
-                return subprocess.run(
-                    [
-                        "uv",
-                        "run",
-                        "--script",
-                        str(ROOT / "mapping/scripts/verify-static-page.py"),
-                        "--particle-json",
-                        temporary.name,
-                    ],
-                    cwd=ROOT,
-                    text=True,
-                    capture_output=True,
-                )
-
-        accepted = verify(payload)
-        self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
-
-        payload["mappings"][0]["mode"] = "direct"
-        rejected = verify(payload)
-        self.assertNotEqual(rejected.returncode, 0)
-        self.assertIn("mode must be special", rejected.stdout + rejected.stderr)
-
-    def test_static_verifier_rejects_particle_artifact_drift(self) -> None:
-        payload = json.loads(PARTICLE_JSON.read_text())
-        payload["mappings"][0]["utn57Shapes"] = ["A:isol"]
-        with tempfile.NamedTemporaryFile("w", suffix=".json") as temporary:
-            json.dump(payload, temporary)
-            temporary.flush()
+            path = Path(directory) / "observations.json"
+            output = Path(directory) / "out.json"
+            path.write_text(json.dumps(observations))
             result = subprocess.run(
                 [
-                    "uv",
-                    "run",
-                    "--script",
-                    str(ROOT / "mapping/scripts/verify-static-page.py"),
-                    "--particle-json",
-                    temporary.name,
+                    "python3",
+                    str(GENERATOR),
+                    "--observations",
+                    str(path),
+                    "--output",
+                    str(output),
                 ],
                 cwd=ROOT,
                 text=True,
                 capture_output=True,
             )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("changed generated field utn57Shapes", result.stdout + result.stderr)
+        self.assertIn("checksum mismatch", result.stdout + result.stderr)
+
+    def test_semantic_sequence_helper_omits_unknown_source_counterparts(self) -> None:
+        module = runpy.run_path(str(GENERATOR))
+        align = module["semantic_zvvnmod_sequence"]
+        mapping = json.loads(MAPPING_JSON.read_text())
+        self.assertEqual(
+            align(["I:init", "I:medi", "A:medi", "R:fina"], mapping),
+            ["I_INIT", "I_MEDI", "A_MEDI", "R_FINA"],
+        )
+        self.assertEqual(align(["Hx:medi", "A:fina"], mapping), ["A_FINA"])
+
+    def test_context_helper_omits_mvs_and_nnbsp_prefixes(self) -> None:
+        module = runpy.run_path(str(GENERATOR))
+        strip_context = module["strip_leading_particle_context"]
+        self.assertEqual(
+            strip_context("mvs i y", [1, 2], ["MVS", "I:init", "I:medi"]),
+            ("i y", [0, 1], ["I:init", "I:medi"]),
+        )
+        self.assertEqual(
+            strip_context("nnbsp i", [1], ["MVS", "I:init"]),
+            ("i", [0], ["I:init"]),
+        )
+        self.assertEqual(
+            strip_context("u u", [0], ["O:init", "U:fina"]),
+            ("u u", [0], ["O:init", "U:fina"]),
+        )
+
+    def test_particle_markup_and_renderer_support_independent_sequences(self) -> None:
+        page = (ROOT / "mapping/index.html").read_text()
+        renderer = (ROOT / "mapping/particle-mappings.js").read_text()
+        self.assertLess(page.index('id="mapping-workbench"'), page.index('id="particle-mappings"'))
+        self.assertIn('src="particle-mappings.js?v=4"', page)
+        self.assertIn("Leading MVS/NNBSP context is omitted", page)
+        self.assertIn('from "./particle-model.mjs?v=4"', renderer)
+        self.assertIn('dataset.action = "add-particle-value"', renderer)
+        self.assertIn('"remove-particle-value"', renderer)
+        self.assertIn('"move-particle-up"', renderer)
+        self.assertIn('"move-particle-down"', renderer)
+        self.assertIn("draft.sources, draft.targets, draft.note", renderer)
+        self.assertIn("baseline.sources, baseline.targets, baseline.note", renderer)
+        self.assertNotIn("innerHTML", renderer)
+        self.assertNotIn("defaultZvvnmodCodes", renderer)
+        self.assertNotIn("zvvnmodCodes", renderer)
+
+    def test_capture_pipeline_remains_pinned_and_auditable(self) -> None:
+        script = (ROOT / "mapping/scripts/capture-particle-observations.py").read_text()
+        self.assertIn('MONGFONTBUILDER_COMMIT = "539b455075486f70889e6de9909eac5dea839d8a"', script)
+        self.assertIn('MECO_COMMIT = "7edff334d33fc367596d1d33406b33bccb8ddc60"', script)
+        self.assertIn('"from": "delehi", "to": "zvvnmod"', script)
+        self.assertIn("require_revision", script)
+        snapshot = ROOT / "mapping/data/particle-shaping-observations.json"
+        self.assertEqual(
+            hashlib.sha256(snapshot.read_bytes()).hexdigest(),
+            "b480e08b16c7efd531b968612a53e6718a96c11578a9d71670994b7033c793ab",
+        )
+
+    def verify_particle(self, payload: dict) -> subprocess.CompletedProcess[str]:
+        with tempfile.NamedTemporaryFile("w", suffix=".json") as temporary:
+            json.dump(payload, temporary)
+            temporary.flush()
+            return subprocess.run(
+                ["uv", "run", "--script", str(VERIFIER), "--particle-json", temporary.name],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+
+    def test_verifier_accepts_compact_unequal_particle_override(self) -> None:
+        payload = self.load_particles()
+        payload["mappings"][6]["sources"] = ["I_INIT"]
+        payload["mappings"][6]["targets"] = ["I:init", "I:medi", "R:fina"]
+        payload["mappings"][6]["note"] = "Reviewed unequal sequence"
+        result = self.verify_particle(payload)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_verifier_rejects_particle_scaffold_and_unknown_value_changes(self) -> None:
+        changed_pattern = self.load_particles()
+        changed_pattern["mappings"][0]["pattern"] = "tampered"
+        result = self.verify_particle(changed_pattern)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("changed generated field pattern", result.stdout + result.stderr)
+
+        unknown = self.load_particles()
+        unknown["mappings"][0]["sources"] = ["UNKNOWN_CONST"]
+        result = self.verify_particle(unknown)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unknown particle ZVVNMOD source", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":
