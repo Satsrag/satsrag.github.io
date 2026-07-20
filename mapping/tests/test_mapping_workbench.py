@@ -40,7 +40,7 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v3")
         self.assertEqual(len(source_ids), 80)
         self.assertEqual(set(source_ids), set(expected_sources))
-        self.assertEqual(len(mapping["mappings"]), 100)
+        self.assertEqual(len(mapping["mappings"]), 104)
         self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 6)
         self.assertEqual(sum(not entry["targets"] for entry in mapping["mappings"]), 1)
         self.assertTrue(all(entry["sources"] or entry["targets"] for entry in mapping["mappings"]))
@@ -116,6 +116,22 @@ class MappingDataTests(unittest.TestCase):
         }
         self.assertEqual({row_id: entries[row_id]["sources"] for row_id in reviewed}, reviewed)
         chachlag = {
+            "chachlag:I_MEDI_AA_FINA_AA_FINA": (
+                ["I_MEDI", "AA_FINA", "AA_FINA"],
+                ["G:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:AA_FINA_AA_FINA": (
+                ["AA_FINA", "AA_FINA"],
+                ["Aa:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:A_FINA_AA_FINA": (
+                ["A_FINA", "AA_FINA"],
+                ["A:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:I_ISOL_AA_FINA": (
+                ["I_ISOL", "AA_FINA"],
+                ["I:isol", "MVS", "Aa:isol"],
+            ),
             "chachlag:I_FINA_AA_FINA": (
                 ["I_FINA", "AA_FINA"],
                 ["I:fina", "MVS", "Aa:isol"],
@@ -185,6 +201,17 @@ class MappingDataTests(unittest.TestCase):
         self.assertIsNotNone(spec.loader if spec else None)
         module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
         spec.loader.exec_module(module)  # type: ignore[union-attr]
+        self.assertEqual(len(module.PATTERNS), 33)
+        self.assertTrue(
+            {
+                "a n fvs2 mvs a",
+                "a g fvs2 mvs a",
+                "j fvs1 mvs a",
+                "a a fvs1 mvs a",
+                "a a fvs2 mvs a",
+            }
+            <= set(module.PATTERNS)
+        )
 
         with tempfile.TemporaryDirectory() as directory:
             repository = Path(directory) / "repository"

@@ -14,9 +14,29 @@ POSITIONS = ("isol", "init", "medi", "fina")
 POSITION_NAMES = {"isol": "isol", "i": "init", "m": "medi", "f": "fina"}
 RETAINED_MERGED_CODES = {"N_AA_FINA", "HX_AA_FINA"}
 FORMAT_CONTROL_SCHEMA = "utn57-format-controls-v1"
-CHACHLAG_NOTE = "UTN connected chachlag shape alignment."
+CHACHLAG_NOTE = "UTN chachlag onset-plus-suffix shape alignment."
 CANONICAL_SOURCE_TARGETS = {"AA_FINA": ("Aa:isol",)}
 CHACHLAG_RULES = (
+    (
+        "chachlag:I_MEDI_AA_FINA_AA_FINA",
+        ("I_MEDI", "AA_FINA", "AA_FINA"),
+        ("G:fina", "MVS", "Aa:isol"),
+    ),
+    (
+        "chachlag:AA_FINA_AA_FINA",
+        ("AA_FINA", "AA_FINA"),
+        ("Aa:fina", "MVS", "Aa:isol"),
+    ),
+    (
+        "chachlag:A_FINA_AA_FINA",
+        ("A_FINA", "AA_FINA"),
+        ("A:fina", "MVS", "Aa:isol"),
+    ),
+    (
+        "chachlag:I_ISOL_AA_FINA",
+        ("I_ISOL", "AA_FINA"),
+        ("I:isol", "MVS", "Aa:isol"),
+    ),
     ("chachlag:I_FINA_AA_FINA", ("I_FINA", "AA_FINA"), ("I:fina", "MVS", "Aa:isol")),
     ("chachlag:U_FINA_AA_FINA", ("U_FINA", "AA_FINA"), ("U:fina", "MVS", "Aa:isol")),
     ("chachlag:H_FINA_AA_FINA", ("H_FINA", "AA_FINA"), ("H:fina", "MVS", "Aa:isol")),

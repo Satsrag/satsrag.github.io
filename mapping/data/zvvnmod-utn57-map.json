@@ -2294,6 +2294,59 @@
       "note": ""
     },
     {
+      "id": "chachlag:I_MEDI_AA_FINA_AA_FINA",
+      "sources": [
+        "I_MEDI",
+        "AA_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "G:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:AA_FINA_AA_FINA",
+      "sources": [
+        "AA_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "Aa:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:A_FINA_AA_FINA",
+      "sources": [
+        "A_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "A:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:I_ISOL_AA_FINA",
+      "sources": [
+        "I_ISOL",
+        "AA_FINA"
+      ],
+      "targets": [
+        "I:isol",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
       "id": "chachlag:I_FINA_AA_FINA",
       "sources": [
         "I_FINA",
@@ -2304,7 +2357,7 @@
         "MVS",
         "Aa:isol"
       ],
-      "note": "UTN connected chachlag shape alignment."
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
     },
     {
       "id": "chachlag:U_FINA_AA_FINA",
@@ -2317,7 +2370,7 @@
         "MVS",
         "Aa:isol"
       ],
-      "note": "UTN connected chachlag shape alignment."
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
     },
     {
       "id": "chachlag:H_FINA_AA_FINA",
@@ -2330,7 +2383,7 @@
         "MVS",
         "Aa:isol"
       ],
-      "note": "UTN connected chachlag shape alignment."
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
     }
   ]
 }
