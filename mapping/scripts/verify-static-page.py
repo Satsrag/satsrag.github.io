@@ -27,6 +27,7 @@ MAPPING_FIELDS = {"id", "sources", "targets", "note"}
 PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
 PARTICLE_IMMUTABLE_FIELDS = ("id", "pattern", "particleIndices")
+CHACHLAG_OBSERVATIONS_SHA256 = "2fa08f0f03dd6e86ab2a53706a847c3045de4fe256294c5e3fdbf7ffd975499b"
 
 
 def check(condition: object, message: str) -> None:
@@ -55,6 +56,12 @@ def main() -> None:
         type=Path,
         default=MAPPING / "data/zvvnmod-utn57-particles.json",
         help="generated particle mapping JSON to validate",
+    )
+    parser.add_argument(
+        "--chachlag-json",
+        type=Path,
+        default=MAPPING / "data/chachlag-shaping-observations.json",
+        help="pinned chachlag observation JSON to validate",
     )
     args = parser.parse_args()
 
@@ -104,10 +111,142 @@ def main() -> None:
                 "position": "control",
                 "codepoint": "U+180A",
                 "glyph": "᠊",
-            }
+            },
+            {
+                "id": "MVS",
+                "unit": "MVS",
+                "position": "control",
+                "codepoint": "U+180E",
+                "glyph": "᠎",
+            },
         ],
         "UTN57 format-control inventory differs",
     )
+
+    chachlag_path = args.chachlag_json
+    check(
+        sha256(chachlag_path) == CHACHLAG_OBSERVATIONS_SHA256,
+        "chachlag observation snapshot differs",
+    )
+    chachlag = json.loads(chachlag_path.read_text())
+    check(
+        set(chachlag) == {"schema", "description", "sources", "observations"},
+        "chachlag observation root fields differ",
+    )
+    check(
+        chachlag.get("schema") == "zvvnmod-utn57-chachlag-observations-v1",
+        "chachlag observation schema mismatch",
+    )
+    check(
+        chachlag.get("sources")
+        == {
+            "mongfontbuilder": {
+                "repository": "https://github.com/Kushim-Jiang/mongfontbuilder",
+                "commit": "539b455075486f70889e6de9909eac5dea839d8a",
+                "rulesPath": "lib/mongfontbuilder/otl/iii.py",
+                "aliasesPath": "lib/mongfontbuilder/data/aliases.json",
+            },
+            "meco": {
+                "repository": "https://github.com/Satsrag/meco",
+                "commit": "7edff334d33fc367596d1d33406b33bccb8ddc60",
+            },
+        },
+        "chachlag observation provenance differs",
+    )
+    observations = chachlag.get("observations")
+    check(
+        isinstance(observations, list) and len(observations) == 22,
+        "expected 22 chachlag observations",
+    )
+    observation_fields = {
+        "pattern",
+        "nominalCodePoints",
+        "rawZvvnmodCodes",
+        "utn57GlyphNames",
+    }
+    check(
+        all(isinstance(item, dict) and set(item) == observation_fields for item in observations),
+        "chachlag observation fields differ",
+    )
+    observed = {item["pattern"]: item for item in observations}
+    check(len(observed) == 22, "chachlag observation patterns must be unique")
+    expected_a_vectors = {
+        "mvs a": (["U+E00D"], ["uni180E.Narrowspace.nomi", "u1820.Aa.isol"]),
+        "n mvs a": (
+            ["U+E027", "U+E00D"],
+            ["u1828.N.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
+        ),
+        "j mvs a": (
+            ["U+E01A", "U+E00D"],
+            ["u1835.I.isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
+        ),
+        "w mvs a": (
+            ["U+E056", "U+E00D"],
+            ["u1838.W.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
+        ),
+        "h mvs a": (
+            ["U+E030", "U+E00D"],
+            ["u182C.H.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
+        ),
+        "g mvs a": (
+            ["U+E030", "U+E00D"],
+            ["u182D.Hx.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
+        ),
+        "a n mvs a": (
+            ["U+E000", "U+E005", "U+E077"],
+            [
+                "u1820.AA.init",
+                "u1828.N.fina",
+                "uni180E.Narrowspace.nomi",
+                "u1820.Aa.isol",
+            ],
+        ),
+        "a j mvs a": (
+            ["U+E000", "U+E005", "U+E04E", "U+E00D"],
+            [
+                "u1820.AA.init",
+                "u1835.I.fina",
+                "uni180E.Narrowspace.nomi",
+                "u1820.Aa.isol",
+            ],
+        ),
+        "a w mvs a": (
+            ["U+E000", "U+E005", "U+E011", "U+E00D"],
+            [
+                "u1820.AA.init",
+                "u1838.U.fina",
+                "uni180E.Narrowspace.nomi",
+                "u1820.Aa.isol",
+            ],
+        ),
+        "a h mvs a": (
+            ["U+E000", "U+E005", "U+E032", "U+E00D"],
+            [
+                "u1820.AA.init",
+                "u182C.H.fina",
+                "uni180E.Narrowspace.nomi",
+                "u1820.Aa.isol",
+            ],
+        ),
+        "a g mvs a": (
+            ["U+E000", "U+E005", "U+E09D"],
+            [
+                "u1820.AA.init",
+                "u182D.Hx.fina",
+                "uni180E.Narrowspace.nomi",
+                "u1820.Aa.isol",
+            ],
+        ),
+    }
+    for pattern, (raw_codes, glyph_names) in expected_a_vectors.items():
+        check(
+            observed.get(pattern, {}).get("rawZvvnmodCodes") == raw_codes,
+            f"{pattern} ZVVNMOD observation drifted",
+        )
+        check(
+            observed.get(pattern, {}).get("utn57GlyphNames") == glyph_names,
+            f"{pattern} UTN57 observation drifted",
+        )
 
     mapping_path = args.mapping_json
     mapping = json.loads(mapping_path.read_text())
@@ -182,9 +321,12 @@ def main() -> None:
         check(target.get("order") == index, f"UTN57 target order mismatch at index {index}")
     check(mapping["targets"] == generated["targets"], "UTN57 target catalogue differs from generated inventory")
     target_ids = [target["id"] for target in mapping["targets"]]
-    check(len(target_ids) == len(set(target_ids)) == 96, "mapping must contain 96 unique UTN57 targets")
+    check(len(target_ids) == len(set(target_ids)) == 97, "mapping must contain 97 unique UTN57 targets")
     check(target_ids[0] == "A:isol", "UTN57 target catalogue must start at A:isol")
-    check(target_ids[-1] == "Nirugu", "UTN57 target catalogue must end with Nirugu control")
+    check(
+        target_ids[-2:] == ["Nirugu", "MVS"],
+        "UTN57 target catalogue must end with Nirugu and MVS controls",
+    )
     valid_targets = set(target_ids)
     particle_ids: set[str] = set()
     for index, (row, default_row) in enumerate(
@@ -236,7 +378,10 @@ def main() -> None:
 
     check(len(particle_ids) == 47, "particle mapping IDs must be unique")
 
-    check(len(mapping["mappings"]) == len(generated["mappings"]) == 97, "mapping must contain 97 alignment rows")
+    check(
+        len(mapping["mappings"]) == len(generated["mappings"]) == 100,
+        "mapping must contain 100 alignment rows",
+    )
     row_ids: set[str] = set()
 
     for index, (entry, default_entry) in enumerate(zip(mapping["mappings"], generated["mappings"])):
@@ -267,7 +412,7 @@ def main() -> None:
 
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
 
-    check(len(row_ids) == 97, "mapping must contain 97 unique alignment row IDs")
+    check(len(row_ids) == 100, "mapping must contain 100 unique alignment row IDs")
 
     font_path = MAPPING / "assets/zvvnmod.ttf"
     font = TTFont(font_path)
@@ -319,15 +464,19 @@ def main() -> None:
         utn_index < zvvnmod_index < workbench_index < particle_index,
         "particle mappings must follow the workbench and both inventories",
     )
-    check('src="workbench.js?v=6"' in mapping_page, "mapping page has stale workbench controller")
+    check('src="workbench.js?v=7"' in mapping_page, "mapping page has stale workbench controller")
     check(
         'src="particle-mappings.js?v=4"' in mapping_page,
         "mapping page does not load particle controller",
     )
     workbench_controller = (MAPPING / "workbench.js").read_text()
     check(
-        'from "./combined-workbench-model.mjs?v=3"' in workbench_controller,
+        'from "./combined-workbench-model.mjs?v=4"' in workbench_controller,
         "combined workbench model import is not cache-busted with its controller",
+    )
+    check(
+        'from "./workbench-model.mjs?v=5"' in workbench_controller,
+        "mapping model import is not cache-busted with its controller",
     )
 
     unequal_particle_rows = sum(
@@ -336,7 +485,8 @@ def main() -> None:
     )
     print(
         "verified: 38 UTN57 rows, 32 ZVVNMOD groups, 139 font-backed codes, "
-        "80 editable ZVVNMOD sources, 96 UTN57 targets, 97 alignment rows, "
+        f"80 editable ZVVNMOD sources, {len(target_ids)} UTN57 targets, "
+        f"{len(row_ids)} alignment rows, "
         f"47 compact editable particle rows ({unequal_particle_rows} with unequal sequence lengths), "
         "and Flutter PWA routing"
     )

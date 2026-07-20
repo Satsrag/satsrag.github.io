@@ -5,7 +5,7 @@ import {
 import {
   hasSameGeneratedScaffold,
   normalizeMappingPayload,
-} from "./workbench-model.mjs?v=4";
+} from "./workbench-model.mjs?v=5";
 
 const SCHEMA = "zvvnmod-utn57-workbench-v2";
 const ROOT_FIELDS = ["schema", "baseline", "mapping", "particleMappings"];

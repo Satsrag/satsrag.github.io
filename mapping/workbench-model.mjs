@@ -25,6 +25,29 @@ function requireStringArray(value, label) {
   return [...value];
 }
 
+export function longestSourceMatches(mappings, input, offset = 0) {
+  if (!Array.isArray(mappings) || !Array.isArray(input)) {
+    throw new Error("longest matching requires mapping and input arrays");
+  }
+  if (!Number.isInteger(offset) || offset < 0 || offset > input.length) {
+    throw new Error("longest matching offset is out of range");
+  }
+  let longest = 0;
+  let candidates = [];
+  for (const row of mappings) {
+    const sources = row?.sources;
+    if (!Array.isArray(sources) || !sources.length || sources.length < longest) continue;
+    const matches = sources.every((source, index) => input[offset + index] === source);
+    if (!matches) continue;
+    if (sources.length > longest) {
+      longest = sources.length;
+      candidates = [];
+    }
+    candidates.push(row);
+  }
+  return candidates;
+}
+
 export function mappingMode(baseline, current) {
   if (!sameSequence(baseline.sources, current.sources)
       || !sameSequence(baseline.targets, current.targets)) {

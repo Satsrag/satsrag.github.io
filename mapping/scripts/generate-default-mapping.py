@@ -14,6 +14,13 @@ POSITIONS = ("isol", "init", "medi", "fina")
 POSITION_NAMES = {"isol": "isol", "i": "init", "m": "medi", "f": "fina"}
 RETAINED_MERGED_CODES = {"N_AA_FINA", "HX_AA_FINA"}
 FORMAT_CONTROL_SCHEMA = "utn57-format-controls-v1"
+CHACHLAG_NOTE = "UTN connected chachlag shape alignment."
+CANONICAL_SOURCE_TARGETS = {"AA_FINA": ("Aa:isol",)}
+CHACHLAG_RULES = (
+    ("chachlag:I_FINA_AA_FINA", ("I_FINA", "AA_FINA"), ("I:fina", "MVS", "Aa:isol")),
+    ("chachlag:U_FINA_AA_FINA", ("U_FINA", "AA_FINA"), ("U:fina", "MVS", "Aa:isol")),
+    ("chachlag:H_FINA_AA_FINA", ("H_FINA", "AA_FINA"), ("H:fina", "MVS", "Aa:isol")),
+)
 
 
 class WrittenUnitTargetParser(HTMLParser):
@@ -142,7 +149,12 @@ def build_mapping(
     mappings = []
     represented_targets: set[str] = set()
     for code in codes:
-        target_sequence = semantic_targets(str(code["name"]), valid_targets)
+        canonical_targets = CANONICAL_SOURCE_TARGETS.get(str(code["const"]))
+        target_sequence = (
+            list(canonical_targets)
+            if canonical_targets is not None
+            else semantic_targets(str(code["name"]), valid_targets)
+        )
         represented_targets.update(target_sequence)
         source_sequence = [code["const"]]
         mappings.append(
@@ -163,6 +175,21 @@ def build_mapping(
                 "sources": [],
                 "targets": [target["id"]],
                 "note": "",
+            }
+        )
+
+    valid_sources = {source["id"] for source in sources}
+    for row_id, source_sequence, target_sequence in CHACHLAG_RULES:
+        if not set(source_sequence) <= valid_sources:
+            raise ValueError(f"chachlag rule {row_id} references an unknown ZVVNMOD source")
+        if not set(target_sequence) <= valid_targets:
+            raise ValueError(f"chachlag rule {row_id} references an unknown UTN57 target")
+        mappings.append(
+            {
+                "id": row_id,
+                "sources": list(source_sequence),
+                "targets": list(target_sequence),
+                "note": CHACHLAG_NOTE,
             }
         )
 

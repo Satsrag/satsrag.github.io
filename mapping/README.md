@@ -11,6 +11,7 @@ Static reference and editing page for preparing the UTN57 ↔ ZVVNMOD mapping Ma
 - `data/mongfontbuilder-particles.json`: exact Mongfontbuilder particle dictionary snapshot used by the particle generator.
 - `data/mongfontbuilder-aliases.json`: exact Mongfontbuilder alias dictionary used to derive nominal Unicode code points.
 - `data/particle-shaping-observations.json`: recorded Mongfontbuilder HarfBuzz glyph output and meco raw ZVVNMOD output for each MNG particle pattern.
+- `data/chachlag-shaping-observations.json`: pinned paired observations for basic, standalone-onset, and connected chachlag sequences.
 - `data/zvvnmod-utn57-particles.json`: generated nominal-context particle alignments shown below the workbench.
 - `assets/writtenunits-Regular.ttf`: UTN57 written-unit display font from Mongolian Font Builder.
 - `assets/zvvnmod.ttf`: generated from meco's formal `zvvnmod.sfd`.
@@ -38,9 +39,39 @@ ZVVNMOD catalogue IDs and mapping values use the Rust constant names; PUA code p
 
 Either `sources` or `targets` may be empty for an unmatched inventory item, but both cannot be empty in the same row. Their lengths are independent. The browser can add, remove, reorder, or replace values on either side. The checked-in Git rows are the Restore baseline, and `direct`, `unmapped`, and `special` are runtime display states derived by comparing the current row with that baseline; they are not serialized.
 
-The UTN57 target inventory combines positional written units from `utn57-written-units.html` with format controls from `utn57-format-controls.json`. UTN #57 v4 §2.2.2 defines U+180A MONGOLIAN NIRUGU as a visible format control that behaves like ZWJ, so the non-positional target `Nirugu` uses `position: "control"` and maps directly from the ZVVNMOD `NIRUGU` code.
+The UTN57 target inventory combines positional written units from `utn57-written-units.html` with format controls from `utn57-format-controls.json`. Both `Nirugu` (U+180A) and `MVS` (U+180E) are non-positional targets with `position: "control"`. Nirugu maps directly from the ZVVNMOD `NIRUGU` code; MVS is emitted structurally before chachlag `Aa:isol` rather than being read from a legacy ZVVNMOD control code.
 
 Main and particle edits download together as `zvvnmod-utn57-workbench-v2`. The combined root contains one `sha256:…` digest of the exact Git-loaded mapping and particle payloads. Import rejects a file made against a different baseline while avoiding duplicated per-row default arrays. To publish reviewed values, replace the corresponding checked-in JSON payload; Git provides history.
+
+## Chachlag mapping observations
+
+The checked-in probes pair pinned Mongfontbuilder shaping with pinned meco observations. Mongfontbuilder confirms that a word-final chachlag uses narrow MVS followed by `Aa:isol`. Standalone probes such as `n mvs a` are retained as diagnostic evidence, but they are not mapping rules: their onset can be graphically initial/isolated because there is no preceding connected form.
+
+The published word-final shape mappings are:
+
+```text
+N_AA_FINA               → N:fina  + MVS + Aa:isol
+I_FINA + AA_FINA        → I:fina  + MVS + Aa:isol
+U_FINA + AA_FINA        → U:fina  + MVS + Aa:isol
+H_FINA + AA_FINA        → H:fina  + MVS + Aa:isol
+HX_AA_FINA              → Hx:fina + MVS + Aa:isol
+```
+
+The sequence rows use the actual final written-unit shapes emitted by UTN (`I:fina`, `U:fina`, and `H:fina`), not nominal-letter labels or implementation-specific meco raw codes such as `J_MEDI`. `N_AA_FINA` and `HX_AA_FINA` remain direct rows because the authoritative ZVVNMOD inventory has no standalone `N_FINA` or `HX_FINA` constants.
+
+A complete standalone `AA_FINA` remains `Aa:isol`; it does not by itself prove an omitted MVS. Raw Delehi/meco output is retained as implementation-specific evidence and is not promoted into rows such as `N_INIT + AA_FINA` or `J_MEDI + AA_FINA` merely from a nominal probe.
+
+Rebuild the 22 observations with Docker and the pinned Mongfontbuilder development environment:
+
+```bash
+uv run --group dev python /path/to/satsrag.github.io/mapping/scripts/capture-chachlag-observations.py \
+  --mongfontbuilder /path/to/mongfontbuilder \
+  --meco /path/to/meco \
+  --output /path/to/satsrag.github.io/mapping/data/chachlag-shaping-observations.json \
+  --check
+```
+
+The chachlag capture validates both pinned revisions and tracked cleanliness, then builds the font and meco JAR only from temporary `git archive HEAD` exports. Untracked worktree files cannot enter either build. Successful writes use an atomic same-directory replacement; `--check` never rewrites the snapshot.
 
 ## Particle mapping generation
 

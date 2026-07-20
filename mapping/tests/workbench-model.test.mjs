@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   hasSameGeneratedScaffold,
+  longestSourceMatches,
   mappingMode,
   normalizeMappingPayload,
   serializeMappingPayload,
@@ -60,6 +61,17 @@ test("mode is derived against the Git-loaded baseline and never serialized", () 
   const edited = updateMappingEntry(direct, ["O_INIT"], ["O:init"], "");
   assert.equal(mappingMode(direct, edited), "special");
   assertCompactRow(edited);
+});
+
+test("longest matching returns only all equal-longest mapping alternatives", () => {
+  const chachlag = longestSourceMatches(fixture.mappings, ["I_FINA", "AA_FINA"]);
+  assert.deepEqual(chachlag.map((row) => row.id), ["chachlag:I_FINA_AA_FINA"]);
+
+  const a = longestSourceMatches(fixture.mappings, ["A_INIT", "AA_FINA"]);
+  assert.deepEqual(a.map((row) => row.id), ["target:A:isol"]);
+
+  const aa = longestSourceMatches(fixture.mappings, ["AA_FINA"]);
+  assert.deepEqual(aa.map((row) => row.id), ["source:AA_FINA"]);
 });
 
 test("normalization accepts left-only and right-only rows but rejects both empty", () => {

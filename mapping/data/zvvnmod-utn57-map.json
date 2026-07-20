@@ -1315,6 +1315,13 @@
       "position": "control",
       "glyph": "᠊",
       "order": 95
+    },
+    {
+      "id": "MVS",
+      "unit": "MVS",
+      "position": "control",
+      "glyph": "᠎",
+      "order": 96
     }
   ],
   "mappings": [
@@ -1354,7 +1361,7 @@
         "AA_FINA"
       ],
       "targets": [
-        "Aa:fina"
+        "Aa:isol"
       ],
       "note": ""
     },
@@ -1585,9 +1592,10 @@
       ],
       "targets": [
         "Hx:fina",
-        "Aa:fina"
+        "MVS",
+        "Aa:isol"
       ],
-      "note": ""
+      "note": "Pinned mongfontbuilder/meco chachlag observation."
     },
     {
       "id": "source:I_ISOL",
@@ -1766,9 +1774,10 @@
       ],
       "targets": [
         "N:fina",
-        "Aa:fina"
+        "MVS",
+        "Aa:isol"
       ],
-      "note": ""
+      "note": "Pinned mongfontbuilder/meco chachlag observation."
     },
     {
       "id": "source:O_INIT",
@@ -2130,16 +2139,6 @@
       "note": ""
     },
     {
-      "id": "target:Aa:isol",
-      "sources": [
-        "AA_FINA"
-      ],
-      "targets": [
-        "Aa:isol"
-      ],
-      "note": ""
-    },
-    {
       "id": "target:B2:fina",
       "sources": [
         "O_MEDI",
@@ -2285,6 +2284,53 @@
         "Ux:isol"
       ],
       "note": ""
+    },
+    {
+      "id": "target:MVS",
+      "sources": [],
+      "targets": [
+        "MVS"
+      ],
+      "note": ""
+    },
+    {
+      "id": "chachlag:I_FINA_AA_FINA",
+      "sources": [
+        "I_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "I:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN connected chachlag shape alignment."
+    },
+    {
+      "id": "chachlag:U_FINA_AA_FINA",
+      "sources": [
+        "U_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "U:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN connected chachlag shape alignment."
+    },
+    {
+      "id": "chachlag:H_FINA_AA_FINA",
+      "sources": [
+        "H_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "H:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN connected chachlag shape alignment."
     }
   ]
 }
