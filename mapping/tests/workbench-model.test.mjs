@@ -64,14 +64,27 @@ test("mode is derived against the Git-loaded baseline and never serialized", () 
 });
 
 test("longest matching returns only all equal-longest mapping alternatives", () => {
-  const triple = longestSourceMatches(fixture.mappings, ["I_MEDI", "AA_FINA", "AA_FINA"]);
-  assert.deepEqual(triple.map((row) => row.id), ["chachlag:I_MEDI_AA_FINA_AA_FINA"]);
+  for (const [source, rowId] of [
+    [["M_FINA", "AA_FINA"], "chachlag:M_FINA_AA_FINA"],
+    [["L_FINA", "AA_FINA"], "chachlag:L_FINA_AA_FINA"],
+    [["S_FINA", "AA_FINA"], "chachlag:S_FINA_AA_FINA"],
+    [["R_FINA", "AA_FINA"], "chachlag:R_FINA_AA_FINA"],
+  ]) {
+    assert.deepEqual(longestSourceMatches(fixture.mappings, source).map((row) => row.id), [rowId]);
+  }
 
-  const doubledAa = longestSourceMatches(fixture.mappings, ["AA_FINA", "AA_FINA"]);
-  assert.deepEqual(doubledAa.map((row) => row.id), ["chachlag:AA_FINA_AA_FINA"]);
-
-  const aFinal = longestSourceMatches(fixture.mappings, ["A_FINA", "AA_FINA"]);
-  assert.deepEqual(aFinal.map((row) => row.id), ["chachlag:A_FINA_AA_FINA"]);
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["I_MEDI", "AA_FINA", "AA_FINA"]).map((row) => row.id),
+    ["target:G:fina"],
+  );
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["AA_FINA", "AA_FINA"]).map((row) => row.id),
+    ["source:AA_FINA"],
+  );
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["A_FINA", "AA_FINA"]).map((row) => row.id),
+    ["source:A_FINA"],
+  );
 
   const iIsol = longestSourceMatches(fixture.mappings, ["I_ISOL", "AA_FINA"]);
   assert.deepEqual(iIsol.map((row) => row.id), ["chachlag:I_ISOL_AA_FINA"]);

@@ -27,7 +27,7 @@ MAPPING_FIELDS = {"id", "sources", "targets", "note"}
 PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
 PARTICLE_IMMUTABLE_FIELDS = ("id", "pattern", "particleIndices")
-CHACHLAG_OBSERVATIONS_SHA256 = "66c28d6777921135a5bbe401f3db3026b6350826626176d6a8a653b7e41bcb05"
+CHACHLAG_OBSERVATIONS_SHA256 = "cb10b161465fe497d936833032dd09a690659e0354dd9c93f5388a2f5e5710f9"
 
 
 def check(condition: object, message: str) -> None:
@@ -155,8 +155,8 @@ def main() -> None:
     )
     observations = chachlag.get("observations")
     check(
-        isinstance(observations, list) and len(observations) == 33,
-        "expected 33 chachlag observations",
+        isinstance(observations, list) and len(observations) == 38,
+        "expected 38 chachlag observations",
     )
     observation_fields = {
         "pattern",
@@ -169,7 +169,7 @@ def main() -> None:
         "chachlag observation fields differ",
     )
     observed = {item["pattern"]: item for item in observations}
-    check(len(observed) == 33, "chachlag observation patterns must be unique")
+    check(len(observed) == 38, "chachlag observation patterns must be unique")
     expected_a_vectors = {
         "mvs a": (["U+E00D"], ["uni180E.Narrowspace.nomi", "u1820.Aa.isol"]),
         "n mvs a": (
@@ -240,114 +240,37 @@ def main() -> None:
     }
     expected_a_vectors.update(
         {
-            "a n fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E028", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1828.N.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "m mvs a": (
+                ["U+E036", "U+E00D"],
+                ["u182E.M.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a n fvs2 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E141", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1828.A.fina",
-                    "fvs2.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "l mvs a": (
+                ["U+E039", "U+E00D"],
+                ["u182F.L.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a h fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E005", "U+E140", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u182C.Hx.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "s mvs a": (
+                ["U+E03C", "U+E00D"],
+                ["u1830.S.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a g fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E005", "U+E140", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u182D.H.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "r mvs a": (
+                ["U+E053", "U+E00D"],
+                ["u1837.R.init._isol", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a g fvs2 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E005", "U+E141", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u182D.G.fina",
-                    "fvs2.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "a m mvs a": (
+                ["U+E000", "U+E005", "U+E038", "U+E00D"],
+                ["u1820.AA.init", "u182E.M.fina", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a g fvs3 mvs a": (
-                ["U+E000", "U+E005", "U+E031", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u182D.Hx.fina",
-                    "fvs3.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "a l mvs a": (
+                ["U+E000", "U+E005", "U+E03B", "U+E00D"],
+                ["u1820.AA.init", "u182F.L.fina", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "j fvs1 mvs a": (
-                ["U+E04D", "U+E140", "U+E00D"],
-                [
-                    "u1835.I.isol",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "a s mvs a": (
+                ["U+E000", "U+E005", "U+E03D", "U+E00D"],
+                ["u1820.AA.init", "u1830.S.fina", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
-            "a j fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E04E", "U+E140", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1835.I.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
-            ),
-            "a w fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E057", "U+E140", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1838.U.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
-            ),
-            "a a fvs1 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E140", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1820.Aa.fina",
-                    "fvs1.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
-            ),
-            "a a fvs2 mvs a": (
-                ["U+E000", "U+E005", "U+E005", "U+E141", "U+E00D"],
-                [
-                    "u1820.AA.init",
-                    "u1820.A.fina",
-                    "fvs2.valid",
-                    "uni180E.Narrowspace.nomi",
-                    "u1820.Aa.isol",
-                ],
+            "a r mvs a": (
+                ["U+E000", "U+E005", "U+E055", "U+E00D"],
+                ["u1820.AA.init", "u1837.R.fina", "uni180E.Narrowspace.nomi", "u1820.Aa.isol"],
             ),
         }
     )
@@ -492,8 +415,8 @@ def main() -> None:
     check(len(particle_ids) == 47, "particle mapping IDs must be unique")
 
     check(
-        len(mapping["mappings"]) == len(generated["mappings"]) == 104,
-        "mapping must contain 104 alignment rows",
+        len(mapping["mappings"]) == len(generated["mappings"]) == 105,
+        "mapping must contain 105 alignment rows",
     )
     row_ids: set[str] = set()
 
@@ -525,22 +448,26 @@ def main() -> None:
 
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
 
-    check(len(row_ids) == 104, "mapping must contain 104 unique alignment row IDs")
+    check(len(row_ids) == 105, "mapping must contain 105 unique alignment row IDs")
     generated_mappings_by_id = {entry["id"]: entry for entry in generated["mappings"]}
     expected_chachlag_mappings = {
         "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
         "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
-        "chachlag:I_MEDI_AA_FINA_AA_FINA": (
-            ["I_MEDI", "AA_FINA", "AA_FINA"],
-            ["G:fina", "MVS", "Aa:isol"],
+        "chachlag:M_FINA_AA_FINA": (
+            ["M_FINA", "AA_FINA"],
+            ["M:fina", "MVS", "Aa:isol"],
         ),
-        "chachlag:AA_FINA_AA_FINA": (
-            ["AA_FINA", "AA_FINA"],
-            ["Aa:fina", "MVS", "Aa:isol"],
+        "chachlag:L_FINA_AA_FINA": (
+            ["L_FINA", "AA_FINA"],
+            ["L:fina", "MVS", "Aa:isol"],
         ),
-        "chachlag:A_FINA_AA_FINA": (
-            ["A_FINA", "AA_FINA"],
-            ["A:fina", "MVS", "Aa:isol"],
+        "chachlag:S_FINA_AA_FINA": (
+            ["S_FINA", "AA_FINA"],
+            ["S:fina", "MVS", "Aa:isol"],
+        ),
+        "chachlag:R_FINA_AA_FINA": (
+            ["R_FINA", "AA_FINA"],
+            ["R:fina", "MVS", "Aa:isol"],
         ),
         "chachlag:I_ISOL_AA_FINA": (
             ["I_ISOL", "AA_FINA"],

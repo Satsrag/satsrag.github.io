@@ -20,23 +20,12 @@ from pathlib import Path
 from typing import Any
 
 OBSERVATION_SCHEMA = "zvvnmod-utn57-chachlag-observations-v1"
-ONSETS = ("n", "j", "w", "h", "g")
+ONSETS = ("n", "j", "w", "h", "g", "m", "l", "s", "r")
 VOWELS = ("a", "e")
 PATTERNS = (
     *(f"mvs {vowel}" for vowel in VOWELS),
     *(f"{onset} mvs {vowel}" for onset in ONSETS for vowel in VOWELS),
     *(f"a {onset} mvs {vowel}" for onset in ONSETS for vowel in VOWELS),
-    "a n fvs1 mvs a",
-    "a n fvs2 mvs a",
-    "a h fvs1 mvs a",
-    "a g fvs1 mvs a",
-    "a g fvs2 mvs a",
-    "a g fvs3 mvs a",
-    "j fvs1 mvs a",
-    "a j fvs1 mvs a",
-    "a w fvs1 mvs a",
-    "a a fvs1 mvs a",
-    "a a fvs2 mvs a",
 )
 
 

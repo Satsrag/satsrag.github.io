@@ -22,19 +22,24 @@ CANONICAL_SOURCE_TARGETS = {
 }
 CHACHLAG_RULES = (
     (
-        "chachlag:I_MEDI_AA_FINA_AA_FINA",
-        ("I_MEDI", "AA_FINA", "AA_FINA"),
-        ("G:fina", "MVS", "Aa:isol"),
+        "chachlag:M_FINA_AA_FINA",
+        ("M_FINA", "AA_FINA"),
+        ("M:fina", "MVS", "Aa:isol"),
     ),
     (
-        "chachlag:AA_FINA_AA_FINA",
-        ("AA_FINA", "AA_FINA"),
-        ("Aa:fina", "MVS", "Aa:isol"),
+        "chachlag:L_FINA_AA_FINA",
+        ("L_FINA", "AA_FINA"),
+        ("L:fina", "MVS", "Aa:isol"),
     ),
     (
-        "chachlag:A_FINA_AA_FINA",
-        ("A_FINA", "AA_FINA"),
-        ("A:fina", "MVS", "Aa:isol"),
+        "chachlag:S_FINA_AA_FINA",
+        ("S_FINA", "AA_FINA"),
+        ("S:fina", "MVS", "Aa:isol"),
+    ),
+    (
+        "chachlag:R_FINA_AA_FINA",
+        ("R_FINA", "AA_FINA"),
+        ("R:fina", "MVS", "Aa:isol"),
     ),
     (
         "chachlag:I_ISOL_AA_FINA",

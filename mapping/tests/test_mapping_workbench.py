@@ -40,7 +40,7 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v3")
         self.assertEqual(len(source_ids), 80)
         self.assertEqual(set(source_ids), set(expected_sources))
-        self.assertEqual(len(mapping["mappings"]), 104)
+        self.assertEqual(len(mapping["mappings"]), 105)
         self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 6)
         self.assertEqual(sum(not entry["targets"] for entry in mapping["mappings"]), 1)
         self.assertTrue(all(entry["sources"] or entry["targets"] for entry in mapping["mappings"]))
@@ -50,7 +50,7 @@ class MappingDataTests(unittest.TestCase):
         self.assertTrue(all("const" not in source for source in mapping["sources"]))
         self.assertEqual(mapping["sources"][0]["codepoint"], "U+E000")
 
-    def test_generator_preserves_all_published_chachlag_defaults(self) -> None:
+    def test_generator_preserves_all_ten_published_chachlag_defaults(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".json") as temporary:
             subprocess.run(
                 [
@@ -69,17 +69,21 @@ class MappingDataTests(unittest.TestCase):
         expected = {
             "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
             "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
-            "chachlag:I_MEDI_AA_FINA_AA_FINA": (
-                ["I_MEDI", "AA_FINA", "AA_FINA"],
-                ["G:fina", "MVS", "Aa:isol"],
+            "chachlag:M_FINA_AA_FINA": (
+                ["M_FINA", "AA_FINA"],
+                ["M:fina", "MVS", "Aa:isol"],
             ),
-            "chachlag:AA_FINA_AA_FINA": (
-                ["AA_FINA", "AA_FINA"],
-                ["Aa:fina", "MVS", "Aa:isol"],
+            "chachlag:L_FINA_AA_FINA": (
+                ["L_FINA", "AA_FINA"],
+                ["L:fina", "MVS", "Aa:isol"],
             ),
-            "chachlag:A_FINA_AA_FINA": (
-                ["A_FINA", "AA_FINA"],
-                ["A:fina", "MVS", "Aa:isol"],
+            "chachlag:S_FINA_AA_FINA": (
+                ["S_FINA", "AA_FINA"],
+                ["S:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:R_FINA_AA_FINA": (
+                ["R_FINA", "AA_FINA"],
+                ["R:fina", "MVS", "Aa:isol"],
             ),
             "chachlag:I_ISOL_AA_FINA": (
                 ["I_ISOL", "AA_FINA"],
@@ -169,17 +173,21 @@ class MappingDataTests(unittest.TestCase):
         }
         self.assertEqual({row_id: entries[row_id]["sources"] for row_id in reviewed}, reviewed)
         chachlag = {
-            "chachlag:I_MEDI_AA_FINA_AA_FINA": (
-                ["I_MEDI", "AA_FINA", "AA_FINA"],
-                ["G:fina", "MVS", "Aa:isol"],
+            "chachlag:M_FINA_AA_FINA": (
+                ["M_FINA", "AA_FINA"],
+                ["M:fina", "MVS", "Aa:isol"],
             ),
-            "chachlag:AA_FINA_AA_FINA": (
-                ["AA_FINA", "AA_FINA"],
-                ["Aa:fina", "MVS", "Aa:isol"],
+            "chachlag:L_FINA_AA_FINA": (
+                ["L_FINA", "AA_FINA"],
+                ["L:fina", "MVS", "Aa:isol"],
             ),
-            "chachlag:A_FINA_AA_FINA": (
-                ["A_FINA", "AA_FINA"],
-                ["A:fina", "MVS", "Aa:isol"],
+            "chachlag:S_FINA_AA_FINA": (
+                ["S_FINA", "AA_FINA"],
+                ["S:fina", "MVS", "Aa:isol"],
+            ),
+            "chachlag:R_FINA_AA_FINA": (
+                ["R_FINA", "AA_FINA"],
+                ["R:fina", "MVS", "Aa:isol"],
             ),
             "chachlag:I_ISOL_AA_FINA": (
                 ["I_ISOL", "AA_FINA"],
@@ -254,14 +262,17 @@ class MappingDataTests(unittest.TestCase):
         self.assertIsNotNone(spec.loader if spec else None)
         module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
         spec.loader.exec_module(module)  # type: ignore[union-attr]
-        self.assertEqual(len(module.PATTERNS), 33)
+        self.assertEqual(len(module.PATTERNS), 38)
         self.assertTrue(
             {
-                "a n fvs2 mvs a",
-                "a g fvs2 mvs a",
-                "j fvs1 mvs a",
-                "a a fvs1 mvs a",
-                "a a fvs2 mvs a",
+                "a m mvs a",
+                "a m mvs e",
+                "a l mvs a",
+                "a l mvs e",
+                "a s mvs a",
+                "a s mvs e",
+                "a r mvs a",
+                "a r mvs e",
             }
             <= set(module.PATTERNS)
         )
@@ -360,7 +371,7 @@ class MappingDataTests(unittest.TestCase):
     def test_verifier_accepts_chachlag_current_value_override(self) -> None:
         payload = self.load_mapping()
         entry = next(
-            item for item in payload["mappings"] if item["id"] == "chachlag:AA_FINA_AA_FINA"
+            item for item in payload["mappings"] if item["id"] == "chachlag:M_FINA_AA_FINA"
         )
         entry["sources"] = ["AA_FINA", "A_FINA", "AA_FINA"]
         entry["targets"] = ["A:fina"]

@@ -45,29 +45,30 @@ Main and particle edits download together as `zvvnmod-utn57-workbench-v2`. The c
 
 ## Chachlag mapping observations
 
-The checked-in probes pair pinned Mongfontbuilder shaping with pinned meco observations. Mongfontbuilder confirms that a chachlag uses narrow MVS followed by `Aa:isol`. A standalone nominal probe is not automatically a mapping rule: only positions explicitly accepted by the shape flow are published. In particular, `j.isol` is an explicit `chachlag_onset`, while initial-looking standalone N/W/H/G probes are diagnostic only.
+The checked-in probes pair pinned Mongfontbuilder shaping with pinned meco observations. Mongfontbuilder confirms that a chachlag uses narrow MVS followed by `Aa:isol`. A standalone nominal probe is not automatically a mapping rule: the published rules come from connected final-shape observations plus UTN's explicit onset variants. In particular, `j.isol` is an explicit `chachlag_onset`, while initial-looking standalone N/W/H/G/M/L/S/R probes are diagnostic only.
 
 The published chachlag onset-plus-suffix shape mappings are:
 
 ```text
-N_AA_FINA                         → N:fina  + MVS + Aa:isol
-I_ISOL + AA_FINA                 → I:isol  + MVS + Aa:isol
-I_FINA + AA_FINA                 → I:fina  + MVS + Aa:isol
-U_FINA + AA_FINA                 → U:fina  + MVS + Aa:isol
-H_FINA + AA_FINA                 → H:fina  + MVS + Aa:isol
-HX_AA_FINA                        → Hx:fina + MVS + Aa:isol
-AA_FINA + AA_FINA                → Aa:fina + MVS + Aa:isol
-A_FINA + AA_FINA                 → A:fina  + MVS + Aa:isol
-I_MEDI + AA_FINA + AA_FINA       → G:fina  + MVS + Aa:isol
+N_AA_FINA                   → N:fina  + MVS + Aa:isol
+I_ISOL + AA_FINA           → I:isol  + MVS + Aa:isol
+I_FINA + AA_FINA           → I:fina  + MVS + Aa:isol
+U_FINA + AA_FINA           → U:fina  + MVS + Aa:isol
+H_FINA + AA_FINA           → H:fina  + MVS + Aa:isol
+HX_AA_FINA                  → Hx:fina + MVS + Aa:isol
+M_FINA + AA_FINA           → M:fina  + MVS + Aa:isol
+L_FINA + AA_FINA           → L:fina  + MVS + Aa:isol
+S_FINA + AA_FINA           → S:fina  + MVS + Aa:isol
+R_FINA + AA_FINA           → R:fina  + MVS + Aa:isol
 ```
 
-The first seven onset shapes exhaust Mongfontbuilder's `chachlag_onset` and `chachlag_onset_gb` condition table, including the explicit isolated-J case and final Hudum Ali Gali A. The final two rows project FVS-selected A and G onset shapes after legacy controls are consumed. `I_MEDI + AA_FINA` is the existing reviewed decomposition of the single `G:fina` shape, so its chachlag form appends one more `AA_FINA`.
+UTN's syllabic phase selects special onset shapes for N/J/W/H/G. M/L/S/R do not need a `chachlag_onset` substitution: their ordinary connected final written units remain before the narrow MVS. The sequence rows therefore use the actual UTN written-unit shapes rather than nominal-letter labels or implementation-specific meco raw codes. For example, meco observes `S_MEDI` in one vendor path while UTN emits `S:fina`; the semantic mapping uses authoritative `S_FINA`.
 
-The sequence rows use actual UTN written-unit shapes, not nominal-letter labels or implementation-specific meco raw codes such as `J_MEDI`. `N_AA_FINA` and `HX_AA_FINA` remain direct rows because the authoritative ZVVNMOD inventory has no standalone `N_FINA` or `HX_FINA` constants. Gender propagation and dotless G contexts reuse these same written shapes and do not add another mapping.
+`N_AA_FINA` and `HX_AA_FINA` remain direct rows because the authoritative ZVVNMOD inventory has no standalone `N_FINA` or `HX_FINA` constants. FVS-selected A/Aa/G outputs are not promoted into independent ZVVNMOD chachlag mappings, and the reviewed `I_MEDI + AA_FINA → G:fina` decomposition remains a standalone shape mapping only.
 
 A complete standalone `AA_FINA` remains `Aa:isol`; it does not by itself prove an omitted MVS. Raw Delehi/meco output is retained as implementation-specific evidence and is not promoted into rows such as `N_INIT + AA_FINA` or `J_MEDI + AA_FINA` merely from a nominal probe.
 
-Rebuild the 33 observations with Docker and the pinned Mongfontbuilder development environment:
+Rebuild the 38 observations with Docker and the pinned Mongfontbuilder development environment:
 
 ```bash
 uv run --group dev python /path/to/satsrag.github.io/mapping/scripts/capture-chachlag-observations.py \

@@ -2294,40 +2294,52 @@
       "note": ""
     },
     {
-      "id": "chachlag:I_MEDI_AA_FINA_AA_FINA",
+      "id": "chachlag:M_FINA_AA_FINA",
       "sources": [
-        "I_MEDI",
-        "AA_FINA",
+        "M_FINA",
         "AA_FINA"
       ],
       "targets": [
-        "G:fina",
+        "M:fina",
         "MVS",
         "Aa:isol"
       ],
       "note": "UTN chachlag onset-plus-suffix shape alignment."
     },
     {
-      "id": "chachlag:AA_FINA_AA_FINA",
+      "id": "chachlag:L_FINA_AA_FINA",
       "sources": [
-        "AA_FINA",
+        "L_FINA",
         "AA_FINA"
       ],
       "targets": [
-        "Aa:fina",
+        "L:fina",
         "MVS",
         "Aa:isol"
       ],
       "note": "UTN chachlag onset-plus-suffix shape alignment."
     },
     {
-      "id": "chachlag:A_FINA_AA_FINA",
+      "id": "chachlag:S_FINA_AA_FINA",
       "sources": [
-        "A_FINA",
+        "S_FINA",
         "AA_FINA"
       ],
       "targets": [
-        "A:fina",
+        "S:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:R_FINA_AA_FINA",
+      "sources": [
+        "R_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "R:fina",
         "MVS",
         "Aa:isol"
       ],
