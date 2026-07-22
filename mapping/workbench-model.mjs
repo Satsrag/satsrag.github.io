@@ -1,9 +1,12 @@
 const SCHEMA = "zvvnmod-utn57-map-v3";
-const ROOT_FIELDS = ["schema", "description", "sources", "targets", "mappings"];
+const ROOT_FIELDS = ["schema", "description", "mappings"];
 const SOURCE_FIELDS = ["id", "name", "codepoint", "value", "glyph", "order"];
 const TARGET_FIELDS = ["id", "unit", "position", "glyph", "order"];
 const MAPPING_FIELDS = ["id", "sources", "targets", "note"];
+const POSITIONS = ["isol", "init", "medi", "fina"];
+const RETAINED_MERGED_CODES = new Set(["N_AA_FINA", "HX_AA_FINA"]);
 const RUST_CONST = /^[A-Z][A-Z0-9_]*$/;
+const SEQUENCE_ID = /^\S+$/u;
 const CODEPOINT = /^U\+[0-9A-F]{4,6}$/;
 
 function sameSequence(left, right) {
@@ -90,7 +93,54 @@ function normalizeCatalogue(items, fields, label, validate) {
   });
 }
 
-export function normalizeMappingPayload(input) {
+export function editableSourceCatalogue(input) {
+  if (!input || typeof input !== "object" || input.schema !== "zvvnmod-code-table-v1") {
+    throw new Error("ZVVNMOD source inventory must use zvvnmod-code-table-v1");
+  }
+  if (!Array.isArray(input.groups)) throw new Error("ZVVNMOD source inventory must contain groups");
+  const codes = [];
+  for (const [groupIndex, group] of input.groups.entries()) {
+    if (!group || typeof group !== "object" || !group.single || !group.merged || !Array.isArray(group.special)) {
+      throw new Error(`invalid ZVVNMOD source group at index ${groupIndex}`);
+    }
+    for (const position of POSITIONS) {
+      if (!Array.isArray(group.single[position])) throw new Error(`invalid single ${position} source group`);
+      codes.push(...group.single[position]);
+    }
+    for (const position of POSITIONS) {
+      if (!Array.isArray(group.merged[position])) throw new Error(`invalid merged ${position} source group`);
+      codes.push(...group.merged[position].filter((code) => RETAINED_MERGED_CODES.has(code.const)));
+    }
+    codes.push(...group.special);
+  }
+  return normalizeCatalogue(
+    codes.map((code, order) => ({
+      id: code.const,
+      name: code.name,
+      codepoint: code.codepoint,
+      value: code.value,
+      glyph: String.fromCodePoint(code.value),
+      order,
+    })),
+    SOURCE_FIELDS,
+    "ZVVNMOD source",
+    (source) => {
+      if (
+        !RUST_CONST.test(source.id)
+        || typeof source.name !== "string"
+        || typeof source.codepoint !== "string"
+        || !CODEPOINT.test(source.codepoint)
+        || !Number.isInteger(source.value)
+        || source.codepoint !== `U+${source.value.toString(16).toUpperCase().padStart(4, "0")}`
+        || source.glyph !== String.fromCodePoint(source.value)
+      ) {
+        throw new Error(`invalid ZVVNMOD source metadata: ${source.id}`);
+      }
+    },
+  );
+}
+
+export function normalizeMappingPayload(input, { sources, targets } = {}) {
   if (!input || typeof input !== "object" || input.schema !== SCHEMA) {
     throw new Error(`mapping schema must be ${SCHEMA}`);
   }
@@ -98,7 +148,7 @@ export function normalizeMappingPayload(input) {
   if (typeof input.description !== "string") throw new Error("mapping description must be a string");
   if (!Array.isArray(input.mappings)) throw new Error("mapping payload must contain a mappings array");
 
-  const sources = normalizeCatalogue(input.sources, SOURCE_FIELDS, "ZVVNMOD source", (source) => {
+  const normalizedSources = normalizeCatalogue(sources, SOURCE_FIELDS, "ZVVNMOD source", (source) => {
     if (
       !RUST_CONST.test(source.id)
       || typeof source.name !== "string"
@@ -110,17 +160,18 @@ export function normalizeMappingPayload(input) {
       throw new Error(`invalid ZVVNMOD source metadata: ${source.id}`);
     }
   });
-  const targets = normalizeCatalogue(input.targets, TARGET_FIELDS, "UTN57 target", (target) => {
+  const normalizedTargets = normalizeCatalogue(targets, TARGET_FIELDS, "UTN57 target", (target) => {
     if (
-      typeof target.unit !== "string"
+      !SEQUENCE_ID.test(target.id)
+      || typeof target.unit !== "string"
       || typeof target.position !== "string"
       || typeof target.glyph !== "string"
     ) {
       throw new Error(`invalid UTN57 target metadata: ${target.id}`);
     }
   });
-  const sourceIds = new Set(sources.map((source) => source.id));
-  const targetIds = new Set(targets.map((target) => target.id));
+  const sourceIds = new Set(normalizedSources.map((source) => source.id));
+  const targetIds = new Set(normalizedTargets.map((target) => target.id));
   const rowIds = new Set();
 
   const mappings = input.mappings.map((entry, index) => {
@@ -148,8 +199,6 @@ export function normalizeMappingPayload(input) {
   return {
     schema: SCHEMA,
     description: input.description,
-    sources,
-    targets,
     mappings,
   };
 }
@@ -157,12 +206,6 @@ export function normalizeMappingPayload(input) {
 export function hasSameGeneratedScaffold(source, candidate) {
   if (!source || !candidate || source.schema !== candidate.schema) return false;
   if (source.description !== candidate.description) return false;
-  if (JSON.stringify(source.sources) !== JSON.stringify(candidate.sources)) return false;
-  if (JSON.stringify(source.targets) !== JSON.stringify(candidate.targets)) return false;
   if (!Array.isArray(source.mappings) || source.mappings.length !== candidate.mappings?.length) return false;
   return source.mappings.every((entry, index) => entry.id === candidate.mappings[index]?.id);
-}
-
-export function serializeMappingPayload(payload) {
-  return `${JSON.stringify(normalizeMappingPayload(payload), null, 2)}\n`;
 }

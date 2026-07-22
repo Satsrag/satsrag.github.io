@@ -20,9 +20,7 @@ from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parents[2]
 MAPPING = ROOT / "mapping"
-ROOT_FIELDS = {"schema", "description", "sources", "targets", "mappings"}
-SOURCE_FIELDS = {"id", "name", "codepoint", "value", "glyph", "order"}
-TARGET_FIELDS = {"id", "unit", "position", "glyph", "order"}
+ROOT_FIELDS = {"schema", "description", "mappings"}
 MAPPING_FIELDS = {"id", "sources", "targets", "note"}
 PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
@@ -43,19 +41,63 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def read_metadata_csv(path: Path, fields: list[str]) -> tuple[dict, list[dict[str, str]]]:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    check(bool(lines) and lines[0].startswith("# metadata="), f"{path.name} metadata missing")
+    metadata = json.loads(lines[0].removeprefix("# metadata="))
+    reader = csv.DictReader(lines[1:])
+    check(reader.fieldnames == fields, f"{path.name} headers differ from schema")
+    rows = list(reader)
+    check(all(None not in row for row in rows), f"{path.name} contains malformed rows")
+    return metadata, rows
+
+
+def sequence(value: str) -> list[str]:
+    return [] if value == "" else value.split(" ")
+
+
+def mapping_csv_payload(path: Path) -> dict:
+    metadata, rows = read_metadata_csv(path, ["id", "sources", "targets", "note"])
+    return {
+        **metadata,
+        "mappings": [
+            {**row, "sources": sequence(row["sources"]), "targets": sequence(row["targets"])}
+            for row in rows
+        ],
+    }
+
+
+def particle_csv_payload(path: Path) -> dict:
+    metadata, rows = read_metadata_csv(
+        path, ["id", "pattern", "particleIndices", "sources", "targets", "note"]
+    )
+    return {
+        **metadata,
+        "mappings": [
+            {
+                **row,
+                "particleIndices": [int(value) for value in sequence(row["particleIndices"])],
+                "sources": sequence(row["sources"]),
+                "targets": sequence(row["targets"]),
+            }
+            for row in rows
+        ],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--mapping-json",
+        "--mapping-csv",
         type=Path,
-        default=MAPPING / "data/zvvnmod-utn57-map.json",
-        help="editable mapping JSON to validate",
+        default=MAPPING / "data/zvvnmod-utn57-main.csv",
+        help="editable mapping CSV to validate",
     )
     parser.add_argument(
-        "--particle-json",
+        "--particle-csv",
         type=Path,
-        default=MAPPING / "data/zvvnmod-utn57-particles.json",
-        help="generated particle mapping JSON to validate",
+        default=MAPPING / "data/zvvnmod-utn57-particles.csv",
+        help="generated particle mapping CSV to validate",
     )
     parser.add_argument(
         "--chachlag-json",
@@ -284,36 +326,44 @@ def main() -> None:
             f"{pattern} UTN57 observation drifted",
         )
 
-    mapping_path = args.mapping_json
-    mapping = json.loads(mapping_path.read_text())
+    mapping = mapping_csv_payload(args.mapping_csv)
     check(isinstance(mapping, dict), "mapping root must be an object")
     check(set(mapping) == ROOT_FIELDS, "mapping root fields differ from schema")
     check(mapping.get("schema") == "zvvnmod-utn57-map-v3", "mapping schema mismatch")
     check(isinstance(mapping.get("description"), str), "mapping description must be a string")
-    check(isinstance(mapping.get("sources"), list), "mapping sources must be an array")
-    check(isinstance(mapping.get("targets"), list), "mapping targets must be an array")
     check(isinstance(mapping.get("mappings"), list), "mappings must be an array")
 
     with tempfile.TemporaryDirectory() as temporary:
-        generated_path = Path(temporary) / "mapping.json"
+        temporary_path = Path(temporary)
+        nonexistent_review = temporary_path / "no-reviewed.csv"
+        generated_path = temporary_path / "mapping.csv"
+        generated_targets_path = temporary_path / "targets.csv"
         subprocess.run(
             [
                 sys.executable,
                 str(MAPPING / "scripts/generate-default-mapping.py"),
+                "--reviewed",
+                str(nonexistent_review),
                 "--output",
                 str(generated_path),
+                "--targets-output",
+                str(generated_targets_path),
             ],
             check=True,
             capture_output=True,
             text=True,
         )
-        generated = json.loads(generated_path.read_text())
+        generated = mapping_csv_payload(generated_path)
 
-        generated_particles_path = Path(temporary) / "particles.json"
+        generated_particles_path = temporary_path / "particles.csv"
         subprocess.run(
             [
                 sys.executable,
                 str(MAPPING / "scripts/generate-particle-mapping.py"),
+                "--targets",
+                str(generated_targets_path),
+                "--reviewed",
+                str(nonexistent_review),
                 "--output",
                 str(generated_particles_path),
             ],
@@ -321,8 +371,35 @@ def main() -> None:
             capture_output=True,
             text=True,
         )
-        generated_particles = json.loads(generated_particles_path.read_text())
-        particle_mapping = json.loads(args.particle_json.read_text())
+        generated_particles = particle_csv_payload(generated_particles_path)
+        particle_mapping = particle_csv_payload(args.particle_csv)
+        check(
+            generated_targets_path.read_bytes()
+            == (MAPPING / "data/utn57-written-units.csv").read_bytes(),
+            "UTN57 target CSV differs from generated inventory",
+        )
+        generated_runtime_path = temporary_path / "runtime.csv"
+        subprocess.run(
+            [
+                "node",
+                str(MAPPING / "scripts/generate-runtime-mapping.mjs"),
+                str(generated_runtime_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        check(
+            generated_runtime_path.read_bytes()
+            == (MAPPING / "data/zvvnmod-utn57-map.csv").read_bytes(),
+            "runtime mapping CSV differs from browser download projection",
+        )
+        runtime_mapping = mapping_csv_payload(generated_runtime_path)
+        check(
+            len(runtime_mapping["mappings"]) == 145
+            and all(row["sources"] and row["targets"] for row in runtime_mapping["mappings"]),
+            "runtime mapping CSV must contain 145 two-sided relations",
+        )
 
     check(isinstance(particle_mapping, dict), "particle mapping root must be an object")
     check(
@@ -339,24 +416,32 @@ def main() -> None:
         "particle provenance differs from generated scaffold",
     )
     check(len(particle_mapping["mappings"]) == 47, "particle mapping must contain 47 rows")
-
     check(mapping["description"] == generated["description"], "mapping description differs from generated scaffold")
 
-    for index, source in enumerate(mapping["sources"]):
-        check(isinstance(source, dict), f"ZVVNMOD source {index} must be an object")
-        check(set(source) == SOURCE_FIELDS, f"ZVVNMOD source {index} fields differ from schema")
-        check(source.get("order") == index, f"ZVVNMOD source order mismatch at index {index}")
-    check(mapping["sources"] == generated["sources"], "ZVVNMOD source catalogue differs from generated inventory")
-    source_ids = [source["id"] for source in mapping["sources"]]
-    check(len(source_ids) == len(set(source_ids)) == 80, "mapping must contain 80 unique ZVVNMOD sources")
-    valid_sources = set(source_ids)
+    retained = {"N_AA_FINA", "HX_AA_FINA"}
+    valid_sources = {
+        code["const"]
+        for group in payload["groups"]
+        for position in ("isol", "init", "medi", "fina")
+        for code in group["single"][position]
+    } | {
+        code["const"]
+        for group in payload["groups"]
+        for position in ("isol", "init", "medi", "fina")
+        for code in group["merged"][position]
+        if code["const"] in retained
+    } | {code["const"] for group in payload["groups"] for code in group["special"]}
+    check(len(valid_sources) == 80, "mapping must use an 80-code ZVVNMOD source catalogue")
 
-    for index, target in enumerate(mapping["targets"]):
-        check(isinstance(target, dict), f"UTN57 target {index} must be an object")
-        check(set(target) == TARGET_FIELDS, f"UTN57 target {index} fields differ from schema")
-        check(target.get("order") == index, f"UTN57 target order mismatch at index {index}")
-    check(mapping["targets"] == generated["targets"], "UTN57 target catalogue differs from generated inventory")
-    target_ids = [target["id"] for target in mapping["targets"]]
+    with (MAPPING / "data/utn57-written-units.csv").open(newline="", encoding="utf-8") as handle:
+        target_reader = csv.DictReader(handle)
+        check(
+            target_reader.fieldnames == ["id", "unit", "position", "glyph"],
+            "UTN57 target CSV headers differ from schema",
+        )
+        targets = list(target_reader)
+        check(all(None not in target for target in targets), "UTN57 target CSV contains malformed rows")
+    target_ids = [target["id"] for target in targets]
     check(len(target_ids) == len(set(target_ids)) == 97, "mapping must contain 97 unique UTN57 targets")
     check(target_ids[0] == "A:isol", "UTN57 target catalogue must start at A:isol")
     check(
@@ -573,19 +658,28 @@ def main() -> None:
         utn_index < zvvnmod_index < workbench_index < particle_index,
         "particle mappings must follow the workbench and both inventories",
     )
-    check('src="workbench.js?v=7"' in mapping_page, "mapping page has stale workbench controller")
+    check('src="workbench.js?v=8"' in mapping_page, "mapping page has stale workbench controller")
     check(
-        'src="particle-mappings.js?v=4"' in mapping_page,
+        'src="particle-mappings.js?v=5"' in mapping_page,
         "mapping page does not load particle controller",
     )
     workbench_controller = (MAPPING / "workbench.js").read_text()
     check(
-        'from "./combined-workbench-model.mjs?v=4"' in workbench_controller,
+        'from "./combined-workbench-model.mjs?v=5"' in workbench_controller,
         "combined workbench model import is not cache-busted with its controller",
     )
     check(
-        'from "./workbench-model.mjs?v=5"' in workbench_controller,
+        'from "./workbench-model.mjs?v=6"' in workbench_controller,
         "mapping model import is not cache-busted with its controller",
+    )
+    check(
+        'from "./csv-data.mjs?v=1"' in workbench_controller,
+        "CSV model import is not cache-busted with its controller",
+    )
+    particle_controller = (MAPPING / "particle-mappings.js").read_text()
+    check(
+        'from "./particle-model.mjs?v=4"' in particle_controller,
+        "particle model import is not cache-busted with its controller",
     )
 
     unequal_particle_rows = sum(
@@ -597,7 +691,7 @@ def main() -> None:
         f"80 editable ZVVNMOD sources, {len(target_ids)} UTN57 targets, "
         f"{len(row_ids)} alignment rows, "
         f"47 compact editable particle rows ({unequal_particle_rows} with unequal sequence lengths), "
-        "and Flutter PWA routing"
+        "145 directly reusable runtime relations, and Flutter PWA routing"
     )
 
 

@@ -154,8 +154,3 @@ export function hasSameParticleScaffold(source, candidate) {
     );
   });
 }
-
-export function serializeParticlePayload(payload, catalogues) {
-  const normalized = catalogues ? normalizeParticlePayload(payload, catalogues) : payload;
-  return `${JSON.stringify(normalized, null, 2)}\n`;
-}

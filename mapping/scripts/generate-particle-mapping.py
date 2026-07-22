@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
+import io
 import json
 import re
 import unicodedata
@@ -143,16 +145,41 @@ def utn57_shape_sequence(glyph_names: list[str], valid_targets: set[str]) -> lis
     return result
 
 
+def load_mapping_catalogues(codes_path: Path, targets_path: Path) -> dict[str, Any]:
+    code_payload = load_json(codes_path)
+    source_ids = {
+        str(code["const"])
+        for group in code_payload["groups"]
+        for code in [
+            *(code for values in group["single"].values() for code in values),
+            *(code for values in group["merged"].values() for code in values),
+            *group["special"],
+        ]
+    }
+    with targets_path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames != ["id", "unit", "position", "glyph"]:
+            raise ValueError("UTN57 target CSV headers differ from schema")
+        targets = list(reader)
+        if any(None in row for row in targets):
+            raise ValueError("UTN57 target CSV contains a malformed row")
+    return {
+        "sources": [{"id": source_id} for source_id in sorted(source_ids)],
+        "targets": targets,
+    }
+
+
 def build_particle_mapping(
     particles_path: Path,
     aliases_path: Path,
     observations_path: Path,
-    mapping_path: Path,
+    codes_path: Path,
+    targets_path: Path,
 ) -> dict[str, Any]:
     particles = load_json(particles_path)
     aliases = load_json(aliases_path)
     observations = load_json(observations_path)
-    mapping_payload = load_json(mapping_path)
+    mapping_payload = load_mapping_catalogues(codes_path, targets_path)
 
     require_keys(observations, {"schema", "sources", "observations"}, "observations")
     if observations["schema"] != "zvvnmod-utn57-particle-observations-v1":
@@ -235,6 +262,62 @@ def build_particle_mapping(
     }
 
 
+def apply_reviewed_particles(path: Path, payload: dict[str, Any]) -> None:
+    if not path.exists():
+        return
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or not lines[0].startswith("# metadata="):
+        raise ValueError("reviewed particle CSV metadata differs from schema")
+    with io.StringIO("\n".join(lines[1:]) + "\n", newline="") as handle:
+        reader = csv.DictReader(handle)
+        fields = ["id", "pattern", "particleIndices", "sources", "targets", "note"]
+        if reader.fieldnames != fields:
+            raise ValueError("reviewed particle CSV headers differ from schema")
+        reviewed = list(reader)
+        if any(None in row for row in reviewed):
+            raise ValueError("reviewed particle CSV contains a malformed row")
+    generated = payload["mappings"]
+    reviewed_scaffold = [
+        (row["id"], row["pattern"], row["particleIndices"])
+        for row in reviewed
+    ]
+    generated_scaffold = [
+        (row["id"], row["pattern"], " ".join(str(value) for value in row["particleIndices"]))
+        for row in generated
+    ]
+    if reviewed_scaffold != generated_scaffold:
+        raise ValueError("reviewed particle CSV scaffold differs from source observations")
+    for target, source in zip(generated, reviewed, strict=True):
+        sources = [] if source["sources"] == "" else source["sources"].split(" ")
+        targets = [] if source["targets"] == "" else source["targets"].split(" ")
+        if not sources and not targets:
+            raise ValueError(f"reviewed particle {source['id']} has both sides blank")
+        target["sources"] = sources
+        target["targets"] = targets
+        target["note"] = source["note"]
+
+
+def particle_csv(payload: dict[str, Any]) -> str:
+    metadata = {key: payload[key] for key in ("schema", "description", "provenance")}
+    buffer = io.StringIO(newline="")
+    buffer.write("# metadata=" + json.dumps(metadata, ensure_ascii=False, separators=(",", ":")) + "\n")
+    fields = ["id", "pattern", "particleIndices", "sources", "targets", "note"]
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
+    writer.writeheader()
+    for row in payload["mappings"]:
+        writer.writerow(
+            {
+                "id": row["id"],
+                "pattern": row["pattern"],
+                "particleIndices": " ".join(str(value) for value in row["particleIndices"]),
+                "sources": " ".join(row["sources"]),
+                "targets": " ".join(row["targets"]),
+                "note": row["note"],
+            }
+        )
+    return buffer.getvalue()
+
+
 def main() -> None:
     mapping_dir = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser()
@@ -250,17 +333,27 @@ def main() -> None:
         default=mapping_dir / "data/particle-shaping-observations.json",
     )
     parser.add_argument(
-        "--mapping", type=Path, default=mapping_dir / "data/zvvnmod-utn57-map.json"
+        "--codes", type=Path, default=mapping_dir / "data/zvvnmod-codes.json"
     )
     parser.add_argument(
-        "--output", type=Path, default=mapping_dir / "data/zvvnmod-utn57-particles.json"
+        "--targets", type=Path, default=mapping_dir / "data/utn57-written-units.csv"
+    )
+    parser.add_argument(
+        "--reviewed",
+        type=Path,
+        default=mapping_dir / "data/zvvnmod-utn57-particles.csv",
+        help="tracked reviewed particle values to apply to the generated scaffold",
+    )
+    parser.add_argument(
+        "--output", type=Path, default=mapping_dir / "data/zvvnmod-utn57-particles.csv"
     )
     args = parser.parse_args()
 
     payload = build_particle_mapping(
-        args.particles, args.aliases, args.observations, args.mapping
+        args.particles, args.aliases, args.observations, args.codes, args.targets
     )
-    args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    apply_reviewed_particles(args.reviewed, payload)
+    args.output.write_text(particle_csv(payload), encoding="utf-8")
     unequal = sum(
         len(row["sources"]) != len(row["targets"])
         for row in payload["mappings"]  # type: ignore[index]

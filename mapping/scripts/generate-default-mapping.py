@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Generate the editable ZVVNMOD → UTN57 mapping JSON from both inventories."""
+"""Generate CSV authorities for the editable ZVVNMOD → UTN57 workbench."""
 
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import json
 import re
 from html.parser import HTMLParser
@@ -231,6 +233,67 @@ def build_mapping(
     }
 
 
+def apply_reviewed_mapping(path: Path, payload: dict[str, Any]) -> None:
+    if not path.exists():
+        return
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or not lines[0].startswith("# metadata="):
+        raise ValueError("reviewed mapping CSV metadata differs from schema")
+    with io.StringIO("\n".join(lines[1:]) + "\n", newline="") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames != ["id", "sources", "targets", "note"]:
+            raise ValueError("reviewed mapping CSV headers differ from schema")
+        reviewed = list(reader)
+        if any(None in row for row in reviewed):
+            raise ValueError("reviewed mapping CSV contains a malformed row")
+    generated = payload["mappings"]
+    if [row["id"] for row in reviewed] != [row["id"] for row in generated]:
+        raise ValueError("reviewed mapping CSV scaffold differs from generated inventories")
+    for target, source in zip(generated, reviewed, strict=True):
+        source_values = [] if source["sources"] == "" else source["sources"].split(" ")
+        target_values = [] if source["targets"] == "" else source["targets"].split(" ")
+        if not source_values and not target_values:
+            raise ValueError(f"reviewed mapping {source['id']} has both sides blank")
+        target["sources"] = source_values
+        target["targets"] = target_values
+        target["note"] = source["note"]
+
+
+def csv_document(fieldnames: list[str], rows: list[dict[str, Any]], metadata: dict[str, Any] | None = None) -> str:
+    buffer = io.StringIO(newline="")
+    if metadata is not None:
+        buffer.write("# metadata=" + json.dumps(metadata, ensure_ascii=False, separators=(",", ":")) + "\n")
+    writer = csv.DictWriter(buffer, fieldnames=fieldnames, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    return buffer.getvalue()
+
+
+def write_csv_authorities(payload: dict[str, Any], mapping_path: Path, targets_path: Path) -> None:
+    mapping_rows = [
+        {
+            "id": row["id"],
+            "sources": " ".join(row["sources"]),
+            "targets": " ".join(row["targets"]),
+            "note": row["note"],
+        }
+        for row in payload["mappings"]
+    ]
+    metadata = {"schema": payload["schema"], "description": payload["description"]}
+    mapping_path.write_text(
+        csv_document(["id", "sources", "targets", "note"], mapping_rows, metadata),
+        encoding="utf-8",
+    )
+    target_rows = [
+        {key: target[key] for key in ("id", "unit", "position", "glyph")}
+        for target in payload["targets"]
+    ]
+    targets_path.write_text(
+        csv_document(["id", "unit", "position", "glyph"], target_rows),
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     script_dir = Path(__file__).resolve().parent
     mapping_dir = script_dir.parent
@@ -245,12 +308,22 @@ def main() -> None:
         default=mapping_dir / "data/utn57-format-controls.json",
     )
     parser.add_argument(
-        "--output", type=Path, default=mapping_dir / "data/zvvnmod-utn57-map.json"
+        "--reviewed",
+        type=Path,
+        default=mapping_dir / "data/zvvnmod-utn57-main.csv",
+        help="tracked reviewed relation values to apply to the generated scaffold",
+    )
+    parser.add_argument(
+        "--output", type=Path, default=mapping_dir / "data/zvvnmod-utn57-main.csv"
+    )
+    parser.add_argument(
+        "--targets-output", type=Path, default=mapping_dir / "data/utn57-written-units.csv"
     )
     args = parser.parse_args()
 
     payload = build_mapping(args.codes, args.written_units, args.format_controls)
-    args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    apply_reviewed_mapping(args.reviewed, payload)
+    write_csv_authorities(payload, args.output, args.targets_output)
     direct = sum(
         bool(entry["sources"] and entry["targets"])
         for entry in payload["mappings"]  # type: ignore[index]
@@ -258,7 +331,7 @@ def main() -> None:
     print(
         f"generated {len(payload['mappings'])} mappings "
         f"({direct} direct, {len(payload['mappings']) - direct} unmapped) "
-        f"and {len(payload['targets'])} UTN57 targets -> {args.output}"
+        f"and {len(payload['targets'])} UTN57 targets -> {args.output}, {args.targets_output}"
     )
 
 
