@@ -2,8 +2,8 @@ import {
   hasSameCombinedScaffold,
   normalizeCombinedPayload,
   serializeCombinedPayload,
-} from "./combined-workbench-model.mjs?v=3";
-import { mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=4";
+} from "./combined-workbench-model.mjs?v=4";
+import { mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=5";
 
 const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.json";
 const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.json";

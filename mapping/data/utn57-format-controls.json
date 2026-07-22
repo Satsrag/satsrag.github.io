@@ -15,6 +15,13 @@
       "position": "control",
       "codepoint": "U+180A",
       "glyph": "᠊"
+    },
+    {
+      "id": "MVS",
+      "unit": "MVS",
+      "position": "control",
+      "codepoint": "U+180E",
+      "glyph": "᠎"
     }
   ]
 }

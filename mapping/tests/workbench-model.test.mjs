@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   hasSameGeneratedScaffold,
+  longestSourceMatches,
   mappingMode,
   normalizeMappingPayload,
   serializeMappingPayload,
@@ -60,6 +61,42 @@ test("mode is derived against the Git-loaded baseline and never serialized", () 
   const edited = updateMappingEntry(direct, ["O_INIT"], ["O:init"], "");
   assert.equal(mappingMode(direct, edited), "special");
   assertCompactRow(edited);
+});
+
+test("longest matching returns only all equal-longest mapping alternatives", () => {
+  for (const [source, rowId] of [
+    [["M_FINA", "AA_FINA"], "chachlag:M_FINA_AA_FINA"],
+    [["L_FINA", "AA_FINA"], "chachlag:L_FINA_AA_FINA"],
+    [["S_FINA", "AA_FINA"], "chachlag:S_FINA_AA_FINA"],
+    [["R_FINA", "AA_FINA"], "chachlag:R_FINA_AA_FINA"],
+  ]) {
+    assert.deepEqual(longestSourceMatches(fixture.mappings, source).map((row) => row.id), [rowId]);
+  }
+
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["I_MEDI", "AA_FINA", "AA_FINA"]).map((row) => row.id),
+    ["target:G:fina"],
+  );
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["AA_FINA", "AA_FINA"]).map((row) => row.id),
+    ["source:AA_FINA"],
+  );
+  assert.deepEqual(
+    longestSourceMatches(fixture.mappings, ["A_FINA", "AA_FINA"]).map((row) => row.id),
+    ["source:A_FINA"],
+  );
+
+  const iIsol = longestSourceMatches(fixture.mappings, ["I_ISOL", "AA_FINA"]);
+  assert.deepEqual(iIsol.map((row) => row.id), ["chachlag:I_ISOL_AA_FINA"]);
+
+  const chachlag = longestSourceMatches(fixture.mappings, ["I_FINA", "AA_FINA"]);
+  assert.deepEqual(chachlag.map((row) => row.id), ["chachlag:I_FINA_AA_FINA"]);
+
+  const a = longestSourceMatches(fixture.mappings, ["A_INIT", "AA_FINA"]);
+  assert.deepEqual(a.map((row) => row.id), ["target:A:isol"]);
+
+  const aa = longestSourceMatches(fixture.mappings, ["AA_FINA"]);
+  assert.deepEqual(aa.map((row) => row.id), ["source:AA_FINA"]);
 });
 
 test("normalization accepts left-only and right-only rows but rejects both empty", () => {

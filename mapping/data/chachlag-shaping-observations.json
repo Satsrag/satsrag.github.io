@@ -1,0 +1,731 @@
+{
+  "schema": "zvvnmod-utn57-chachlag-observations-v1",
+  "description": "Pinned Delehi-to-ZVVNMOD and UTN57 chachlag shaping observations.",
+  "sources": {
+    "mongfontbuilder": {
+      "repository": "https://github.com/Kushim-Jiang/mongfontbuilder",
+      "commit": "539b455075486f70889e6de9909eac5dea839d8a",
+      "rulesPath": "lib/mongfontbuilder/otl/iii.py",
+      "aliasesPath": "lib/mongfontbuilder/data/aliases.json"
+    },
+    "meco": {
+      "repository": "https://github.com/Satsrag/meco",
+      "commit": "7edff334d33fc367596d1d33406b33bccb8ddc60"
+    }
+  },
+  "observations": [
+    {
+      "pattern": "mvs a",
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "mvs e",
+      "nominalCodePoints": [
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "n mvs a",
+      "nominalCodePoints": [
+        "U+1828",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E027",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1828.N.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "n mvs e",
+      "nominalCodePoints": [
+        "U+1828",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E027",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1828.N.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "j mvs a",
+      "nominalCodePoints": [
+        "U+1835",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E01A",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1835.I.isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "j mvs e",
+      "nominalCodePoints": [
+        "U+1835",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E01A",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1835.I.isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "w mvs a",
+      "nominalCodePoints": [
+        "U+1838",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E056",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1838.W.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "w mvs e",
+      "nominalCodePoints": [
+        "U+1838",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E056",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1838.W.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "h mvs a",
+      "nominalCodePoints": [
+        "U+182C",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E030",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182C.H.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "h mvs e",
+      "nominalCodePoints": [
+        "U+182C",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E030",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182C.H.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "g mvs a",
+      "nominalCodePoints": [
+        "U+182D",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E030",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182D.Hx.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "g mvs e",
+      "nominalCodePoints": [
+        "U+182D",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E030",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182D.Hx.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "m mvs a",
+      "nominalCodePoints": [
+        "U+182E",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E036",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182E.M.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "m mvs e",
+      "nominalCodePoints": [
+        "U+182E",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E036",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182E.M.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "l mvs a",
+      "nominalCodePoints": [
+        "U+182F",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E039",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182F.L.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "l mvs e",
+      "nominalCodePoints": [
+        "U+182F",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E039",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u182F.L.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "s mvs a",
+      "nominalCodePoints": [
+        "U+1830",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E03C",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1830.S.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "s mvs e",
+      "nominalCodePoints": [
+        "U+1830",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E03C",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1830.S.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "r mvs a",
+      "nominalCodePoints": [
+        "U+1837",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E053",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1837.R.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "r mvs e",
+      "nominalCodePoints": [
+        "U+1837",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E053",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1837.R.init._isol",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a n mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1828",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E077"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1828.N.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a n mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1828",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E077"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1828.N.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a j mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1835",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E04E",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1835.I.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a j mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1835",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E04E",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1835.I.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a w mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1838",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E011",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1838.U.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a w mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1838",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E011",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1838.U.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a h mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182C",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E032",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182C.H.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a h mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182C",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E005",
+        "U+E005",
+        "U+E143",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182C.H.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a g mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182D",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E09D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182D.Hx.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a g mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182D",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E005",
+        "U+E005",
+        "U+E143",
+        "U+E00C"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182D.H.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a m mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182E",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E038",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182E.M.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a m mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182E",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E038",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182E.M.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a l mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182F",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E03B",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182F.L.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a l mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+182F",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E03B",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u182F.L.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a s mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1830",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E03D",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1830.S.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a s mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1830",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E03D",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1830.S.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a r mvs a",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1837",
+        "U+180E",
+        "U+1820"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E055",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1837.R.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1820.Aa.isol"
+      ]
+    },
+    {
+      "pattern": "a r mvs e",
+      "nominalCodePoints": [
+        "U+1820",
+        "U+1837",
+        "U+180E",
+        "U+1821"
+      ],
+      "rawZvvnmodCodes": [
+        "U+E000",
+        "U+E005",
+        "U+E055",
+        "U+E00D"
+      ],
+      "utn57GlyphNames": [
+        "u1820.AA.init",
+        "u1837.R.fina",
+        "uni180E.Narrowspace.nomi",
+        "u1821.Aa.isol"
+      ]
+    }
+  ]
+}

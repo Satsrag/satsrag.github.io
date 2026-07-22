@@ -1315,6 +1315,13 @@
       "position": "control",
       "glyph": "᠊",
       "order": 95
+    },
+    {
+      "id": "MVS",
+      "unit": "MVS",
+      "position": "control",
+      "glyph": "᠎",
+      "order": 96
     }
   ],
   "mappings": [
@@ -1354,7 +1361,7 @@
         "AA_FINA"
       ],
       "targets": [
-        "Aa:fina"
+        "Aa:isol"
       ],
       "note": ""
     },
@@ -1585,9 +1592,10 @@
       ],
       "targets": [
         "Hx:fina",
-        "Aa:fina"
+        "MVS",
+        "Aa:isol"
       ],
-      "note": ""
+      "note": "Pinned mongfontbuilder/meco chachlag observation."
     },
     {
       "id": "source:I_ISOL",
@@ -1766,9 +1774,10 @@
       ],
       "targets": [
         "N:fina",
-        "Aa:fina"
+        "MVS",
+        "Aa:isol"
       ],
-      "note": ""
+      "note": "Pinned mongfontbuilder/meco chachlag observation."
     },
     {
       "id": "source:O_INIT",
@@ -2130,12 +2139,10 @@
       "note": ""
     },
     {
-      "id": "target:Aa:isol",
-      "sources": [
-        "AA_FINA"
-      ],
+      "id": "target:Aa:fina",
+      "sources": [],
       "targets": [
-        "Aa:isol"
+        "Aa:fina"
       ],
       "note": ""
     },
@@ -2285,6 +2292,110 @@
         "Ux:isol"
       ],
       "note": ""
+    },
+    {
+      "id": "chachlag:M_FINA_AA_FINA",
+      "sources": [
+        "M_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "M:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:L_FINA_AA_FINA",
+      "sources": [
+        "L_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "L:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:S_FINA_AA_FINA",
+      "sources": [
+        "S_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "S:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:R_FINA_AA_FINA",
+      "sources": [
+        "R_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "R:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:I_ISOL_AA_FINA",
+      "sources": [
+        "I_ISOL",
+        "AA_FINA"
+      ],
+      "targets": [
+        "I:isol",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:I_FINA_AA_FINA",
+      "sources": [
+        "I_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "I:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:U_FINA_AA_FINA",
+      "sources": [
+        "U_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "U:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
+    },
+    {
+      "id": "chachlag:H_FINA_AA_FINA",
+      "sources": [
+        "H_FINA",
+        "AA_FINA"
+      ],
+      "targets": [
+        "H:fina",
+        "MVS",
+        "Aa:isol"
+      ],
+      "note": "UTN chachlag onset-plus-suffix shape alignment."
     }
   ]
 }
