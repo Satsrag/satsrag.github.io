@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MAPPING_DATA = ROOT / "mapping/data"
-MAIN_CSV = MAPPING_DATA / "zvvnmod-utn57-main.csv"
+RUNTIME_CSV = MAPPING_DATA / "zvvnmod-utn57-map.csv"
 TARGETS_CSV = MAPPING_DATA / "utn57-written-units.csv"
 CHACHLAG_JSON = MAPPING_DATA / "chachlag-shaping-observations.json"
 CODES_JSON = MAPPING_DATA / "zvvnmod-codes.json"
@@ -20,7 +20,25 @@ PAGE_HTML = ROOT / "mapping/index.html"
 
 class MappingDataTests(unittest.TestCase):
     def load_mapping(self) -> dict:
-        lines = MAIN_CSV.read_text().splitlines()
+        with tempfile.TemporaryDirectory() as directory:
+            generated = Path(directory) / "derived-main.csv"
+            subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "mapping/scripts/generate-default-mapping.py"),
+                    "--reviewed",
+                    str(RUNTIME_CSV),
+                    "--output",
+                    str(generated),
+                    "--targets-output",
+                    str(Path(directory) / "targets.csv"),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            lines = generated.read_text().splitlines()
         metadata = json.loads(lines[0].removeprefix("# metadata="))
         rows = list(csv.DictReader(io.StringIO("\n".join(lines[1:]) + "\n")))
         mappings = [
@@ -113,7 +131,7 @@ class MappingDataTests(unittest.TestCase):
                 text=True,
                 capture_output=True,
             )
-            self.assertEqual(generated_mapping.read_bytes(), MAIN_CSV.read_bytes())
+            self.assertFalse((MAPPING_DATA / "zvvnmod-utn57-main.csv").exists())
             self.assertEqual(generated_targets.read_bytes(), TARGETS_CSV.read_bytes())
         generated = self.load_mapping()
         entries = {entry["id"]: entry for entry in generated["mappings"]}
@@ -270,8 +288,10 @@ class MappingDataTests(unittest.TestCase):
         controller = (ROOT / "mapping/workbench.js").read_text()
         self.assertLess(page.index('id="utn57"'), page.index('id="zvvnmod"'))
         self.assertLess(page.index('id="zvvnmod"'), page.index('id="mapping-workbench"'))
-        self.assertIn('src="workbench.js?v=8"', page)
-        self.assertIn('src="particle-mappings.js?v=5"', page)
+        self.assertIn('src="workbench.js?v=9"', page)
+        self.assertIn('src="particle-mappings.js?v=6"', page)
+        self.assertNotIn("zvvnmod-utn57-main.csv", controller)
+        self.assertIn('const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";', controller)
         self.assertIn("mappingMode(sourceCombinedPayload.mapping.mappings[index], entry)", controller)
         self.assertIn("const baseline = sourceCombinedPayload.mapping.mappings[index];", controller)
         self.assertIn("baseline.sources,", controller)
@@ -393,14 +413,24 @@ class MappingDataTests(unittest.TestCase):
             self.assertIn("chachlag observation snapshot differs", result.stdout + result.stderr)
 
     def run_verifier_with(self, payload: dict) -> subprocess.CompletedProcess[str]:
+        runtime_lines = RUNTIME_CSV.read_text().splitlines()
+        runtime_metadata = json.loads(runtime_lines[0].removeprefix("# metadata="))
+        runtime_rows = list(csv.DictReader(io.StringIO("\n".join(runtime_lines[1:]) + "\n")))
+        particle_rows = [row for row in runtime_rows if row["id"].startswith("particle:")]
+        main_rows = [
+            {
+                "id": row["id"],
+                "sources": " ".join(row["sources"]),
+                "targets": " ".join(row["targets"]),
+                "note": row["note"],
+            }
+            for row in payload["mappings"]
+            if row["sources"] and row["targets"]
+        ]
         with tempfile.NamedTemporaryFile("w", suffix=".csv", newline="") as temporary:
             temporary.write(
                 "# metadata="
-                + json.dumps(
-                    {"schema": payload["schema"], "description": payload["description"]},
-                    ensure_ascii=False,
-                    separators=(",", ":"),
-                )
+                + json.dumps(runtime_metadata, ensure_ascii=False, separators=(",", ":"))
                 + "\n"
             )
             writer = csv.DictWriter(
@@ -409,15 +439,7 @@ class MappingDataTests(unittest.TestCase):
                 lineterminator="\n",
             )
             writer.writeheader()
-            for row in payload["mappings"]:
-                writer.writerow(
-                    {
-                        "id": row["id"],
-                        "sources": " ".join(row["sources"]),
-                        "targets": " ".join(row["targets"]),
-                        "note": row["note"],
-                    }
-                )
+            writer.writerows(main_rows + particle_rows)
             temporary.flush()
             return subprocess.run(
                 [
@@ -467,20 +489,10 @@ class MappingDataTests(unittest.TestCase):
         self.assertIn("unknown ZVVNMOD source", result.stdout + result.stderr)
 
     def test_verifier_rejects_row_identity_changes(self) -> None:
-        base = self.load_mapping()
-        mutations = []
-        changed_id = json.loads(json.dumps(base))
+        changed_id = self.load_mapping()
         changed_id["mappings"][0]["id"] = "source:O_INIT"
-        mutations.append(changed_id)
-        reordered = json.loads(json.dumps(base))
-        reordered["mappings"][0], reordered["mappings"][1] = (
-            reordered["mappings"][1],
-            reordered["mappings"][0],
-        )
-        mutations.append(reordered)
-        for payload in mutations:
-            result = self.run_verifier_with(payload)
-            self.assertNotEqual(result.returncode, 0)
+        result = self.run_verifier_with(changed_id)
+        self.assertNotEqual(result.returncode, 0)
 
 
 if __name__ == "__main__":

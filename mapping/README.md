@@ -8,17 +8,16 @@ Static reference and editing page for preparing the UTN57 ↔ ZVVNMOD mapping Ma
 - `data/zvvnmod-unicode-names.csv`: the authoritative ZVVNMOD name inventory snapshot.
 - `data/zvvnmod-codes.json`: browser data grouped by base written-unit ID and joining position.
 - `data/utn57-written-units.csv`: generated browser target catalogue, including UTN format controls.
-- `data/zvvnmod-utn57-main.csv`: editable 105-row main mapping scaffold and reviewed values, including one-sided inventory rows.
-- `data/zvvnmod-utn57-map.csv`: generated 145-row two-sided runtime relation; byte-identical to an unedited browser download and directly reusable by the Rust repository.
+- `data/zvvnmod-utn57-map.csv`: the sole reviewed relation authority: 145 two-sided main and particle runtime rows, byte-identical to an unedited browser download and directly reusable by the Rust repository.
 - `data/mongfontbuilder-particles.json`: exact Mongfontbuilder particle dictionary snapshot used by the particle generator.
 - `data/mongfontbuilder-aliases.json`: exact Mongfontbuilder alias dictionary used to derive nominal Unicode code points.
 - `data/particle-shaping-observations.json`: recorded Mongfontbuilder HarfBuzz glyph output and meco raw ZVVNMOD output for each MNG particle pattern.
 - `data/chachlag-shaping-observations.json`: pinned paired observations for basic, standalone-onset, and connected chachlag sequences.
-- `data/zvvnmod-utn57-particles.csv`: generated particle scaffold with reviewed ordered sequence values and provenance metadata.
+- `data/zvvnmod-utn57-particles.csv`: generated particle identity/context scaffold and provenance metadata; relation values are joined by ID from the sole runtime mapping CSV.
 - `assets/writtenunits-Regular.ttf`: UTN57 written-unit display font from Mongolian Font Builder.
 - `assets/zvvnmod.ttf`: generated from meco's formal `zvvnmod.sfd`.
 
-The two inventory tables remain unchanged above an aligned three-column mapping workbench. Its ZVVNMOD source catalogue contains the 77 single codes, the special `NIRUGU` code, and the two retained chachlag forms `N_AA_FINA` and `HX_AA_FINA`; other merged codes are already represented by decomposed sequences and are omitted. Generated direct mappings are review drafts, not authoritative linguistic rules. Unmatched codes remain as rows with the opposite side blank.
+The browser derives the 105-row main workbench from the sole runtime relation CSV plus the source and target inventories. Seven currently unmatched inventory items are added as one-sided rows at load time; they are not stored in a second mapping file.
 
 ## Mapping CSV workflow
 
@@ -38,7 +37,7 @@ source:A_INIT,A_INIT,A:init,
 particle:37,D_INIT A_MEDI I_MEDI AA_FINA,D:init A:medi G:fina,
 ```
 
-Either `sources` or `targets` may be empty for an unmatched inventory item, but both cannot be empty in the same row. Their lengths are independent. The browser can add, remove, reorder, or replace values on either side. The checked-in Git rows are the Restore baseline, and `direct`, `unmapped`, and `special` are runtime display states derived by comparing the current row with that baseline; they are not serialized.
+The runtime mapping CSV always contains both non-empty ordered sides; their lengths remain independent. Inventory-derived workbench rows may be source-only or target-only, but never both empty. The browser can add, remove, reorder, or replace values on either side. The checked-in Git rows are the Restore baseline, and `direct`, `unmapped`, and `special` are runtime display states derived by comparing the current row with that baseline; they are not serialized.
 
 The UTN57 target inventory combines positional written units from `utn57-written-units.html` with format controls from `utn57-format-controls.json`. Both `Nirugu` (U+180A) and `MVS` (U+180E) are non-positional targets with `position: "control"`. Nirugu maps directly from the ZVVNMOD `NIRUGU` code; MVS is emitted structurally before chachlag `Aa:isol` rather than being read from a legacy ZVVNMOD control code.
 
@@ -111,14 +110,14 @@ Regenerate the initial compact particle rows from the reviewed snapshots and obs
 python3 mapping/scripts/generate-particle-mapping.py
 ```
 
-Particle scaffold rows add immutable `pattern` and `particleIndices` columns; download projects their editable relation fields into the same runtime CSV shown above:
+Particle metadata rows add immutable `pattern` and `particleIndices` columns. They do not duplicate relation values:
 
 ```csv
-id,pattern,particleIndices,sources,targets,note
-particle:07,i y a r,0 1,I_INIT I_MEDI A_MEDI R_FINA,I:init I:medi A:medi R:fina,
+id,pattern,particleIndices
+particle:07,i y a r,0 1
 ```
 
-The two ordered sequences are independently editable and may have different lengths. The generated scaffold contains 47 rows; reviewed Git current values may diverge from the generator's initial sequence suggestions.
+The browser joins these 47 metadata rows by ID with the `sources`, `targets`, and `note` fields stored exclusively in `zvvnmod-utn57-map.csv`. The two runtime ordered sequences are independently editable and may have different lengths.
 
 ## Font regeneration
 

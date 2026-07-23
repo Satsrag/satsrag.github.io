@@ -6,8 +6,8 @@ const ROW_KEYS = new Set(["id", "pattern", "particleIndices", "sources", "target
 const GENERATED_ROW_KEYS = ["id", "pattern", "particleIndices"];
 const SCHEMA = "zvvnmod-utn57-particles-v3";
 const DESCRIPTION =
-  "Compact editable Rust-named ZVVNMOD and UTN57 particle sequences with leading MVS/NNBSP "
-  + "context omitted; either ordered side may contain a different number of values.";
+  "Particle identity and compact context metadata with leading MVS/NNBSP context omitted; "
+  + "ordered relation values are joined by ID from the runtime mapping CSV.";
 const COMMIT = /^[0-9a-f]{40}$/;
 
 function sameSequence(left, right) {

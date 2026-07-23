@@ -2,7 +2,7 @@ import {
   normalizeParticlePayload,
   particleMode,
   updateParticleEntry,
-} from "./particle-model.mjs?v=4";
+} from "./particle-model.mjs?v=5";
 
 const rowsElement = document.querySelector("#particle-mapping-rows");
 const statusElement = document.querySelector("#particle-mapping-status");

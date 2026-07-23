@@ -13,6 +13,8 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+from strict_csv import parse_metadata_table
+
 POSITIONS = {"isol", "init", "medi", "fina"}
 SCHEMA = "zvvnmod-utn57-particles-v3"
 MONGFONTBUILDER_COMMIT = "539b455075486f70889e6de9909eac5dea839d8a"
@@ -33,8 +35,8 @@ EXPECTED_SOURCES = {
     },
 }
 DESCRIPTION = (
-    "Compact editable Rust-named ZVVNMOD and UTN57 particle sequences with leading MVS/NNBSP "
-    "context omitted; either ordered side may contain a different number of values."
+    "Particle identity and compact context metadata with leading MVS/NNBSP context omitted; "
+    "ordered relation values are joined by ID from the runtime mapping CSV."
 )
 
 
@@ -265,28 +267,21 @@ def build_particle_mapping(
 def apply_reviewed_particles(path: Path, payload: dict[str, Any]) -> None:
     if not path.exists():
         return
-    lines = path.read_text(encoding="utf-8").splitlines()
-    if not lines or not lines[0].startswith("# metadata="):
+    metadata, rows = parse_metadata_table(
+        path.read_text(encoding="utf-8"),
+        ["id", "sources", "targets", "note"],
+        ["schema", "baseline"],
+    )
+    if (
+        metadata["schema"] != "zvvnmod-utn57-runtime-map-v1"
+        or not isinstance(metadata["baseline"], str)
+        or re.fullmatch(r"sha256:[0-9a-f]{64}", metadata["baseline"]) is None
+    ):
         raise ValueError("reviewed particle CSV metadata differs from schema")
-    with io.StringIO("\n".join(lines[1:]) + "\n", newline="") as handle:
-        reader = csv.DictReader(handle)
-        fields = ["id", "pattern", "particleIndices", "sources", "targets", "note"]
-        if reader.fieldnames != fields:
-            raise ValueError("reviewed particle CSV headers differ from schema")
-        reviewed = list(reader)
-        if any(None in row for row in reviewed):
-            raise ValueError("reviewed particle CSV contains a malformed row")
+    reviewed = [row for row in rows if row["id"].startswith("particle:")]
     generated = payload["mappings"]
-    reviewed_scaffold = [
-        (row["id"], row["pattern"], row["particleIndices"])
-        for row in reviewed
-    ]
-    generated_scaffold = [
-        (row["id"], row["pattern"], " ".join(str(value) for value in row["particleIndices"]))
-        for row in generated
-    ]
-    if reviewed_scaffold != generated_scaffold:
-        raise ValueError("reviewed particle CSV scaffold differs from source observations")
+    if [row["id"] for row in reviewed] != [row["id"] for row in generated]:
+        raise ValueError("reviewed runtime particle IDs differ from source observations")
     for target, source in zip(generated, reviewed, strict=True):
         sources = [] if source["sources"] == "" else source["sources"].split(" ")
         targets = [] if source["targets"] == "" else source["targets"].split(" ")
@@ -301,7 +296,7 @@ def particle_csv(payload: dict[str, Any]) -> str:
     metadata = {key: payload[key] for key in ("schema", "description", "provenance")}
     buffer = io.StringIO(newline="")
     buffer.write("# metadata=" + json.dumps(metadata, ensure_ascii=False, separators=(",", ":")) + "\n")
-    fields = ["id", "pattern", "particleIndices", "sources", "targets", "note"]
+    fields = ["id", "pattern", "particleIndices"]
     writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in payload["mappings"]:
@@ -310,9 +305,6 @@ def particle_csv(payload: dict[str, Any]) -> str:
                 "id": row["id"],
                 "pattern": row["pattern"],
                 "particleIndices": " ".join(str(value) for value in row["particleIndices"]),
-                "sources": " ".join(row["sources"]),
-                "targets": " ".join(row["targets"]),
-                "note": row["note"],
             }
         )
     return buffer.getvalue()
@@ -341,8 +333,8 @@ def main() -> None:
     parser.add_argument(
         "--reviewed",
         type=Path,
-        default=mapping_dir / "data/zvvnmod-utn57-particles.csv",
-        help="tracked reviewed particle values to apply to the generated scaffold",
+        default=mapping_dir / "data/zvvnmod-utn57-map.csv",
+        help="tracked runtime relation values to join with generated particle metadata",
     )
     parser.add_argument(
         "--output", type=Path, default=mapping_dir / "data/zvvnmod-utn57-particles.csv"

@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PARTICLE_CSV = ROOT / "mapping/data/zvvnmod-utn57-particles.csv"
+RUNTIME_CSV = ROOT / "mapping/data/zvvnmod-utn57-map.csv"
 TARGETS_CSV = ROOT / "mapping/data/utn57-written-units.csv"
 CODES_JSON = ROOT / "mapping/data/zvvnmod-codes.json"
 GENERATOR = ROOT / "mapping/scripts/generate-particle-mapping.py"
@@ -23,6 +24,9 @@ class ParticleMappingTests(unittest.TestCase):
         lines = PARTICLE_CSV.read_text().splitlines()
         metadata = json.loads(lines[0].removeprefix("# metadata="))
         rows = list(csv.DictReader(io.StringIO("\n".join(lines[1:]) + "\n")))
+        runtime_lines = RUNTIME_CSV.read_text().splitlines()
+        runtime_rows = list(csv.DictReader(io.StringIO("\n".join(runtime_lines[1:]) + "\n")))
+        relations = {row["id"]: row for row in runtime_rows if row["id"].startswith("particle:")}
         return {
             **metadata,
             "mappings": [
@@ -30,9 +34,9 @@ class ParticleMappingTests(unittest.TestCase):
                     "id": row["id"],
                     "pattern": row["pattern"],
                     "particleIndices": [int(value) for value in row["particleIndices"].split()],
-                    "sources": row["sources"].split() if row["sources"] else [],
-                    "targets": row["targets"].split() if row["targets"] else [],
-                    "note": row["note"],
+                    "sources": relations[row["id"]]["sources"].split(),
+                    "targets": relations[row["id"]]["targets"].split(),
+                    "note": relations[row["id"]]["note"],
                 }
                 for row in rows
             ],
@@ -166,9 +170,9 @@ class ParticleMappingTests(unittest.TestCase):
         page = (ROOT / "mapping/index.html").read_text()
         renderer = (ROOT / "mapping/particle-mappings.js").read_text()
         self.assertLess(page.index('id="mapping-workbench"'), page.index('id="particle-mappings"'))
-        self.assertIn('src="particle-mappings.js?v=5"', page)
+        self.assertIn('src="particle-mappings.js?v=6"', page)
         self.assertIn("Leading MVS/NNBSP context is omitted", page)
-        self.assertIn('from "./particle-model.mjs?v=4"', renderer)
+        self.assertIn('from "./particle-model.mjs?v=5"', renderer)
         self.assertIn('dataset.action = "add-particle-value"', renderer)
         self.assertIn('"remove-particle-value"', renderer)
         self.assertIn('"move-particle-up"', renderer)
@@ -192,8 +196,20 @@ class ParticleMappingTests(unittest.TestCase):
         )
 
     def verify_particle(self, payload: dict) -> subprocess.CompletedProcess[str]:
-        with tempfile.NamedTemporaryFile("w", suffix=".csv", newline="") as temporary:
-            temporary.write(
+        runtime_lines = RUNTIME_CSV.read_text().splitlines()
+        runtime_metadata = json.loads(runtime_lines[0].removeprefix("# metadata="))
+        runtime_rows = list(csv.DictReader(io.StringIO("\n".join(runtime_lines[1:]) + "\n")))
+        relation_by_id = {row["id"]: row for row in payload["mappings"]}
+        for row in runtime_rows:
+            relation = relation_by_id.get(row["id"])
+            if relation is not None:
+                row["sources"] = " ".join(relation["sources"])
+                row["targets"] = " ".join(relation["targets"])
+                row["note"] = relation["note"]
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", newline="") as metadata_file, tempfile.NamedTemporaryFile(
+            "w", suffix=".csv", newline=""
+        ) as runtime_file:
+            metadata_file.write(
                 "# metadata="
                 + json.dumps(
                     {key: payload[key] for key in ("schema", "description", "provenance")},
@@ -202,8 +218,8 @@ class ParticleMappingTests(unittest.TestCase):
                 )
                 + "\n"
             )
-            fields = ["id", "pattern", "particleIndices", "sources", "targets", "note"]
-            writer = csv.DictWriter(temporary, fieldnames=fields, lineterminator="\n")
+            fields = ["id", "pattern", "particleIndices"]
+            writer = csv.DictWriter(metadata_file, fieldnames=fields, lineterminator="\n")
             writer.writeheader()
             for row in payload["mappings"]:
                 writer.writerow(
@@ -211,14 +227,33 @@ class ParticleMappingTests(unittest.TestCase):
                         "id": row["id"],
                         "pattern": row["pattern"],
                         "particleIndices": " ".join(str(value) for value in row["particleIndices"]),
-                        "sources": " ".join(row["sources"]),
-                        "targets": " ".join(row["targets"]),
-                        "note": row["note"],
                     }
                 )
-            temporary.flush()
+            metadata_file.flush()
+            runtime_file.write(
+                "# metadata="
+                + json.dumps(runtime_metadata, separators=(",", ":"))
+                + "\n"
+            )
+            runtime_writer = csv.DictWriter(
+                runtime_file,
+                fieldnames=["id", "sources", "targets", "note"],
+                lineterminator="\n",
+            )
+            runtime_writer.writeheader()
+            runtime_writer.writerows(runtime_rows)
+            runtime_file.flush()
             return subprocess.run(
-                ["uv", "run", "--script", str(VERIFIER), "--particle-csv", temporary.name],
+                [
+                    "uv",
+                    "run",
+                    "--script",
+                    str(VERIFIER),
+                    "--particle-csv",
+                    metadata_file.name,
+                    "--mapping-csv",
+                    runtime_file.name,
+                ],
                 cwd=ROOT,
                 text=True,
                 capture_output=True,

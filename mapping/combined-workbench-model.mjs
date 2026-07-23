@@ -1,7 +1,7 @@
 import {
   hasSameParticleScaffold,
   normalizeParticlePayload,
-} from "./particle-model.mjs?v=4";
+} from "./particle-model.mjs?v=5";
 import {
   hasSameGeneratedScaffold,
   normalizeMappingPayload,

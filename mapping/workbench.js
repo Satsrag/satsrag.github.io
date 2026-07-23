@@ -2,17 +2,17 @@ import {
   applyRuntimeRelations,
   hasSameCombinedScaffold,
   normalizeCombinedPayload,
-} from "./combined-workbench-model.mjs?v=5";
+} from "./combined-workbench-model.mjs?v=6";
 import { editableSourceCatalogue, mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=6";
 import {
-  mappingPayloadFromCsv,
+  mappingPayloadFromRuntime,
   particlePayloadFromCsv,
   runtimeMappingFromCsv,
   serializeRuntimeMappingCsv,
   targetCatalogueFromCsv,
-} from "./csv-data.mjs?v=1";
+} from "./csv-data.mjs?v=2";
 
-const MAPPING_DATA_URL = "data/zvvnmod-utn57-main.csv";
+const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";
 const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.csv";
 const SOURCE_DATA_URL = "data/zvvnmod-codes.json";
 const TARGET_DATA_URL = "data/utn57-written-units.csv";
@@ -445,19 +445,27 @@ async function loadSourceMapping() {
     if (![mappingResponse, particleResponse, sourceResponse, targetResponse].every((response) => response.ok)) {
       throw new Error("Workbench CSV/catalogue assets could not be loaded.");
     }
-    const mapping = mappingPayloadFromCsv(await mappingResponse.text());
-    const particleMappings = particlePayloadFromCsv(await particleResponse.text());
+    const runtime = runtimeMappingFromCsv(await mappingResponse.text());
     sourceCatalogue = editableSourceCatalogue(await sourceResponse.json());
     targetCatalogue = targetCatalogueFromCsv(await targetResponse.text());
+    const mapping = mappingPayloadFromRuntime(runtime, sourceCatalogue, targetCatalogue);
+    const particleMappings = particlePayloadFromCsv(
+      await particleResponse.text(),
+      runtime.mappings,
+    );
+    const baseline = await gitBaselineDigest(
+      mapping,
+      particleMappings,
+      sourceCatalogue,
+      targetCatalogue,
+    );
+    if (runtime.baseline !== baseline) {
+      throw new Error("Runtime CSV baseline does not match the loaded catalogues and particle metadata.");
+    }
     const loaded = normalizeCombinedPayload(
       {
         schema: "zvvnmod-utn57-workbench-v2",
-        baseline: await gitBaselineDigest(
-          mapping,
-          particleMappings,
-          sourceCatalogue,
-          targetCatalogue,
-        ),
+        baseline,
         mapping,
         particleMappings,
       },
