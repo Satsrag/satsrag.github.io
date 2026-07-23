@@ -1,0 +1,49 @@
+# metadata={"schema":"zvvnmod-utn57-particles-v3","description":"Particle identity and compact context metadata with leading MVS/NNBSP context omitted; ordered relation values are joined by ID from the runtime mapping CSV.","provenance":{"mongfontbuilder":{"repository":"https://github.com/Kushim-Jiang/mongfontbuilder","commit":"539b455075486f70889e6de9909eac5dea839d8a","particlesPath":"lib/mongfontbuilder/data/particles.json","aliasesPath":"lib/mongfontbuilder/data/aliases.json"},"meco":{"repository":"https://github.com/Satsrag/meco","commit":"7edff334d33fc367596d1d33406b33bccb8ddc60"}}}
+id,pattern,particleIndices
+particle:01,u u,0
+particle:02,ue ue,0
+particle:03,b ue ue,1
+particle:04,a ch a,0
+particle:05,a ch a g a n,0
+particle:06,i,0
+particle:07,i y a r,0 1
+particle:08,i y e r,0 1
+particle:09,i y a n,0 1
+particle:10,i y e n,0 1
+particle:11,u,0
+particle:12,ue,0
+particle:13,u n,0
+particle:14,ue n,0
+particle:15,u d,0
+particle:16,ue d,0
+particle:17,ch u,1
+particle:18,ch ue,1
+particle:19,t u,1
+particle:20,t ue,1
+particle:21,t ue r,1
+particle:22,t ue n i,1
+particle:23,y ue g e n,1
+particle:24,l ue g e,1
+particle:25,n ue g ue d,1
+particle:26,n ue g e n,1
+particle:27,y ue m,1
+particle:28,y ue m s e n,1
+particle:29,h ue,1
+particle:30,y i,0
+particle:31,y i n,0
+particle:32,d a g a n,0
+particle:33,d e g e n,0
+particle:34,d u,0 1
+particle:35,d ue,0 1
+particle:36,d a g,0
+particle:37,d e g,0
+particle:38,d a h i,0
+particle:39,d e h i,0
+particle:40,d u r,0
+particle:41,d ue r,0 1
+particle:42,d u n i,0
+particle:43,d ue n i,0 1
+particle:44,d u g a r,0
+particle:45,d ue g e r,0 1
+particle:46,d a,0
+particle:47,d e,0

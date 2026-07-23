@@ -1,11 +1,11 @@
 import {
   hasSameParticleScaffold,
   normalizeParticlePayload,
-} from "./particle-model.mjs?v=4";
+} from "./particle-model.mjs?v=5";
 import {
   hasSameGeneratedScaffold,
   normalizeMappingPayload,
-} from "./workbench-model.mjs?v=5";
+} from "./workbench-model.mjs?v=6";
 
 const SCHEMA = "zvvnmod-utn57-workbench-v2";
 const ROOT_FIELDS = ["schema", "baseline", "mapping", "particleMappings"];
@@ -22,7 +22,7 @@ function requireExactFields(value, expected, label) {
   }
 }
 
-export function normalizeCombinedPayload(input, { expectedBaseline } = {}) {
+export function normalizeCombinedPayload(input, { expectedBaseline, sources, targets } = {}) {
   requireExactFields(input, ROOT_FIELDS, "combined root fields");
   if (input.schema !== SCHEMA) throw new TypeError(`combined schema must be ${SCHEMA}`);
   if (typeof input.baseline !== "string" || !BASELINE.test(input.baseline)) {
@@ -31,12 +31,36 @@ export function normalizeCombinedPayload(input, { expectedBaseline } = {}) {
   if (expectedBaseline !== undefined && input.baseline !== expectedBaseline) {
     throw new TypeError("combined baseline does not match the loaded Git baseline");
   }
-  const mapping = normalizeMappingPayload(input.mapping);
+  const mapping = normalizeMappingPayload(input.mapping, { sources, targets });
   const particleMappings = normalizeParticlePayload(input.particleMappings, {
-    sourceIds: new Set(mapping.sources.map((source) => source.id)),
-    targetIds: new Set(mapping.targets.map((target) => target.id)),
+    sourceIds: new Set(sources.map((source) => source.id)),
+    targetIds: new Set(targets.map((target) => target.id)),
   });
   return { schema: SCHEMA, baseline: input.baseline, mapping, particleMappings };
+}
+
+export function applyRuntimeRelations(source, relations, options = {}) {
+  const candidate = structuredClone(normalizeCombinedPayload(source, options));
+  const rows = [...candidate.mapping.mappings, ...candidate.particleMappings.mappings];
+  const byId = new Map(rows.map((row) => [row.id, row]));
+
+  for (const row of candidate.mapping.mappings) {
+    if (row.id.startsWith("target:")) row.sources = [];
+    else row.targets = [];
+  }
+  for (const row of candidate.particleMappings.mappings) {
+    if (row.sources.length) row.targets = [];
+    else row.sources = [];
+  }
+
+  for (const relation of relations) {
+    const row = byId.get(relation.id);
+    if (!row) throw new Error(`Runtime CSV contains unknown row ID: ${relation.id}`);
+    row.sources = [...relation.sources];
+    row.targets = [...relation.targets];
+    row.note = relation.note || "";
+  }
+  return normalizeCombinedPayload(candidate, options);
 }
 
 export function hasSameCombinedScaffold(source, candidate) {
@@ -49,8 +73,4 @@ export function hasSameCombinedScaffold(source, candidate) {
     && hasSameGeneratedScaffold(source.mapping, candidate.mapping)
     && hasSameParticleScaffold(source.particleMappings, candidate.particleMappings)
   );
-}
-
-export function serializeCombinedPayload(payload) {
-  return `${JSON.stringify(normalizeCombinedPayload(payload), null, 2)}\n`;
 }

@@ -2,7 +2,7 @@ import {
   normalizeParticlePayload,
   particleMode,
   updateParticleEntry,
-} from "./particle-model.mjs?v=4";
+} from "./particle-model.mjs?v=5";
 
 const rowsElement = document.querySelector("#particle-mapping-rows");
 const statusElement = document.querySelector("#particle-mapping-status");
@@ -330,7 +330,7 @@ rowsElement.addEventListener("click", (event) => {
     );
     commitParticleEntry(index, saved);
     closeEditor();
-    publishUpdate(`Saved particle mapping ${payload.mappings[index].pattern}. Download the combined JSON to keep it.`);
+    publishUpdate(`Saved particle mapping ${payload.mappings[index].pattern}. Download the runtime CSV to keep it.`);
     return;
   }
   if (action === "restore-particle") {
@@ -396,7 +396,7 @@ window.addEventListener("particle-mapping-unavailable", (event) => {
   statusElement.classList.add("error");
   statusElement.textContent = `Could not load particle mappings: ${event.detail.message}`;
   const row = document.createElement("tr");
-  const cell = element("td", "particle-load-error", "Particle mappings are unavailable. Reload source JSON files to retry.");
+  const cell = element("td", "particle-load-error", "Particle mappings are unavailable. Reload the Git CSV baseline to retry.");
   cell.colSpan = 3;
   row.append(cell);
   rowsElement.replaceChildren(row);

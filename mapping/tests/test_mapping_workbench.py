@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import csv
 import importlib.util
+import io
 import json
 import subprocess
 import tempfile
@@ -9,7 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MAPPING_DATA = ROOT / "mapping/data"
-MAPPING_JSON = MAPPING_DATA / "zvvnmod-utn57-map.json"
+RUNTIME_CSV = MAPPING_DATA / "zvvnmod-utn57-map.csv"
+TARGETS_CSV = MAPPING_DATA / "utn57-written-units.csv"
 CHACHLAG_JSON = MAPPING_DATA / "chachlag-shaping-observations.json"
 CODES_JSON = MAPPING_DATA / "zvvnmod-codes.json"
 PAGE_HTML = ROOT / "mapping/index.html"
@@ -17,7 +20,67 @@ PAGE_HTML = ROOT / "mapping/index.html"
 
 class MappingDataTests(unittest.TestCase):
     def load_mapping(self) -> dict:
-        return json.loads(MAPPING_JSON.read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            generated = Path(directory) / "derived-main.csv"
+            subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "mapping/scripts/generate-default-mapping.py"),
+                    "--reviewed",
+                    str(RUNTIME_CSV),
+                    "--output",
+                    str(generated),
+                    "--targets-output",
+                    str(Path(directory) / "targets.csv"),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            lines = generated.read_text().splitlines()
+        metadata = json.loads(lines[0].removeprefix("# metadata="))
+        rows = list(csv.DictReader(io.StringIO("\n".join(lines[1:]) + "\n")))
+        mappings = [
+            {
+                "id": row["id"],
+                "sources": row["sources"].split() if row["sources"] else [],
+                "targets": row["targets"].split() if row["targets"] else [],
+                "note": row["note"],
+            }
+            for row in rows
+        ]
+        codes = json.loads(CODES_JSON.read_text())
+        retained = {"N_AA_FINA", "HX_AA_FINA"}
+        editable = [
+            code
+            for group in codes["groups"]
+            for position in ("isol", "init", "medi", "fina")
+            for code in group["single"][position]
+        ] + [
+            code
+            for group in codes["groups"]
+            for position in ("isol", "init", "medi", "fina")
+            for code in group["merged"][position]
+            if code["const"] in retained
+        ] + [code for group in codes["groups"] for code in group["special"]]
+        sources = [
+            {
+                "id": code["const"],
+                "name": code["name"],
+                "codepoint": code["codepoint"],
+                "value": code["value"],
+                "glyph": chr(code["value"]),
+                "order": order,
+            }
+            for order, code in enumerate(editable)
+        ]
+        with TARGETS_CSV.open(newline="", encoding="utf-8") as handle:
+            targets = [
+                {**row, "order": order}
+                for order, row in enumerate(csv.DictReader(handle))
+            ]
+        return {**metadata, "sources": sources, "targets": targets, "mappings": mappings}
 
     def test_compact_rust_named_mapping_preserves_inventory_alignment(self) -> None:
         mapping = self.load_mapping()
@@ -51,20 +114,26 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(mapping["sources"][0]["codepoint"], "U+E000")
 
     def test_generator_preserves_all_ten_published_chachlag_defaults(self) -> None:
-        with tempfile.NamedTemporaryFile(suffix=".json") as temporary:
+        with tempfile.TemporaryDirectory() as directory:
+            generated_mapping = Path(directory) / "mapping.csv"
+            generated_targets = Path(directory) / "targets.csv"
             subprocess.run(
                 [
                     "python3",
                     str(ROOT / "mapping/scripts/generate-default-mapping.py"),
                     "--output",
-                    temporary.name,
+                    str(generated_mapping),
+                    "--targets-output",
+                    str(generated_targets),
                 ],
                 cwd=ROOT,
                 check=True,
                 text=True,
                 capture_output=True,
             )
-            generated = json.loads(Path(temporary.name).read_text())
+            self.assertFalse((MAPPING_DATA / "zvvnmod-utn57-main.csv").exists())
+            self.assertEqual(generated_targets.read_bytes(), TARGETS_CSV.read_bytes())
+        generated = self.load_mapping()
         entries = {entry["id"]: entry for entry in generated["mappings"]}
         expected = {
             "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
@@ -219,8 +288,10 @@ class MappingDataTests(unittest.TestCase):
         controller = (ROOT / "mapping/workbench.js").read_text()
         self.assertLess(page.index('id="utn57"'), page.index('id="zvvnmod"'))
         self.assertLess(page.index('id="zvvnmod"'), page.index('id="mapping-workbench"'))
-        self.assertIn('src="workbench.js?v=7"', page)
-        self.assertIn('src="particle-mappings.js?v=4"', page)
+        self.assertIn('src="workbench.js?v=9"', page)
+        self.assertIn('src="particle-mappings.js?v=6"', page)
+        self.assertNotIn("zvvnmod-utn57-main.csv", controller)
+        self.assertIn('const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";', controller)
         self.assertIn("mappingMode(sourceCombinedPayload.mapping.mappings[index], entry)", controller)
         self.assertIn("const baseline = sourceCombinedPayload.mapping.mappings[index];", controller)
         self.assertIn("baseline.sources,", controller)
@@ -243,8 +314,8 @@ class MappingDataTests(unittest.TestCase):
         self.assertGreaterEqual(controller.count("guardActiveDraft("), 6)
         self.assertIn("function beginOperation()", controller)
         self.assertIn("function finishOperation()", controller)
-        self.assertIn("serializeCombinedPayload(combinedPayload)", controller)
-        self.assertIn("normalizeCombinedPayload(JSON.parse(await file.text()), {", controller)
+        self.assertIn("serializeRuntimeMappingCsv(combinedPayload)", controller)
+        self.assertIn("runtimeMappingFromCsv(await file.text(), {", controller)
 
     def test_dual_sequence_styles_and_ultra_narrow_header_remain(self) -> None:
         styles = (ROOT / "mapping/styles.css").read_text()
@@ -342,8 +413,33 @@ class MappingDataTests(unittest.TestCase):
             self.assertIn("chachlag observation snapshot differs", result.stdout + result.stderr)
 
     def run_verifier_with(self, payload: dict) -> subprocess.CompletedProcess[str]:
-        with tempfile.NamedTemporaryFile("w", suffix=".json") as temporary:
-            json.dump(payload, temporary)
+        runtime_lines = RUNTIME_CSV.read_text().splitlines()
+        runtime_metadata = json.loads(runtime_lines[0].removeprefix("# metadata="))
+        runtime_rows = list(csv.DictReader(io.StringIO("\n".join(runtime_lines[1:]) + "\n")))
+        particle_rows = [row for row in runtime_rows if row["id"].startswith("particle:")]
+        main_rows = [
+            {
+                "id": row["id"],
+                "sources": " ".join(row["sources"]),
+                "targets": " ".join(row["targets"]),
+                "note": row["note"],
+            }
+            for row in payload["mappings"]
+            if row["sources"] and row["targets"]
+        ]
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", newline="") as temporary:
+            temporary.write(
+                "# metadata="
+                + json.dumps(runtime_metadata, ensure_ascii=False, separators=(",", ":"))
+                + "\n"
+            )
+            writer = csv.DictWriter(
+                temporary,
+                fieldnames=["id", "sources", "targets", "note"],
+                lineterminator="\n",
+            )
+            writer.writeheader()
+            writer.writerows(main_rows + particle_rows)
             temporary.flush()
             return subprocess.run(
                 [
@@ -351,7 +447,7 @@ class MappingDataTests(unittest.TestCase):
                     "run",
                     "--script",
                     str(ROOT / "mapping/scripts/verify-static-page.py"),
-                    "--mapping-json",
+                    "--mapping-csv",
                     temporary.name,
                 ],
                 cwd=ROOT,
@@ -392,29 +488,11 @@ class MappingDataTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("unknown ZVVNMOD source", result.stdout + result.stderr)
 
-        extra = self.load_mapping()
-        extra["mappings"][0]["mode"] = "direct"
-        result = self.run_verifier_with(extra)
-        self.assertNotEqual(result.returncode, 0)
-
-    def test_verifier_rejects_catalogue_and_row_identity_changes(self) -> None:
-        base = self.load_mapping()
-        mutations = []
-        changed_source = json.loads(json.dumps(base))
-        changed_source["sources"][0]["glyph"] = "tampered"
-        mutations.append(changed_source)
-        changed_id = json.loads(json.dumps(base))
+    def test_verifier_rejects_row_identity_changes(self) -> None:
+        changed_id = self.load_mapping()
         changed_id["mappings"][0]["id"] = "source:O_INIT"
-        mutations.append(changed_id)
-        reordered = json.loads(json.dumps(base))
-        reordered["mappings"][0], reordered["mappings"][1] = (
-            reordered["mappings"][1],
-            reordered["mappings"][0],
-        )
-        mutations.append(reordered)
-        for payload in mutations:
-            result = self.run_verifier_with(payload)
-            self.assertNotEqual(result.returncode, 0)
+        result = self.run_verifier_with(changed_id)
+        self.assertNotEqual(result.returncode, 0)
 
 
 if __name__ == "__main__":

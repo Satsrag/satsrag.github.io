@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -7,13 +6,10 @@ import {
   longestSourceMatches,
   mappingMode,
   normalizeMappingPayload,
-  serializeMappingPayload,
   updateMappingEntry,
 } from "../workbench-model.mjs";
 
-const fixture = JSON.parse(
-  await readFile(new URL("../data/zvvnmod-utn57-map.json", import.meta.url), "utf8"),
-);
+import { mapping as fixture, mappingOptions, sources, targets } from "./fixtures.mjs";
 
 const ROW_KEYS = ["id", "note", "sources", "targets"];
 
@@ -25,11 +21,11 @@ function assertCompactRow(row) {
 }
 
 test("v3 uses Rust constants as ZVVNMOD IDs and compact mapping rows", () => {
-  const normalized = normalizeMappingPayload(structuredClone(fixture));
+  const normalized = normalizeMappingPayload(structuredClone(fixture), mappingOptions);
   assert.equal(normalized.schema, "zvvnmod-utn57-map-v3");
-  assert.equal(normalized.sources[0].id, "A_INIT");
-  assert.equal(normalized.sources[0].codepoint, "U+E000");
-  assert.equal(Object.hasOwn(normalized.sources[0], "const"), false);
+  assert.equal(sources[0].id, "A_INIT");
+  assert.equal(sources[0].codepoint, "U+E000");
+  assert.equal(Object.hasOwn(sources[0], "const"), false);
   assert.equal(normalized.mappings[0].id, "source:A_INIT");
   assert.deepEqual(normalized.mappings[0].sources, ["A_INIT"]);
   normalized.mappings.forEach(assertCompactRow);
@@ -100,41 +96,65 @@ test("longest matching returns only all equal-longest mapping alternatives", () 
 });
 
 test("normalization accepts left-only and right-only rows but rejects both empty", () => {
-  const normalized = normalizeMappingPayload(structuredClone(fixture));
+  const normalized = normalizeMappingPayload(structuredClone(fixture), mappingOptions);
   assert.ok(normalized.mappings.some((entry) => entry.sources.length === 0 && entry.targets.length));
   assert.ok(normalized.mappings.some((entry) => entry.sources.length && entry.targets.length === 0));
 
   const empty = structuredClone(fixture);
   empty.mappings[0].sources = [];
   empty.mappings[0].targets = [];
-  assert.throws(() => normalizeMappingPayload(empty), /both sides empty/i);
+  assert.throws(() => normalizeMappingPayload(empty, mappingOptions), /both sides empty/i);
 });
 
 test("normalization rejects unknown Rust source constants and target IDs", () => {
   const unknownSource = structuredClone(fixture);
   unknownSource.mappings[0].sources = ["NOT_A_RUST_CONST"];
-  assert.throws(() => normalizeMappingPayload(unknownSource), /unknown ZVVNMOD source/i);
+  assert.throws(() => normalizeMappingPayload(unknownSource, mappingOptions), /unknown ZVVNMOD source/i);
 
   const unknownTarget = structuredClone(fixture);
   unknownTarget.mappings[0].targets = ["Unknown:medi"];
-  assert.throws(() => normalizeMappingPayload(unknownTarget), /unknown UTN57 target/i);
+  assert.throws(() => normalizeMappingPayload(unknownTarget, mappingOptions), /unknown UTN57 target/i);
 });
 
-test("normalization is fail-closed for compact schema fields and catalogue order", () => {
+test("target catalogue IDs are unique nonempty sequence tokens", () => {
+  for (const invalidId of ["", "A target", "A\ttarget", "A\ntarget"]) {
+    const invalidTargets = structuredClone(targets);
+    invalidTargets[0].id = invalidId;
+    assert.throws(
+      () => normalizeMappingPayload(fixture, { ...mappingOptions, targets: invalidTargets }),
+      /invalid UTN57 target metadata/,
+    );
+  }
+
+  const duplicateTargets = structuredClone(targets);
+  duplicateTargets[1].id = duplicateTargets[0].id;
+  assert.throws(
+    () => normalizeMappingPayload(fixture, { ...mappingOptions, targets: duplicateTargets }),
+    /duplicate UTN57 target/,
+  );
+});
+
+test("normalization is fail-closed for compact schema fields and external catalogue order", () => {
   const extraMapping = structuredClone(fixture);
   extraMapping.mappings[0].mode = "direct";
-  assert.throws(() => normalizeMappingPayload(extraMapping), /mapping fields/i);
+  assert.throws(() => normalizeMappingPayload(extraMapping, mappingOptions), /mapping fields/i);
 
-  const extraSource = structuredClone(fixture);
-  extraSource.sources[0].const = "A_INIT";
-  assert.throws(() => normalizeMappingPayload(extraSource), /source fields/i);
+  const extraSources = structuredClone(sources);
+  extraSources[0].const = "A_INIT";
+  assert.throws(
+    () => normalizeMappingPayload(fixture, { ...mappingOptions, sources: extraSources }),
+    /source fields/i,
+  );
 
-  const sourceOrder = structuredClone(fixture);
-  sourceOrder.sources[0].order = 99;
-  assert.throws(() => normalizeMappingPayload(sourceOrder), /source order/i);
+  const sourceOrder = structuredClone(sources);
+  sourceOrder[0].order = 99;
+  assert.throws(
+    () => normalizeMappingPayload(fixture, { ...mappingOptions, sources: sourceOrder }),
+    /source order/i,
+  );
 });
 
-test("Git baseline scaffold permits value edits but rejects catalogue or row identity changes", () => {
+test("Git baseline scaffold permits value edits but rejects row identity changes", () => {
   const override = structuredClone(fixture);
   override.mappings[0] = updateMappingEntry(
     override.mappings[0],
@@ -143,10 +163,6 @@ test("Git baseline scaffold permits value edits but rejects catalogue or row ide
     "reviewed",
   );
   assert.equal(hasSameGeneratedScaffold(fixture, override), true);
-
-  const changedCatalogue = structuredClone(override);
-  changedCatalogue.sources[0].glyph = "tampered";
-  assert.equal(hasSameGeneratedScaffold(fixture, changedCatalogue), false);
 
   const changedId = structuredClone(override);
   changedId.mappings[0].id = "source:O_INIT";
@@ -157,16 +173,16 @@ test("Git baseline scaffold permits value edits but rejects catalogue or row ide
   assert.equal(hasSameGeneratedScaffold(fixture, reordered), false);
 });
 
-test("serialization round-trips compact variable-length alignments", () => {
-  const payload = normalizeMappingPayload(structuredClone(fixture));
+test("normalization preserves compact variable-length alignments", () => {
+  const payload = normalizeMappingPayload(structuredClone(fixture), mappingOptions);
   payload.mappings[0] = updateMappingEntry(
     payload.mappings[0],
     ["A_INIT", "O_INIT"],
     ["A:init"],
     "manual mapping",
   );
-  const roundTrip = normalizeMappingPayload(JSON.parse(serializeMappingPayload(payload)));
-  assert.deepEqual(roundTrip.mappings[0], {
+  const normalized = normalizeMappingPayload(payload, mappingOptions);
+  assert.deepEqual(normalized.mappings[0], {
     id: "source:A_INIT",
     sources: ["A_INIT", "O_INIT"],
     targets: ["A:init"],

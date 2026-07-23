@@ -1,25 +1,17 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
   hasSameParticleScaffold,
   normalizeParticlePayload,
   particleMode,
-  serializeParticlePayload,
   updateParticleEntry,
 } from "../particle-model.mjs";
 
-const particlePayload = JSON.parse(
-  await readFile(new URL("../data/zvvnmod-utn57-particles.json", import.meta.url), "utf8"),
-);
-const mappingPayload = JSON.parse(
-  await readFile(new URL("../data/zvvnmod-utn57-map.json", import.meta.url), "utf8"),
-);
-const catalogues = {
-  sourceIds: new Set(mappingPayload.sources.map((source) => source.id)),
-  targetIds: new Set(mappingPayload.targets.map((target) => target.id)),
-};
+import {
+  particleCatalogues as catalogues,
+  particleMappings as particlePayload,
+} from "./fixtures.mjs";
 const ROW_KEYS = ["id", "note", "particleIndices", "pattern", "sources", "targets"];
 
 test("v3 particle rows are compact Rust-name sequence mappings without leading MVS context", () => {
@@ -110,7 +102,7 @@ test("particle scaffold permits sequence and note edits but rejects identity/con
   assert.equal(hasSameParticleScaffold(particlePayload, changedIndices), false);
 });
 
-test("particle serialization round-trips variable-length compact mappings", () => {
+test("particle normalization preserves variable-length compact mappings", () => {
   const edited = structuredClone(particlePayload);
   edited.mappings[6] = updateParticleEntry(
     edited.mappings[6],
@@ -118,10 +110,7 @@ test("particle serialization round-trips variable-length compact mappings", () =
     ["I:init", "I:medi", "R:fina"],
     "reviewed",
   );
-  const roundTrip = normalizeParticlePayload(
-    JSON.parse(serializeParticlePayload(edited, catalogues)),
-    catalogues,
-  );
-  assert.deepEqual(roundTrip.mappings[6].sources, ["I_INIT"]);
-  assert.deepEqual(roundTrip.mappings[6].targets, ["I:init", "I:medi", "R:fina"]);
+  const normalized = normalizeParticlePayload(edited, catalogues);
+  assert.deepEqual(normalized.mappings[6].sources, ["I_INIT"]);
+  assert.deepEqual(normalized.mappings[6].targets, ["I:init", "I:medi", "R:fina"]);
 });

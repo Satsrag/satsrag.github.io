@@ -1,13 +1,22 @@
 import {
+  applyRuntimeRelations,
   hasSameCombinedScaffold,
   normalizeCombinedPayload,
-  serializeCombinedPayload,
-} from "./combined-workbench-model.mjs?v=4";
-import { mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=5";
+} from "./combined-workbench-model.mjs?v=6";
+import { editableSourceCatalogue, mappingMode, updateMappingEntry } from "./workbench-model.mjs?v=6";
+import {
+  mappingPayloadFromRuntime,
+  particlePayloadFromCsv,
+  runtimeMappingFromCsv,
+  serializeRuntimeMappingCsv,
+  targetCatalogueFromCsv,
+} from "./csv-data.mjs?v=2";
 
-const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.json";
-const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.json";
-const DOWNLOAD_NAME = "zvvnmod-utn57-workbench.json";
+const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";
+const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.csv";
+const SOURCE_DATA_URL = "data/zvvnmod-codes.json";
+const TARGET_DATA_URL = "data/utn57-written-units.csv";
+const DOWNLOAD_NAME = "zvvnmod-utn57-map.csv";
 
 const rowsElement = document.getElementById("mapping-rows");
 const shellElement = document.getElementById("mapping-shell");
@@ -23,6 +32,8 @@ const resetElement = document.getElementById("reset-mapping");
 let sourceCombinedPayload;
 let combinedPayload;
 let payload;
+let sourceCatalogue = [];
+let targetCatalogue = [];
 let sourceById = new Map();
 let targetById = new Map();
 let editingIndex = -1;
@@ -37,8 +48,10 @@ function make(tag, className, text) {
   return node;
 }
 
-async function gitBaselineDigest(mapping, particleMappings) {
-  const bytes = new TextEncoder().encode(JSON.stringify({ mapping, particleMappings }));
+async function gitBaselineDigest(mapping, particleMappings, sources, targets) {
+  const bytes = new TextEncoder().encode(
+    JSON.stringify({ mapping, particleMappings, sources, targets }),
+  );
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   const hex = [...new Uint8Array(digest)]
     .map((value) => value.toString(16).padStart(2, "0"))
@@ -51,8 +64,8 @@ function targetLabel(target) {
 }
 
 function refreshCatalogueIndexes() {
-  sourceById = new Map(payload.sources.map((source) => [source.id, source]));
-  targetById = new Map(payload.targets.map((target) => [target.id, target]));
+  sourceById = new Map(sourceCatalogue.map((source) => [source.id, source]));
+  targetById = new Map(targetCatalogue.map((target) => [target.id, target]));
 }
 
 function mappingSearchText(entry) {
@@ -139,7 +152,7 @@ function targetSequence(entry) {
 
 function sourceOptionList(selectedValue = "") {
   const select = make("select", "source-select");
-  payload.sources.forEach((source) => {
+  sourceCatalogue.forEach((source) => {
     const option = document.createElement("option");
     option.value = source.id;
     option.textContent = `${source.id} · ${source.name} · ${source.codepoint}`;
@@ -151,7 +164,7 @@ function sourceOptionList(selectedValue = "") {
 
 function targetOptionList(selectedValue = "") {
   const select = make("select", "target-select");
-  payload.targets.forEach((target) => {
+  targetCatalogue.forEach((target) => {
     const option = document.createElement("option");
     option.value = target.id;
     option.textContent = targetLabel(target);
@@ -212,7 +225,7 @@ function sequenceEditor(side, index) {
   section.append(list);
 
   const addRow = make("div", "sequence-add-row");
-  const firstId = isSource ? payload.sources[0]?.id : payload.targets[0]?.id;
+  const firstId = isSource ? sourceCatalogue[0]?.id : targetCatalogue[0]?.id;
   const addSelect = isSource ? sourceOptionList(firstId || "") : targetOptionList(firstId || "");
   addSelect.id = `add-${side}-${index}`;
   addSelect.dataset.role = `add-${side}-select`;
@@ -316,7 +329,7 @@ function render() {
   rowsElement.replaceChildren(fragment);
   summaryElement.replaceChildren(
     make("span", "summary-count", `${visible} shown`),
-    make("span", "summary-count", `${payload.sources.length} ZVVNMOD sources · ${payload.targets.length} UTN57 targets`),
+    make("span", "summary-count", `${sourceCatalogue.length} ZVVNMOD sources · ${targetCatalogue.length} UTN57 targets`),
     make("span", "summary-count direct", `${counts.direct} direct`),
     make("span", "summary-count special", `${counts.special} special`),
     make("span", "summary-count unmapped", `${counts.unmapped} unmapped`),
@@ -420,26 +433,44 @@ function finishOperation() {
 }
 
 async function loadSourceMapping() {
-  if (guardActiveDraft("reloading source JSON")) return;
+  if (guardActiveDraft("reloading Git CSV baseline")) return;
   if (!beginOperation()) return;
   try {
-    const [mappingResponse, particleResponse] = await Promise.all([
+    const [mappingResponse, particleResponse, sourceResponse, targetResponse] = await Promise.all([
       fetch(MAPPING_DATA_URL, { cache: "no-cache" }),
       fetch(PARTICLE_DATA_URL, { cache: "no-cache" }),
+      fetch(SOURCE_DATA_URL, { cache: "no-cache" }),
+      fetch(TARGET_DATA_URL, { cache: "no-cache" }),
     ]);
-    if (!mappingResponse.ok || !particleResponse.ok) {
-      throw new Error(
-        `Workbench JSON could not be loaded (${mappingResponse.status}/${particleResponse.status}).`,
-      );
+    if (![mappingResponse, particleResponse, sourceResponse, targetResponse].every((response) => response.ok)) {
+      throw new Error("Workbench CSV/catalogue assets could not be loaded.");
     }
-    const mapping = await mappingResponse.json();
-    const particleMappings = await particleResponse.json();
-    const loaded = normalizeCombinedPayload({
-      schema: "zvvnmod-utn57-workbench-v2",
-      baseline: await gitBaselineDigest(mapping, particleMappings),
+    const runtime = runtimeMappingFromCsv(await mappingResponse.text());
+    sourceCatalogue = editableSourceCatalogue(await sourceResponse.json());
+    targetCatalogue = targetCatalogueFromCsv(await targetResponse.text());
+    const mapping = mappingPayloadFromRuntime(runtime, sourceCatalogue, targetCatalogue);
+    const particleMappings = particlePayloadFromCsv(
+      await particleResponse.text(),
+      runtime.mappings,
+    );
+    const baseline = await gitBaselineDigest(
       mapping,
       particleMappings,
-    });
+      sourceCatalogue,
+      targetCatalogue,
+    );
+    if (runtime.baseline !== baseline) {
+      throw new Error("Runtime CSV baseline does not match the loaded catalogues and particle metadata.");
+    }
+    const loaded = normalizeCombinedPayload(
+      {
+        schema: "zvvnmod-utn57-workbench-v2",
+        baseline,
+        mapping,
+        particleMappings,
+      },
+      { sources: sourceCatalogue, targets: targetCatalogue },
+    );
     sourceCombinedPayload = structuredClone(loaded);
     combinedPayload = loaded;
     payload = combinedPayload.mapping;
@@ -451,11 +482,11 @@ async function loadSourceMapping() {
         detail: {
           payload: combinedPayload.particleMappings,
           baseline: sourceCombinedPayload.particleMappings,
-          catalogue: payload,
+          catalogue: { sources: sourceCatalogue, targets: targetCatalogue },
         },
       }),
     );
-    setMessage("Source JSON loaded. Main and particle edits stay in this browser tab until you download one combined JSON.");
+    setMessage("Git CSV baseline loaded. Main and particle edits stay in this browser tab until you download the runtime CSV.");
   } finally {
     finishOperation();
   }
@@ -484,7 +515,7 @@ rowsElement.addEventListener("click", (event) => {
       draft.note,
     );
     const mode = mappingMode(sourceCombinedPayload.mapping.mappings[index], payload.mappings[index]);
-    setMessage(`Saved ${payload.mappings[index].id} as ${mode}. Download JSON to keep this edit.`);
+    setMessage(`Saved ${payload.mappings[index].id} as ${mode}. Download CSV to keep this edit.`);
     return closeEditor();
   }
   if (action === "restore-entry") {
@@ -555,7 +586,7 @@ window.addEventListener("particle-mapping-request-payload", () => {
       detail: {
         payload: combinedPayload.particleMappings,
         baseline: sourceCombinedPayload.particleMappings,
-        catalogue: payload,
+        catalogue: { sources: sourceCatalogue, targets: targetCatalogue },
       },
     }),
   );
@@ -563,12 +594,15 @@ window.addEventListener("particle-mapping-request-payload", () => {
 
 window.addEventListener("particle-mapping-updated", (event) => {
   if (!combinedPayload) return;
-  combinedPayload = normalizeCombinedPayload({
-    ...combinedPayload,
-    particleMappings: event.detail.payload,
-  });
+  combinedPayload = normalizeCombinedPayload(
+    {
+      ...combinedPayload,
+      particleMappings: event.detail.payload,
+    },
+    { sources: sourceCatalogue, targets: targetCatalogue },
+  );
   payload = combinedPayload.mapping;
-  setMessage("Saved particle mapping edit. Download the combined JSON to keep it.");
+  setMessage("Saved particle mapping edit. Download the runtime CSV to keep it.");
 });
 
 window.addEventListener("particle-mapping-draft-state", (event) => {
@@ -578,19 +612,20 @@ window.addEventListener("particle-mapping-draft-state", (event) => {
 });
 
 downloadElement.addEventListener("click", () => {
-  if (guardActiveDraft("downloading JSON")) return;
+  if (guardActiveDraft("downloading CSV")) return;
   if (!combinedPayload) {
-    setMessage("Workbench JSON is not ready. Reload the source JSON before downloading.", true);
+    setMessage("Workbench baseline is not ready. Reload the Git CSV files before downloading.", true);
     return;
   }
-  const blob = new Blob([serializeCombinedPayload(combinedPayload)], { type: "application/json" });
+  const csv = serializeRuntimeMappingCsv(combinedPayload);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = DOWNLOAD_NAME;
   link.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  setMessage(`Downloaded ${DOWNLOAD_NAME} with both main and particle mappings.`);
+  setMessage(`Downloaded ${DOWNLOAD_NAME}; copy it directly into zvvnmod-utn57/data/.`);
 });
 
 resetElement.addEventListener("click", () => {
@@ -603,20 +638,25 @@ importElement.addEventListener("change", async () => {
   const file = importElement.files?.[0];
   importElement.value = "";
   if (!file) return;
-  if (guardActiveDraft("importing JSON")) return;
+  if (guardActiveDraft("importing CSV")) return;
   if (!sourceCombinedPayload) {
-    setMessage("Source JSON must load before importing a workbench file.", true);
+    setMessage("Git CSV baseline must load before importing a workbench file.", true);
     return;
   }
   if (!beginOperation()) return;
   setMessage(`Importing ${file.name}…`);
   try {
-    if (file.size > 5_000_000) throw new Error("Mapping JSON must be smaller than 5 MB.");
-    const imported = normalizeCombinedPayload(JSON.parse(await file.text()), {
+    if (file.size > 5_000_000) throw new Error("Mapping CSV must be smaller than 5 MB.");
+    const runtime = runtimeMappingFromCsv(await file.text(), {
       expectedBaseline: sourceCombinedPayload.baseline,
     });
+    const imported = applyRuntimeRelations(sourceCombinedPayload, runtime.mappings, {
+      expectedBaseline: sourceCombinedPayload.baseline,
+      sources: sourceCatalogue,
+      targets: targetCatalogue,
+    });
     if (!hasSameCombinedScaffold(sourceCombinedPayload, imported)) {
-      throw new Error("Imported JSON does not match the current generated workbench scaffold.");
+      throw new Error("Imported CSV does not match the current generated workbench scaffold.");
     }
     combinedPayload = imported;
     payload = combinedPayload.mapping;
@@ -628,11 +668,11 @@ importElement.addEventListener("change", async () => {
         detail: {
           payload: combinedPayload.particleMappings,
           baseline: sourceCombinedPayload.particleMappings,
-          catalogue: payload,
+          catalogue: { sources: sourceCatalogue, targets: targetCatalogue },
         },
       }),
     );
-    setMessage(`Imported ${file.name}, including main and particle mapping edits.`);
+    setMessage(`Imported ${file.name}; main and particle runtime relations were applied by row ID.`);
   } catch (error) {
     setMessage(`Import failed: ${error.message}`, true);
   } finally {
