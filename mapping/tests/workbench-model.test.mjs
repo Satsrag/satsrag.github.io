@@ -75,7 +75,7 @@ test("longest matching returns only all equal-longest mapping alternatives", () 
   );
   assert.deepEqual(
     longestSourceMatches(fixture.mappings, ["AA_FINA", "AA_FINA"]).map((row) => row.id),
-    ["source:AA_FINA"],
+    ["source:AA_FINA", "target:Aa:fina"],
   );
   assert.deepEqual(
     longestSourceMatches(fixture.mappings, ["A_FINA", "AA_FINA"]).map((row) => row.id),
@@ -92,7 +92,7 @@ test("longest matching returns only all equal-longest mapping alternatives", () 
   assert.deepEqual(a.map((row) => row.id), ["target:A:isol"]);
 
   const aa = longestSourceMatches(fixture.mappings, ["AA_FINA"]);
-  assert.deepEqual(aa.map((row) => row.id), ["source:AA_FINA"]);
+  assert.deepEqual(aa.map((row) => row.id), ["source:AA_FINA", "target:Aa:fina"]);
 });
 
 test("normalization accepts left-only and right-only rows but rejects both empty", () => {

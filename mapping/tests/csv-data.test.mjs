@@ -24,14 +24,13 @@ test("runtime authority plus inventories derives the complete workbench", async 
   const particleMetadata = await read("zvvnmod-utn57-particles.csv");
   const particles = particlePayloadFromCsv(particleMetadata, runtime.mappings);
   assert.match(particleMetadata.split("\n")[1], /^id,pattern,particleIndices$/);
-  assert.equal(mapping.mappings.length, 105);
+  assert.equal(mapping.mappings.length, 106);
   assert.equal(particles.mappings.length, 47);
   assert.equal(targets.length, 97);
   assert.deepEqual(
     mapping.mappings.filter((row) => !row.sources.length || !row.targets.length).map((row) => row.id),
     [
       "source:IR_FINA",
-      "target:Aa:fina",
       "target:Gx:init",
       "target:Gx:medi",
       "target:Ix:isol",
@@ -66,6 +65,29 @@ test("runtime authority plus inventories derives the complete workbench", async 
   );
 });
 
+test("AA final keeps positional candidates and the medial collapse relation", async () => {
+  const runtime = runtimeMappingFromCsv(await read("zvvnmod-utn57-map.csv"));
+  const byId = new Map(runtime.mappings.map((row) => [row.id, row]));
+  assert.deepEqual(byId.get("source:AA_FINA"), {
+    id: "source:AA_FINA",
+    sources: ["AA_FINA"],
+    targets: ["Aa:isol"],
+    note: "",
+  });
+  assert.deepEqual(byId.get("target:Aa:fina"), {
+    id: "target:Aa:fina",
+    sources: ["AA_FINA"],
+    targets: ["Aa:fina"],
+    note: "Position-resolved connected Aa final candidate.",
+  });
+  assert.deepEqual(byId.get("context:A_MEDI_AA_FINA"), {
+    id: "context:A_MEDI_AA_FINA",
+    sources: ["A_MEDI", "AA_FINA"],
+    targets: ["Aa:fina"],
+    note: "A_MEDI and AA_FINA jointly represent a connected Aa final.",
+  });
+});
+
 test("download CSV is the combined non-empty runtime relation artifact", async () => {
   const checkedCsv = await read("zvvnmod-utn57-map.csv");
   const checked = runtimeMappingFromCsv(checkedCsv);
@@ -79,8 +101,8 @@ test("download CSV is the combined non-empty runtime relation artifact", async (
   const baseline = `sha256:${"a".repeat(64)}`;
   const csv = serializeRuntimeMappingCsv({ baseline, mapping, particleMappings });
   const runtime = runtimeMappingFromCsv(csv, { expectedBaseline: baseline });
-  assert.equal(runtime.mappings.length, 145);
-  assert.equal(runtime.mappings.filter((row) => !row.id.startsWith("particle:")).length, 98);
+  assert.equal(runtime.mappings.length, 147);
+  assert.equal(runtime.mappings.filter((row) => !row.id.startsWith("particle:")).length, 100);
   assert.equal(runtime.mappings.filter((row) => row.id.startsWith("particle:")).length, 47);
   assert.ok(runtime.mappings.every((row) => row.sources.length && row.targets.length));
   assert.equal(runtime.mappings.some((row) => row.id === "source:IR_FINA"), false);

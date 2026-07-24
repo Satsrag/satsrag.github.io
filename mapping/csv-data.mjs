@@ -126,6 +126,14 @@ const CANONICAL_SOURCE_TARGETS = new Map([
   ["N_AA_FINA", ["N:fina", "MVS", "Aa:isol"]],
   ["HX_AA_FINA", ["Hx:fina", "MVS", "Aa:isol"]],
 ]);
+const POSITIONAL_ROWS = [
+  [
+    "context:A_MEDI_AA_FINA",
+    ["A_MEDI", "AA_FINA"],
+    ["Aa:fina"],
+    "A_MEDI and AA_FINA jointly represent a connected Aa final.",
+  ],
+];
 const CHACHLAG_ROWS = [
   ["chachlag:M_FINA_AA_FINA", ["M_FINA", "AA_FINA"], ["M:fina", "MVS", "Aa:isol"]],
   ["chachlag:L_FINA_AA_FINA", ["L_FINA", "AA_FINA"], ["L:fina", "MVS", "Aa:isol"]],
@@ -166,6 +174,14 @@ export function mappingScaffoldFromInventories(sources, targets) {
     if (!representedTargets.has(target.id)) {
       mappings.push({ id: `target:${target.id}`, sources: [], targets: [target.id], note: "" });
     }
+  }
+  for (const [id, sourceSequence, targetSequence, note] of POSITIONAL_ROWS) {
+    mappings.push({
+      id,
+      sources: [...sourceSequence],
+      targets: [...targetSequence],
+      note,
+    });
   }
   for (const [id, sourceSequence, targetSequence] of CHACHLAG_ROWS) {
     mappings.push({

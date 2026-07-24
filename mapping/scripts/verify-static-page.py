@@ -28,7 +28,7 @@ PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
 PARTICLE_IMMUTABLE_FIELDS = ("id", "pattern", "particleIndices")
 CHACHLAG_OBSERVATIONS_SHA256 = "cb10b161465fe497d936833032dd09a690659e0354dd9c93f5388a2f5e5710f9"
-REVIEWED_RUNTIME_BASELINE = "sha256:e0ebea2d2696bc41b7e62d72993b76f0e19bea7bc90aec0ad566ad47b31e6624"
+REVIEWED_RUNTIME_BASELINE = "sha256:83a60c3e1ac9df98a14c1a6d979f7c5c8733f1e70d52b81f41de1dd321ea5016"
 
 
 def check(condition: object, message: str) -> None:
@@ -486,9 +486,9 @@ def main() -> None:
         )
         generated_runtime = mapping_csv_payload(generated_runtime_path)
         check(
-            len(generated_runtime["mappings"]) == 145
+            len(generated_runtime["mappings"]) == 147
             and all(row["sources"] and row["targets"] for row in generated_runtime["mappings"]),
-            "runtime mapping CSV must contain 145 two-sided relations",
+            "runtime mapping CSV must contain 147 two-sided relations",
         )
 
     check(isinstance(particle_mapping, dict), "particle mapping root must be an object")
@@ -590,8 +590,8 @@ def main() -> None:
     check(len(particle_ids) == 47, "particle mapping IDs must be unique")
 
     check(
-        len(mapping["mappings"]) == len(generated["mappings"]) == 105,
-        "mapping must contain 105 alignment rows",
+        len(mapping["mappings"]) == len(generated["mappings"]) == 106,
+        "mapping must contain 106 alignment rows",
     )
     row_ids: set[str] = set()
 
@@ -623,8 +623,45 @@ def main() -> None:
 
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
 
-    check(len(row_ids) == 105, "mapping must contain 105 unique alignment row IDs")
+    check(len(row_ids) == 106, "mapping must contain 106 unique alignment row IDs")
     generated_mappings_by_id = {entry["id"]: entry for entry in generated["mappings"]}
+    current_mappings_by_id = {entry["id"]: entry for entry in mapping["mappings"]}
+    check(
+        generated_mappings_by_id["source:AA_FINA"]["sources"] == ["AA_FINA"]
+        and generated_mappings_by_id["source:AA_FINA"]["targets"] == ["Aa:isol"],
+        "generated standalone AA_FINA default differs",
+    )
+    check(
+        generated_mappings_by_id["target:Aa:fina"]["sources"] == []
+        and generated_mappings_by_id["target:Aa:fina"]["targets"] == ["Aa:fina"],
+        "generated Aa:fina target-only scaffold differs",
+    )
+    check(
+        generated_mappings_by_id["context:A_MEDI_AA_FINA"]["sources"]
+        == ["A_MEDI", "AA_FINA"]
+        and generated_mappings_by_id["context:A_MEDI_AA_FINA"]["targets"] == ["Aa:fina"],
+        "generated A_MEDI AA_FINA positional default differs",
+    )
+    aa_final_candidates = [
+        (entry["id"], tuple(entry["targets"]))
+        for entry in mapping["mappings"]
+        if entry["sources"] == ["AA_FINA"]
+    ]
+    check(
+        len(aa_final_candidates) == 2
+        and set(aa_final_candidates)
+        == {
+            ("source:AA_FINA", ("Aa:isol",)),
+            ("target:Aa:fina", ("Aa:fina",)),
+        },
+        "reviewed AA_FINA positional candidate identities differ",
+    )
+    check(
+        current_mappings_by_id["context:A_MEDI_AA_FINA"]["sources"]
+        == ["A_MEDI", "AA_FINA"]
+        and current_mappings_by_id["context:A_MEDI_AA_FINA"]["targets"] == ["Aa:fina"],
+        "reviewed A_MEDI AA_FINA relation differs",
+    )
     expected_chachlag_mappings = {
         "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
         "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
@@ -668,10 +705,6 @@ def main() -> None:
             and generated_mappings_by_id[row_id]["targets"] == expected_targets,
             f"generated chachlag default differs: {row_id}",
         )
-    check(
-        generated_mappings_by_id["source:AA_FINA"]["targets"] == ["Aa:isol"],
-        "generated standalone AA_FINA default differs",
-    )
     observed_chachlag_onsets: set[str] = set()
     for observation in observations:
         glyph_names = observation["utn57GlyphNames"]
@@ -748,7 +781,7 @@ def main() -> None:
         utn_index < zvvnmod_index < workbench_index < particle_index,
         "particle mappings must follow the workbench and both inventories",
     )
-    check('src="workbench.js?v=9"' in mapping_page, "mapping page has stale workbench controller")
+    check('src="workbench.js?v=10"' in mapping_page, "mapping page has stale workbench controller")
     check(
         'src="particle-mappings.js?v=6"' in mapping_page,
         "mapping page does not load particle controller",
@@ -763,7 +796,7 @@ def main() -> None:
         "mapping model import is not cache-busted with its controller",
     )
     check(
-        'from "./csv-data.mjs?v=2"' in workbench_controller,
+        'from "./csv-data.mjs?v=3"' in workbench_controller,
         "CSV model import is not cache-busted with its controller",
     )
     particle_controller = (MAPPING / "particle-mappings.js").read_text()
@@ -781,7 +814,7 @@ def main() -> None:
         f"80 editable ZVVNMOD sources, {len(target_ids)} UTN57 targets, "
         f"{len(row_ids)} alignment rows, "
         f"47 compact editable particle rows ({unequal_particle_rows} with unequal sequence lengths), "
-        "145 directly reusable runtime relations, and Flutter PWA routing"
+        "147 directly reusable runtime relations, and Flutter PWA routing"
     )
 
 

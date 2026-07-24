@@ -10,7 +10,7 @@ import {
   runtimeMappingFromCsv,
   serializeRuntimeMappingCsv,
   targetCatalogueFromCsv,
-} from "./csv-data.mjs?v=2";
+} from "./csv-data.mjs?v=3";
 
 const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";
 const PARTICLE_DATA_URL = "data/zvvnmod-utn57-particles.csv";
