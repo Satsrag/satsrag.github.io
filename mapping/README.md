@@ -8,7 +8,7 @@ Static reference and editing page for preparing the UTN57 ↔ ZVVNMOD mapping Ma
 - `data/zvvnmod-unicode-names.csv`: the authoritative ZVVNMOD name inventory snapshot.
 - `data/zvvnmod-codes.json`: browser data grouped by base written-unit ID and joining position.
 - `data/utn57-written-units.csv`: generated browser target catalogue, including UTN format controls.
-- `data/zvvnmod-utn57-map.csv`: the sole reviewed relation authority: 145 two-sided main and particle runtime rows, byte-identical to an unedited browser download and directly reusable by the Rust repository.
+- `data/zvvnmod-utn57-map.csv`: the sole reviewed relation authority: 147 two-sided main and particle runtime rows, byte-identical to an unedited browser download and published for byte-for-byte synchronization with the Rust generator input.
 - `data/mongfontbuilder-particles.json`: exact Mongfontbuilder particle dictionary snapshot used by the particle generator.
 - `data/mongfontbuilder-aliases.json`: exact Mongfontbuilder alias dictionary used to derive nominal Unicode code points.
 - `data/particle-shaping-observations.json`: recorded Mongfontbuilder HarfBuzz glyph output and meco raw ZVVNMOD output for each MNG particle pattern.
@@ -17,7 +17,9 @@ Static reference and editing page for preparing the UTN57 ↔ ZVVNMOD mapping Ma
 - `assets/writtenunits-Regular.ttf`: UTN57 written-unit display font from Mongolian Font Builder.
 - `assets/zvvnmod.ttf`: generated from meco's formal `zvvnmod.sfd`.
 
-The browser derives the 105-row main workbench from the sole runtime relation CSV plus the source and target inventories. Seven currently unmatched inventory items are added as one-sided rows at load time; they are not stored in a second mapping file.
+The browser derives the 106-row main workbench from the sole runtime relation CSV plus the source and target inventories. Six currently unmatched inventory items are added as one-sided rows at load time; they are not stored in a second mapping file.
+
+The reviewed relation preserves both `AA_FINA → Aa:isol` and `AA_FINA → Aa:fina` as equal-source positional candidates, plus the longer `A_MEDI AA_FINA → Aa:fina` collapse. This defines the compatible-consumer contract: first apply longest match, then prefer the candidate for the matched span's actual word position; when that position has no candidate, fall back to the unique target whose overall position matches the source sequence's theoretical position.
 
 ## Mapping CSV workflow
 

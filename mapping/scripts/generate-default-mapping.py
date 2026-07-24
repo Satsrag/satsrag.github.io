@@ -24,6 +24,14 @@ CANONICAL_SOURCE_TARGETS = {
     "N_AA_FINA": ("N:fina", "MVS", "Aa:isol"),
     "HX_AA_FINA": ("Hx:fina", "MVS", "Aa:isol"),
 }
+POSITIONAL_RULES = (
+    (
+        "context:A_MEDI_AA_FINA",
+        ("A_MEDI", "AA_FINA"),
+        ("Aa:fina",),
+        "A_MEDI and AA_FINA jointly represent a connected Aa final.",
+    ),
+)
 CHACHLAG_RULES = (
     (
         "chachlag:M_FINA_AA_FINA",
@@ -212,6 +220,20 @@ def build_mapping(
         )
 
     valid_sources = {source["id"] for source in sources}
+    for row_id, source_sequence, target_sequence, note in POSITIONAL_RULES:
+        if not set(source_sequence) <= valid_sources:
+            raise ValueError(f"positional rule {row_id} references an unknown ZVVNMOD source")
+        if not set(target_sequence) <= valid_targets:
+            raise ValueError(f"positional rule {row_id} references an unknown UTN57 target")
+        mappings.append(
+            {
+                "id": row_id,
+                "sources": list(source_sequence),
+                "targets": list(target_sequence),
+                "note": note,
+            }
+        )
+
     for row_id, source_sequence, target_sequence in CHACHLAG_RULES:
         if not set(source_sequence) <= valid_sources:
             raise ValueError(f"chachlag rule {row_id} references an unknown ZVVNMOD source")

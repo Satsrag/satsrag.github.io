@@ -103,8 +103,8 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v3")
         self.assertEqual(len(source_ids), 80)
         self.assertEqual(set(source_ids), set(expected_sources))
-        self.assertEqual(len(mapping["mappings"]), 105)
-        self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 6)
+        self.assertEqual(len(mapping["mappings"]), 106)
+        self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 5)
         self.assertEqual(sum(not entry["targets"] for entry in mapping["mappings"]), 1)
         self.assertTrue(all(entry["sources"] or entry["targets"] for entry in mapping["mappings"]))
         self.assertTrue(
@@ -112,6 +112,43 @@ class MappingDataTests(unittest.TestCase):
         )
         self.assertTrue(all("const" not in source for source in mapping["sources"]))
         self.assertEqual(mapping["sources"][0]["codepoint"], "U+E000")
+
+    def test_generator_derives_aa_final_position_scaffold(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            generated_mapping = Path(directory) / "mapping.csv"
+            subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "mapping/scripts/generate-default-mapping.py"),
+                    "--reviewed",
+                    str(Path(directory) / "missing-reviewed.csv"),
+                    "--output",
+                    str(generated_mapping),
+                    "--targets-output",
+                    str(Path(directory) / "targets.csv"),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
+            rows = list(csv.DictReader(io.StringIO("\n".join(generated_mapping.read_text().splitlines()[1:]) + "\n")))
+        entries = {row["id"]: row for row in rows}
+        self.assertEqual(
+            (entries["source:AA_FINA"]["sources"], entries["source:AA_FINA"]["targets"]),
+            ("AA_FINA", "Aa:isol"),
+        )
+        self.assertEqual(
+            (entries["target:Aa:fina"]["sources"], entries["target:Aa:fina"]["targets"]),
+            ("", "Aa:fina"),
+        )
+        self.assertEqual(
+            (
+                entries["context:A_MEDI_AA_FINA"]["sources"],
+                entries["context:A_MEDI_AA_FINA"]["targets"],
+            ),
+            ("A_MEDI AA_FINA", "Aa:fina"),
+        )
 
     def test_generator_preserves_all_ten_published_chachlag_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -288,7 +325,8 @@ class MappingDataTests(unittest.TestCase):
         controller = (ROOT / "mapping/workbench.js").read_text()
         self.assertLess(page.index('id="utn57"'), page.index('id="zvvnmod"'))
         self.assertLess(page.index('id="zvvnmod"'), page.index('id="mapping-workbench"'))
-        self.assertIn('src="workbench.js?v=9"', page)
+        self.assertIn('src="workbench.js?v=10"', page)
+        self.assertIn('from "./csv-data.mjs?v=3"', controller)
         self.assertIn('src="particle-mappings.js?v=6"', page)
         self.assertNotIn("zvvnmod-utn57-main.csv", controller)
         self.assertIn('const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";', controller)
@@ -454,6 +492,34 @@ class MappingDataTests(unittest.TestCase):
                 text=True,
                 capture_output=True,
             )
+
+    def test_verifier_rejects_aa_final_positional_relation_drift(self) -> None:
+        mutations = []
+
+        missing_candidate = self.load_mapping()
+        next(
+            row for row in missing_candidate["mappings"] if row["id"] == "target:Aa:fina"
+        )["sources"] = []
+        mutations.append((missing_candidate, "reviewed AA_FINA positional candidate identities differ"))
+
+        changed_candidate = self.load_mapping()
+        next(
+            row for row in changed_candidate["mappings"] if row["id"] == "target:Aa:fina"
+        )["targets"] = ["Aa:isol"]
+        mutations.append((changed_candidate, "reviewed AA_FINA positional candidate identities differ"))
+
+        changed_context = self.load_mapping()
+        next(
+            row
+            for row in changed_context["mappings"]
+            if row["id"] == "context:A_MEDI_AA_FINA"
+        )["targets"] = ["Aa:isol"]
+        mutations.append((changed_context, "reviewed A_MEDI AA_FINA relation differs"))
+
+        for payload, message in mutations:
+            result = self.run_verifier_with(payload)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(message, result.stdout + result.stderr)
 
     def test_verifier_accepts_compact_unequal_length_override(self) -> None:
         payload = self.load_mapping()
