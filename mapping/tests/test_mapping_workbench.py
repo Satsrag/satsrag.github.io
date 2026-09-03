@@ -272,7 +272,7 @@ class MappingDataTests(unittest.TestCase):
             "target:Dd:fina": ["O_MEDI", "A_FINA"],
             "target:G:fina": ["I_MEDI", "AA_FINA"],
             "target:H:medi": ["A_MEDI", "A_MEDI"],
-            "target:Hx:medi": ["M_MEDI", "M_MEDI"],
+            "target:Hx:medi": ["N_MEDI", "N_MEDI"],
             "target:K2:init": ["K_INIT"],
             "target:K2:medi": ["K_MEDI"],
             "target:K2:fina": ["K_FINA"],

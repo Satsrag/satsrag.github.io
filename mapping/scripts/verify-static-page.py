@@ -28,7 +28,7 @@ PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
 PARTICLE_IMMUTABLE_FIELDS = ("id", "pattern", "particleIndices")
 CHACHLAG_OBSERVATIONS_SHA256 = "cb10b161465fe497d936833032dd09a690659e0354dd9c93f5388a2f5e5710f9"
-REVIEWED_RUNTIME_BASELINE = "sha256:83a60c3e1ac9df98a14c1a6d979f7c5c8733f1e70d52b81f41de1dd321ea5016"
+REVIEWED_RUNTIME_BASELINE = "sha256:843af21ad5356565c2f0559a18feaafa3d000ae666d9035c389e26eda199c237"
 
 
 def check(condition: object, message: str) -> None:
