@@ -1,6 +1,6 @@
 /**
  * Translate `input` from encoding `from` to `to`. `from`/`to` are canonical encoding names
- * ("zvvnmod", "delehi", "menk_shape", "menk_letter", "z52", plus the output-only "utn57").
+ * ("zvvnmod", "delehi", "menk_shape", "menk_letter", "z52", "utn57").
  * Throws a JS `Error` on an unknown encoding name or an unsupported conversion.
  * @param {string} from
  * @param {string} to
