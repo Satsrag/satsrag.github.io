@@ -68,7 +68,7 @@
     /* the mirror of `.cu.sel`: the characters a code-point selection covers, lit in the box above */
     .bd .hl { background:rgb(45 125 111 / .3); border-radius:3px; box-shadow:0 0 0 1px rgb(45 125 111 / .3); }
     .bd .hl.bad { background:rgb(192 57 43 / .22); box-shadow:0 0 0 1px rgb(192 57 43 / .3); }
-    /* an echo is the same mark in a pane you did not select in: word-level, so toned down */
+    /* an echo is the same mark in a pane you did not select in: whole words, so toned down */
     .bd .hl.echo { background:rgb(45 125 111 / .13); box-shadow:0 0 0 1px rgb(45 125 111 / .2); }
     .bd .hl.echo.bad { background:rgb(192 57 43 / .1); box-shadow:0 0 0 1px rgb(192 57 43 / .2); }
     textarea.mong::placeholder { color:#b6b1a5; }
@@ -109,6 +109,12 @@
     #alert.bad button:hover { filter:none; background:#ffe6e2; }
     @keyframes alertIn { from { opacity:.4; transform:translateY(-4px); } to { opacity:1; transform:none; } }
     #alert.bad { animation:alertIn .18s ease-out; }
+    /* Amber: the conversion succeeded, but had to go beyond what the input said (an invented ZWJ,
+       which means the hub lacks a glyph for that position). Worth reporting, not a failure. */
+    #alert.warn { color:#5c3d00; background:#fff3d6; border-color:#d9a400; }
+    #alert.warn::before { content:"⚠"; flex:0 0 auto; font-size:17px; line-height:1; }
+    #alert.warn button { color:#5c3d00; background:#fff; border-color:#d9a400; }
+    #alert.warn button:hover { filter:none; background:#ffe9b8; }
     @media (prefers-reduced-motion: reduce) { #alert.bad { animation:none; } }
     #report { width:min(760px,92vw); border:1px solid var(--bd); border-radius:12px; padding:0;
               color:#222; background:var(--bg); }
@@ -212,7 +218,7 @@
     </dialog>
 
 <script type="module">
-import init, { translate, version } from "./pkg/meco_wasm.js";
+import init, { translate, translate_with_warnings, version } from "./pkg/meco_wasm.js";
 
 const SIDE_TYPES = ["z52", "menk_shape", "menk_letter", "delehi", "utn57"]; // oyun still deferred
 // Every one of these reads and writes; the left/right split is a layout choice about where you
@@ -411,39 +417,96 @@ function markHex(which, cells){
 
 // --- echoing a selection across panes ------------------------------------
 // The three texts are the same words in three encodings, but a word rarely has the same number of
-// code points in each, so characters cannot be matched one to one. Words can: split every pane on
-// the same separators and, when all three come out with the same count, the n-th word of one is
-// the n-th word of the others. When the counts disagree (an encoding turned a space into NNBSP,
-// or a side failed to convert) fall back to lines. A selection maps to the words it touches.
-const SPLITS = [/[ \u202f\t\r\n]+/g, /[\r\n]+/g];
-function tokens(text, re){
-    const out = []; let i = 0, m; re.lastIndex = 0;
-    while((m = re.exec(text))){ if(m.index > i) out.push([i, m.index]); i = m.index + m[0].length; }
-    if(i < text.length) out.push([i, text.length]);
-    return out;
+// code points in each, so characters cannot be matched one to one. Cut points can. The hub text
+// was converted from one side and converted into the other, and a position p in the source of
+// such a conversion is a cut when converting the text up to p yields exactly the converted text
+// up to some q. Candidates are the edges of every run of spaces / NNBSP and every line end —
+// word boundaries, which the converters treat as context breaks — and each one is verified by
+// actually converting, so a boundary a converter does not respect (a suffix after NNBSP that
+// became MVS, say) is simply dropped and its word merges with its neighbour. A selection then
+// echoes as the span between the nearest cuts around it. (Guessing separators instead fails
+// exactly there: utn57 writes the suffix connector as MVS, which is also a letter-internal mark.)
+const SEPS = /[  \t\r]+/g;
+let budget = 0; // characters this alignment may still convert; word cuts stop when it runs out
+function conv(from, to, s){
+    budget -= s.length;
+    try{ return translate(from, to, s); }catch(e){ return null; }
 }
-let alignKey = null, alignSegs = null; // memo: the alignment only changes when a text does
+
+// Verified cut pairs [p, q] between `a` and `b`, where `b` is `a` converted from → to, ascending
+// on both sides from [0, 0] to the ends. Null when `b` is not in fact that conversion.
+function cutPairs(from, to, a, b){
+    if(conv(from, to, a) !== b) return null;
+    const cuts = [[0, 0]];
+    let qa = 0, qb = 0;               // aligned so far: a[:qa] ↔ b[:qb]
+    const lines = a.split("\n");
+    for(let i = 0; i < lines.length; i++){
+        const la = lines[i], last = i === lines.length - 1;
+        const out = conv(from, to, la);
+        const fits = out !== null && b.startsWith(out, qb)
+            && (last ? qb + out.length === b.length : b[qb + out.length] === "\n");
+        if(fits){
+            let m; SEPS.lastIndex = 0;
+            while(budget > 0 && (m = SEPS.exec(la))){
+                for(const p of [m.index, m.index + m[0].length]){
+                    if(p === 0 || p === la.length) continue;
+                    const pre = conv(from, to, la.slice(0, p));
+                    if(pre !== null && out.startsWith(pre)) cuts.push([qa + p, qb + pre.length]);
+                }
+            }
+            qa += la.length; qb += out.length;
+        }else{
+            // the line does not convert on its own; settle for its end, via the whole text so far
+            const pre = conv(from, to, a.slice(0, qa + la.length));
+            if(pre === null || !b.startsWith(pre)) break;
+            qa += la.length; qb = pre.length;
+        }
+        if(!last){ cuts.push([qa, qb]); qa += 1; qb += 1; cuts.push([qa, qb]); }
+    }
+    cuts.push([a.length, b.length]);
+    const asc = [];                   // strictly ascending on both sides, or the bracketing breaks
+    for(const c of cuts){
+        const l = asc[asc.length - 1];
+        if(!l || (c[0] > l[0] && c[1] > l[1])) asc.push(c);
+    }
+    return asc;
+}
+
+// The hub is the pivot: for each side, cut pairs [pM, pX], found in whichever direction the two
+// texts were actually converted. Memoised on the encodings and texts, since it only changes when
+// they do, and building it converts every line a few dozen times.
+let alignKey = null, alignPairs = null;
 function alignment(){
     const t = { L:$("boxL").value, M:$("boxM").value, R:$("boxR").value };
-    const key = t.L + "\0" + t.M + "\0" + t.R;
-    if(key === alignKey) return alignSegs;
-    alignKey = key; alignSegs = null;
-    for(const re of SPLITS){
-        const segs = { L:tokens(t.L, re), M:tokens(t.M, re), R:tokens(t.R, re) };
-        if(segs.L.length && segs.L.length === segs.M.length && segs.M.length === segs.R.length){
-            alignSegs = segs; break;
-        }
-    }
-    return alignSegs;
+    const key = [encOf("L"), encOf("R"), t.L, t.M, t.R].join("\0");
+    if(key === alignKey) return alignPairs;
+    alignKey = key; budget = 4e6;
+    const side = x => {
+        if(!t.M || !t[x]) return null;
+        const mx = cutPairs("zvvnmod", encOf(x), t.M, t[x]);
+        if(mx) return mx;
+        const xm = cutPairs(encOf(x), "zvvnmod", t[x], t.M);
+        return xm ? xm.map(c => [c[1], c[0]]) : null;
+    };
+    alignPairs = { L: side("L"), R: side("R") };
+    return alignPairs;
 }
-// The [from, to) range in pane `to` that stands for `hl` in pane `from`: the span of the words it
-// touches. Null when the panes cannot be aligned or the range touches no word.
+// The span between the nearest cuts around `hl` on side `i` of `pairs`, read off the other side.
+function bracket(pairs, i, hl){
+    let lo = pairs[0], hi = pairs[pairs.length - 1];
+    for(const c of pairs){ if(c[i] <= hl[0]) lo = c; if(c[i] >= hl[1]){ hi = c; break; } }
+    return [lo[1 - i], hi[1 - i]];
+}
+// The [from, to) range in pane `to` that stands for `hl` in pane `from`, or null when the two
+// cannot be aligned. Side to side goes through the hub.
 function echoRange(from, hl, to){
+    if(!hl) return null;
     const al = alignment();
-    if(!al || !hl) return null;
-    let i = -1, j = -1;
-    al[from].forEach((w, k)=>{ if(w[0] < hl[1] && w[1] > hl[0]){ if(i < 0) i = k; j = k; } });
-    return i < 0 ? null : [al[to][i][0], al[to][j][1]];
+    const toHub   = x => al[x] ? bracket(al[x], 1, hl) : null;
+    const fromHub = (x, h) => al[x] && h ? bracket(al[x], 0, h) : null;
+    if(from === "M") return fromHub(to, hl);
+    if(to === "M")   return toHub(from);
+    return fromHub(to, toHub(from));
 }
 
 // One selection drives everything: a box with focus lights its own code-point row (box → row); a
@@ -485,12 +548,16 @@ function applyFonts(){
     $("wrapM").style.fontFamily = FONTS.zvvnmod+FALLBACK;
     applySide("R");
 }
-// Returns the converted string, or null after recording why it failed in `errs[slot]`.
+// Returns the converted string, or null after recording why it failed in `errs[slot]`. What the
+// conversion had to do beyond the input — today, a ZWJ the UTN #57 encoder invented because the hub
+// has no glyph for that position — lands in `warns[slot]`, one message per affected run.
 const errs = {};
+const warns = {};
 function tr(from,to,s,slot){
     errs[slot] = null;
+    warns[slot] = [];
     if(s==="") return "";
-    try{ return translate(from,to,s); }
+    try{ const r = translate_with_warnings(from,to,s); warns[slot] = r.warnings; return r.text; }
     catch(e){ errs[slot] = (e && e.message) || String(e); return null; }
 }
 
@@ -500,7 +567,7 @@ function tr(from,to,s,slot){
 // output only, so a new encoding there just re-encodes it from the hub.
 function reconvert(which){
     if(which !== "R"){ recompute(which); return; }
-    errs[which] = null;
+    errs[which] = null; warns[which] = [];
     const out = tr("zvvnmod", encOf(which), $("boxM").value, which);
     $("box"+which).value = out===null ? "" : out;
     paintPane(which);
@@ -512,6 +579,7 @@ function reconvert(which){
 // recompute from a source box ("L" | "M" | "R")
 function recompute(src){
     errs.L = errs.M = errs.R = null;
+    warns.L = warns.M = warns.R = [];
     const val = $("box"+src).value;
     const srcEnc = encOf(src);
     // to hub
@@ -559,6 +627,7 @@ function diagnostics(){
         "hub":    paneField("M"),
         "actual": paneField("R"),
         "meco-error": errs.L || errs.M || errs.R || "",
+        "meco-warning": allWarnings().join("\n"),
         "screenshot": "",   // filled in by pasting; the URL cannot carry an image
         "environment": [
             `core: ${CORE} (wasm)`,
@@ -571,7 +640,8 @@ function diagnostics(){
 const LABEL = {
     "from-encoding":"Source encoding / 源编码", "to-encoding":"Target encoding / 目标编码",
     "input":"Input / 输入", "hub":"Hub / 中间码 zvvnmod", "actual":"Actual output / 实际输出",
-    "meco-error":"Error from meco / meco 报错", "environment":"Environment / 环境",
+    "meco-error":"Error from meco / meco 报错", "meco-warning":"Warning from meco / meco 警告",
+    "environment":"Environment / 环境",
 };
 const reportText = d => Object.entries(d)
     .map(([k,v]) => `${k}:\n${(v||"(空)").split("\n").map(l=>"  "+l).join("\n")}`).join("\n\n");
@@ -590,6 +660,7 @@ function issueBody(d, what){
         `### ${LABEL["actual"]}`, "", block("actual"), "",
         "### Expected output / 期望输出", "", "_(to be filled in / 待补充)_", "",
         `### ${LABEL["meco-error"]}`, "", block("meco-error"), "",
+        `### ${LABEL["meco-warning"]}`, "", block("meco-warning"), "",
         "### Screenshot / 截图", "",
         shot ? "_(on your clipboard — paste it here with Cmd/Ctrl+V / 截图已复制到剪贴板，在这一行粘贴)_"
              : "_(none / 无)_", "",
@@ -676,17 +747,23 @@ const IDLE_MSG = "A conversion looks wrong? Report it — the code points go alo
                + "/ 转换结果不对？点右边报一下，码点会自动带上。";
 let shown = null;
 function idle(){
-    $("alert").classList.remove("bad");
+    $("alert").classList.remove("bad", "warn");
     $("alertMsg").textContent = IDLE_MSG;
     $("alertClose").hidden = true;
 }
+const allWarnings = () => ["L","M","R"].flatMap(x => warns[x] || []);
 function updateAlert(){
     const err = errs.L || errs.M || errs.R || null;
-    if(!err){ idle(); shown = null; return; }
-    if(err === shown) return;              // same failure, already raised or dismissed
-    shown = err;
-    $("alert").classList.add("bad");
-    $("alertMsg").textContent = "Conversion failed / 转换报错: " + err;
+    const warning = err ? null : allWarnings().join("\n") || null;
+    const raise = err || warning;
+    if(!raise){ idle(); shown = null; return; }
+    if(raise === shown) return;            // same failure or warning, already raised or dismissed
+    shown = raise;
+    $("alert").classList.remove("bad", "warn");
+    $("alert").classList.add(err ? "bad" : "warn");
+    $("alertMsg").textContent = err
+        ? "Conversion failed / 转换报错: " + err
+        : "Converted with a warning / 转换成功但有警告: " + warning;
     $("alertClose").hidden = false;
 }
 
