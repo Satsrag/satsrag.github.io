@@ -1,7 +1,9 @@
 /**
  * A finished conversion: `text` is what `translate` returns, `warnings` says what the conversion
  * had to do beyond what the input said (empty for most conversions). Today only the `utn57`
- * target raises any, for a hub run it could spell only with an invented ZWJ.
+ * target raises any, for a hub run it could spell only with an invented ZWJ. `repairs` lists
+ * the suffix separators that `translate_with_options` restored, one entry per edit; it is empty
+ * unless repair was requested.
  */
 export class Translation {
     static __wrap(ptr) {
@@ -19,6 +21,15 @@ export class Translation {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_translation_free(ptr, 0);
+    }
+    /**
+     * @returns {string[]}
+     */
+    get repairs() {
+        const ret = wasm.__wbg_get_translation_repairs(this.__wbg_ptr);
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
     }
     /**
      * @returns {string}
@@ -43,6 +54,14 @@ export class Translation {
         var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
         wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
         return v1;
+    }
+    /**
+     * @param {string[]} arg0
+     */
+    set repairs(arg0) {
+        const ptr0 = passArrayJsValueToWasm0(arg0, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.__wbg_set_translation_repairs(this.__wbg_ptr, ptr0, len0);
     }
     /**
      * @param {string} arg0
@@ -95,6 +114,30 @@ export function translate(from, to, input) {
     } finally {
         wasm.__wbindgen_free(deferred5_0, deferred5_1, 1);
     }
+}
+
+/**
+ * Like `translate_with_warnings`, with `repair_suffix_separators` set, also restores NNBSP before
+ * known suffixes in `menk_letter` / `delehi` input first (a space that lost its NNBSP would
+ * otherwise shape as an independent word). Throws if repair is requested for any other source.
+ * @param {string} from
+ * @param {string} to
+ * @param {string} input
+ * @param {boolean} repair_suffix_separators
+ * @returns {Translation}
+ */
+export function translate_with_options(from, to, input, repair_suffix_separators) {
+    const ptr0 = passStringToWasm0(from, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passStringToWasm0(to, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ptr2 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len2 = WASM_VECTOR_LEN;
+    const ret = wasm.translate_with_options(ptr0, len0, ptr1, len1, ptr2, len2, repair_suffix_separators);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return Translation.__wrap(ret[0]);
 }
 
 /**
