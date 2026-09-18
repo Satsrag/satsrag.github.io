@@ -83,6 +83,26 @@ export class Translation {
 if (Symbol.dispose) Translation.prototype[Symbol.dispose] = Translation.prototype.free;
 
 /**
+ * Restore legacy SoftBank/iOS emoji that collide with MenkShape PUA.
+ * @param {string} input
+ * @returns {string}
+ */
+export function restore_menk_shape_emoji(input) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.restore_menk_shape_emoji(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
  * Translate `input` from encoding `from` to `to`. `from`/`to` are canonical encoding names
  * ("zvvnmod", "delehi", "menk_shape", "menk_letter", "z52", "utn57").
  * Throws a JS `Error` on an unknown encoding name or an unsupported conversion.
@@ -114,6 +134,29 @@ export function translate(from, to, input) {
     } finally {
         wasm.__wbindgen_free(deferred5_0, deferred5_1, 1);
     }
+}
+
+/**
+ * Like `translate_with_options`, with all currently supported input-normalization switches.
+ * @param {string} from
+ * @param {string} to
+ * @param {string} input
+ * @param {boolean} repair_suffix_separators
+ * @param {boolean} restore_menk_shape_emoji
+ * @returns {Translation}
+ */
+export function translate_with_all_options(from, to, input, repair_suffix_separators, restore_menk_shape_emoji) {
+    const ptr0 = passStringToWasm0(from, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ptr1 = passStringToWasm0(to, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    const ptr2 = passStringToWasm0(input, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len2 = WASM_VECTOR_LEN;
+    const ret = wasm.translate_with_all_options(ptr0, len0, ptr1, len1, ptr2, len2, repair_suffix_separators, restore_menk_shape_emoji);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return Translation.__wrap(ret[0]);
 }
 
 /**
