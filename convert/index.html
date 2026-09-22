@@ -195,7 +195,7 @@
         </div>
     </div>
 
-    <footer><a href="../">← other tools / 其他工具</a> · <a href="https://github.com/Satsrag/meco-rust">Satsrag/meco-rust</a>
+    <footer><a href="../">← other tools / 其他工具</a> · <a href="https://github.com/Satsrag/mongol-convert">Satsrag/mongol-convert</a>
         · <a href="#" id="forget" title="clear the encodings and text this browser remembers / 清空本浏览器记住的编码选择和文本">forget local memory / 清除本地记忆</a></footer>
 
 
@@ -229,13 +229,13 @@
     </dialog>
 
 <script type="module">
-import init, { restore_menk_shape_emoji, translate, translate_with_warnings, translate_with_options, version } from "./pkg/meco_wasm.js";
+import init, { restore_menk_shape_emoji, translate, translate_with_warnings, translate_with_options, version } from "./pkg/mongol_convert_wasm.js";
 
 const SIDE_TYPES = ["z52", "menk_shape", "menk_letter", "delehi", "utn57", "utn57_shape"]; // oyun still deferred
 // Every one of these reads and writes; the left/right split is a layout choice about where you
-// type, not a limit on what meco can decode.
+// type, not a limit on what mongol-convert can decode.
 const SOURCE_TYPES = SIDE_TYPES;
-// The encodings whose input meco can repair (a space before a known suffix → NNBSP). The checkbox
+// The encodings whose input mongol-convert can repair (a space before a known suffix → NNBSP). The checkbox
 // is ignored, not an error, for the others.
 const REPAIRABLE = ["menk_letter", "delehi"];
 const repairOn = enc => $("repair").checked && REPAIRABLE.includes(enc);
@@ -271,7 +271,7 @@ let CORE = "?"; // filled in once the wasm module reports its version
 // The encodings live in disjoint parts of the code space: the letter encodings are standard Unicode
 // Hudum, z52 borrows the Todo/Sibe/Manchu range as shape codes, and zvvnmod/menk_shape are PUA.
 // Anything neutral — space, NNBSP, MVS, FVS, punctuation, ASCII, CJK — is never flagged, because
-// meco passes it through by design; only a letter from the *wrong* encoding is a real mistake.
+// mongol-convert passes it through by design; only a letter from the *wrong* encoding is a real mistake.
 function cls(cp){
     if(cp>=0xE000 && cp<=0xF8FF) return "pua";
     if(cp>=0x1820 && cp<=0x1842) return "hudum";
@@ -307,7 +307,7 @@ function paint(text, enc, hl, echo){
 // Per-browser only: the selected encoding/font of each side plus what is in the three boxes, so a
 // reload lands you where you left off. Every access is guarded — storage throws outright in some
 // privacy modes, and a page that cannot remember must still work.
-const LS_KEY = "meco-wasm-demo/v1";
+const LS_KEY = "mongol-convert-wasm-demo/v1";
 function saveState(){
     try{
         localStorage.setItem(LS_KEY, JSON.stringify({
@@ -553,7 +553,7 @@ function fillSel(sel, def, types){ types.forEach(t=>{
     if(t===def) o.selected=true; sel.appendChild(o);
 }); }
 function encOf(which){ return which==="M" ? "zvvnmod" : (which==="L" ? $("encL").value : $("encR").value); }
-// Left is the input side, right is output. Only the left selector is restricted to encodings meco
+// Left is the input side, right is output. Only the left selector is restricted to encodings mongol-convert
 // can decode; the right may name any target, utn57 included.
 function applySide(which){
     const box = $("box"+which), ro = which === "R";
@@ -653,7 +653,7 @@ function recompute(src){
 // --- reporting -----------------------------------------------------------
 // Nothing is ever sent from this page. The report button assembles the state into a prefilled
 // GitHub issue URL, shows it in full, and only opens it when you say so; you submit it yourself.
-const ISSUE_NEW = "https://github.com/Satsrag/meco-rust/issues/new";
+const ISSUE_NEW = "https://github.com/Satsrag/mongol-convert/issues/new";
 const clip = (t,n)=> t.length > n ? t.slice(0,n) + ` … (截断，共 ${t.length} 字符)` : t;
 
 // Each pane contributes both forms: the raw text, which can be pasted straight back into the
@@ -672,8 +672,8 @@ function diagnostics(){
         "input":  paneField("L"),
         "hub":    paneField("M"),
         "actual": paneField("R"),
-        "meco-error": errs.L || errs.M || errs.R || "",
-        "meco-warning": allWarnings().join("\n"),
+        "mongol-convert-error": errs.L || errs.M || errs.R || "",
+        "mongol-convert-warning": allWarnings().join("\n"),
         "screenshot": "",   // filled in by pasting; the URL cannot carry an image
         "environment": [
             `core: ${CORE} (wasm)`,
@@ -687,7 +687,7 @@ function diagnostics(){
 const LABEL = {
     "from-encoding":"Source encoding / 源编码", "to-encoding":"Target encoding / 目标编码",
     "input":"Input / 输入", "hub":"Hub / 中间码 zvvnmod", "actual":"Actual output / 实际输出",
-    "meco-error":"Error from meco / meco 报错", "meco-warning":"Warning from meco / meco 警告",
+    "mongol-convert-error":"Error from mongol-convert / mongol-convert 报错", "mongol-convert-warning":"Warning from mongol-convert / mongol-convert 警告",
     "environment":"Environment / 环境",
 };
 const reportText = d => Object.entries(d)
@@ -706,8 +706,8 @@ function issueBody(d, what){
         `### ${LABEL["hub"]}`, "", block("hub"), "",
         `### ${LABEL["actual"]}`, "", block("actual"), "",
         "### Expected output / 期望输出", "", "_(to be filled in / 待补充)_", "",
-        `### ${LABEL["meco-error"]}`, "", block("meco-error"), "",
-        `### ${LABEL["meco-warning"]}`, "", block("meco-warning"), "",
+        `### ${LABEL["mongol-convert-error"]}`, "", block("mongol-convert-error"), "",
+        `### ${LABEL["mongol-convert-warning"]}`, "", block("mongol-convert-warning"), "",
         "### Screenshot / 截图", "",
         shot ? "_(on your clipboard — paste it here with Cmd/Ctrl+V / 截图已复制到剪贴板，在这一行粘贴)_"
              : "_(none / 无)_", "",
@@ -729,7 +729,7 @@ function issueUrl(d, what){
 // the clipboard and open Copilot for pasting. It honours the repo's issue form when it drafts.
 const COPILOT = "https://github.com/copilot";
 const aiPrompt = (d, what) => [
-    "在 Satsrag/meco-rust 仓库建一个 issue，用 converter-bug.yml 表单。",
+    "在 Satsrag/mongol-convert 仓库建一个 issue，用 converter-bug.yml 表单。",
     "这是蒙古文编码转换器的问题。下面是页面采集的诊断数据，请据此写标题和描述；",
     "**码点序列原样保留，一个字符都不要改写或省略**。",
     what ? `\n用户的说明：${what}` : "",
@@ -788,7 +788,7 @@ function openReport(){
 }
 
 // The bar is always there — the report entry point should never be hunted for. It only turns red
-// when meco actually throws. Out-of-encoding text is already obvious from the red marking and is
+// when mongol-convert actually throws. Out-of-encoding text is already obvious from the red marking and is
 // usually the wrong encoding picked rather than a bug, so it does not raise the alarm.
 const IDLE_MSG = "A conversion looks wrong? Report it — the code points go along automatically. "
                + "/ 转换结果不对？点右边报一下，码点会自动带上。";
@@ -863,7 +863,7 @@ function wire(){
     $("shotDrop").onclick = ()=>showShot(null);
     $("shotSave").onclick = ()=>{
         const a = Object.assign(document.createElement("a"),
-            { href: URL.createObjectURL(shot), download: "meco-convert.png" });
+            { href: URL.createObjectURL(shot), download: "mongol-convert-convert.png" });
         a.click(); URL.revokeObjectURL(a.href);
     };
     $("reportAI").onclick = async ()=>{
