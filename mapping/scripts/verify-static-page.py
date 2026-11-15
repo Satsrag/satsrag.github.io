@@ -28,7 +28,7 @@ PARTICLE_ROOT_FIELDS = {"schema", "description", "provenance", "mappings"}
 PARTICLE_MAPPING_FIELDS = {"id", "pattern", "particleIndices", "sources", "targets", "note"}
 PARTICLE_IMMUTABLE_FIELDS = ("id", "pattern", "particleIndices")
 CHACHLAG_OBSERVATIONS_SHA256 = "cb10b161465fe497d936833032dd09a690659e0354dd9c93f5388a2f5e5710f9"
-REVIEWED_RUNTIME_BASELINE = "sha256:843af21ad5356565c2f0559a18feaafa3d000ae666d9035c389e26eda199c237"
+REVIEWED_RUNTIME_BASELINE = "sha256:19c6a20c222da16631f86cf271163d4ab43ea122957d55cc1e73b5e454fa23e2"
 
 
 def check(condition: object, message: str) -> None:
@@ -590,8 +590,8 @@ def main() -> None:
     check(len(particle_ids) == 47, "particle mapping IDs must be unique")
 
     check(
-        len(mapping["mappings"]) == len(generated["mappings"]) == 106,
-        "mapping must contain 106 alignment rows",
+        len(mapping["mappings"]) == len(generated["mappings"]) == 107,
+        "mapping must contain 107 alignment rows",
     )
     row_ids: set[str] = set()
 
@@ -623,7 +623,7 @@ def main() -> None:
 
         check(isinstance(entry.get("note"), str), f"mapping {index} note must be a string")
 
-    check(len(row_ids) == 106, "mapping must contain 106 unique alignment row IDs")
+    check(len(row_ids) == 107, "mapping must contain 107 unique alignment row IDs")
     generated_mappings_by_id = {entry["id"]: entry for entry in generated["mappings"]}
     current_mappings_by_id = {entry["id"]: entry for entry in mapping["mappings"]}
     check(
@@ -663,39 +663,39 @@ def main() -> None:
         "reviewed A_MEDI AA_FINA relation differs",
     )
     expected_chachlag_mappings = {
-        "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
-        "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
+        "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "Aa:isol"]),
+        "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "Aa:isol"]),
         "chachlag:M_FINA_AA_FINA": (
             ["M_FINA", "AA_FINA"],
-            ["M:fina", "MVS", "Aa:isol"],
+            ["M:fina", "Aa:isol"],
         ),
         "chachlag:L_FINA_AA_FINA": (
             ["L_FINA", "AA_FINA"],
-            ["L:fina", "MVS", "Aa:isol"],
+            ["L:fina", "Aa:isol"],
         ),
         "chachlag:S_FINA_AA_FINA": (
             ["S_FINA", "AA_FINA"],
-            ["S:fina", "MVS", "Aa:isol"],
+            ["S:fina", "Aa:isol"],
         ),
         "chachlag:R_FINA_AA_FINA": (
             ["R_FINA", "AA_FINA"],
-            ["R:fina", "MVS", "Aa:isol"],
+            ["R:fina", "Aa:isol"],
         ),
         "chachlag:I_ISOL_AA_FINA": (
             ["I_ISOL", "AA_FINA"],
-            ["I:isol", "MVS", "Aa:isol"],
+            ["I:isol", "Aa:isol"],
         ),
         "chachlag:I_FINA_AA_FINA": (
             ["I_FINA", "AA_FINA"],
-            ["I:fina", "MVS", "Aa:isol"],
+            ["I:fina", "Aa:isol"],
         ),
         "chachlag:U_FINA_AA_FINA": (
             ["U_FINA", "AA_FINA"],
-            ["U:fina", "MVS", "Aa:isol"],
+            ["U:fina", "Aa:isol"],
         ),
         "chachlag:H_FINA_AA_FINA": (
             ["H_FINA", "AA_FINA"],
-            ["H:fina", "MVS", "Aa:isol"],
+            ["H:fina", "Aa:isol"],
         ),
     }
     for row_id, (expected_sources, expected_targets) in expected_chachlag_mappings.items():
@@ -723,7 +723,7 @@ def main() -> None:
         if onset_match:
             observed_chachlag_onsets.add(f"{onset_match.group(1)}:{onset_match.group(2)}")
     generated_chachlag_onsets = {
-        next(target for target in generated_mappings_by_id[row_id]["targets"] if target not in {"MVS", "Aa:isol"})
+        next(target for target in generated_mappings_by_id[row_id]["targets"] if target not in {"Aa:isol"})
         for row_id in expected_chachlag_mappings
     }
     check(
@@ -781,7 +781,7 @@ def main() -> None:
         utn_index < zvvnmod_index < workbench_index < particle_index,
         "particle mappings must follow the workbench and both inventories",
     )
-    check('src="workbench.js?v=10"' in mapping_page, "mapping page has stale workbench controller")
+    check('src="workbench.js?v=11"' in mapping_page, "mapping page has stale workbench controller")
     check(
         'src="particle-mappings.js?v=6"' in mapping_page,
         "mapping page does not load particle controller",
@@ -796,7 +796,7 @@ def main() -> None:
         "mapping model import is not cache-busted with its controller",
     )
     check(
-        'from "./csv-data.mjs?v=3"' in workbench_controller,
+        'from "./csv-data.mjs?v=4"' in workbench_controller,
         "CSV model import is not cache-busted with its controller",
     )
     particle_controller = (MAPPING / "particle-mappings.js").read_text()

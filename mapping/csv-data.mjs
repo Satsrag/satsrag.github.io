@@ -123,8 +123,8 @@ const MAIN_DESCRIPTION = "Editable aligned Rust-named ZVVNMOD and UTN57 code seq
 const POSITION_NAMES = new Map([["isol", "isol"], ["i", "init"], ["m", "medi"], ["f", "fina"]]);
 const CANONICAL_SOURCE_TARGETS = new Map([
   ["AA_FINA", ["Aa:isol"]],
-  ["N_AA_FINA", ["N:fina", "MVS", "Aa:isol"]],
-  ["HX_AA_FINA", ["Hx:fina", "MVS", "Aa:isol"]],
+  ["N_AA_FINA", ["N:fina", "Aa:isol"]],
+  ["HX_AA_FINA", ["Hx:fina", "Aa:isol"]],
 ]);
 const POSITIONAL_ROWS = [
   [
@@ -135,14 +135,14 @@ const POSITIONAL_ROWS = [
   ],
 ];
 const CHACHLAG_ROWS = [
-  ["chachlag:M_FINA_AA_FINA", ["M_FINA", "AA_FINA"], ["M:fina", "MVS", "Aa:isol"]],
-  ["chachlag:L_FINA_AA_FINA", ["L_FINA", "AA_FINA"], ["L:fina", "MVS", "Aa:isol"]],
-  ["chachlag:S_FINA_AA_FINA", ["S_FINA", "AA_FINA"], ["S:fina", "MVS", "Aa:isol"]],
-  ["chachlag:R_FINA_AA_FINA", ["R_FINA", "AA_FINA"], ["R:fina", "MVS", "Aa:isol"]],
-  ["chachlag:I_ISOL_AA_FINA", ["I_ISOL", "AA_FINA"], ["I:isol", "MVS", "Aa:isol"]],
-  ["chachlag:I_FINA_AA_FINA", ["I_FINA", "AA_FINA"], ["I:fina", "MVS", "Aa:isol"]],
-  ["chachlag:U_FINA_AA_FINA", ["U_FINA", "AA_FINA"], ["U:fina", "MVS", "Aa:isol"]],
-  ["chachlag:H_FINA_AA_FINA", ["H_FINA", "AA_FINA"], ["H:fina", "MVS", "Aa:isol"]],
+  ["chachlag:M_FINA_AA_FINA", ["M_FINA", "AA_FINA"], ["M:fina", "Aa:isol"]],
+  ["chachlag:L_FINA_AA_FINA", ["L_FINA", "AA_FINA"], ["L:fina", "Aa:isol"]],
+  ["chachlag:S_FINA_AA_FINA", ["S_FINA", "AA_FINA"], ["S:fina", "Aa:isol"]],
+  ["chachlag:R_FINA_AA_FINA", ["R_FINA", "AA_FINA"], ["R:fina", "Aa:isol"]],
+  ["chachlag:I_ISOL_AA_FINA", ["I_ISOL", "AA_FINA"], ["I:isol", "Aa:isol"]],
+  ["chachlag:I_FINA_AA_FINA", ["I_FINA", "AA_FINA"], ["I:fina", "Aa:isol"]],
+  ["chachlag:U_FINA_AA_FINA", ["U_FINA", "AA_FINA"], ["U:fina", "Aa:isol"]],
+  ["chachlag:H_FINA_AA_FINA", ["H_FINA", "AA_FINA"], ["H:fina", "Aa:isol"]],
 ];
 const CHACHLAG_NOTE = "UTN chachlag onset-plus-suffix shape alignment.";
 

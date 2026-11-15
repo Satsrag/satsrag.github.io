@@ -103,8 +103,8 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(mapping["schema"], "zvvnmod-utn57-map-v3")
         self.assertEqual(len(source_ids), 80)
         self.assertEqual(set(source_ids), set(expected_sources))
-        self.assertEqual(len(mapping["mappings"]), 106)
-        self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 5)
+        self.assertEqual(len(mapping["mappings"]), 107)
+        self.assertEqual(sum(not entry["sources"] for entry in mapping["mappings"]), 6)
         self.assertEqual(sum(not entry["targets"] for entry in mapping["mappings"]), 1)
         self.assertTrue(all(entry["sources"] or entry["targets"] for entry in mapping["mappings"]))
         self.assertTrue(
@@ -173,39 +173,39 @@ class MappingDataTests(unittest.TestCase):
         generated = self.load_mapping()
         entries = {entry["id"]: entry for entry in generated["mappings"]}
         expected = {
-            "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "MVS", "Aa:isol"]),
-            "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "MVS", "Aa:isol"]),
+            "source:N_AA_FINA": (["N_AA_FINA"], ["N:fina", "Aa:isol"]),
+            "source:HX_AA_FINA": (["HX_AA_FINA"], ["Hx:fina", "Aa:isol"]),
             "chachlag:M_FINA_AA_FINA": (
                 ["M_FINA", "AA_FINA"],
-                ["M:fina", "MVS", "Aa:isol"],
+                ["M:fina", "Aa:isol"],
             ),
             "chachlag:L_FINA_AA_FINA": (
                 ["L_FINA", "AA_FINA"],
-                ["L:fina", "MVS", "Aa:isol"],
+                ["L:fina", "Aa:isol"],
             ),
             "chachlag:S_FINA_AA_FINA": (
                 ["S_FINA", "AA_FINA"],
-                ["S:fina", "MVS", "Aa:isol"],
+                ["S:fina", "Aa:isol"],
             ),
             "chachlag:R_FINA_AA_FINA": (
                 ["R_FINA", "AA_FINA"],
-                ["R:fina", "MVS", "Aa:isol"],
+                ["R:fina", "Aa:isol"],
             ),
             "chachlag:I_ISOL_AA_FINA": (
                 ["I_ISOL", "AA_FINA"],
-                ["I:isol", "MVS", "Aa:isol"],
+                ["I:isol", "Aa:isol"],
             ),
             "chachlag:I_FINA_AA_FINA": (
                 ["I_FINA", "AA_FINA"],
-                ["I:fina", "MVS", "Aa:isol"],
+                ["I:fina", "Aa:isol"],
             ),
             "chachlag:U_FINA_AA_FINA": (
                 ["U_FINA", "AA_FINA"],
-                ["U:fina", "MVS", "Aa:isol"],
+                ["U:fina", "Aa:isol"],
             ),
             "chachlag:H_FINA_AA_FINA": (
                 ["H_FINA", "AA_FINA"],
-                ["H:fina", "MVS", "Aa:isol"],
+                ["H:fina", "Aa:isol"],
             ),
         }
         self.assertEqual(
@@ -254,11 +254,11 @@ class MappingDataTests(unittest.TestCase):
         self.assertEqual(sources["HX_AA_FINA"]["name"], "Hx f Aa f")
         self.assertEqual(
             entries["source:HX_AA_FINA"]["targets"],
-            ["Hx:fina", "MVS", "Aa:isol"],
+            ["Hx:fina", "Aa:isol"],
         )
         self.assertEqual(
             entries["source:N_AA_FINA"]["targets"],
-            ["N:fina", "MVS", "Aa:isol"],
+            ["N:fina", "Aa:isol"],
         )
         self.assertEqual(entries["source:AA_FINA"]["targets"], ["Aa:isol"])
         self.assertNotIn("target:Aa:isol", entries)
@@ -281,35 +281,35 @@ class MappingDataTests(unittest.TestCase):
         chachlag = {
             "chachlag:M_FINA_AA_FINA": (
                 ["M_FINA", "AA_FINA"],
-                ["M:fina", "MVS", "Aa:isol"],
+                ["M:fina", "Aa:isol"],
             ),
             "chachlag:L_FINA_AA_FINA": (
                 ["L_FINA", "AA_FINA"],
-                ["L:fina", "MVS", "Aa:isol"],
+                ["L:fina", "Aa:isol"],
             ),
             "chachlag:S_FINA_AA_FINA": (
                 ["S_FINA", "AA_FINA"],
-                ["S:fina", "MVS", "Aa:isol"],
+                ["S:fina", "Aa:isol"],
             ),
             "chachlag:R_FINA_AA_FINA": (
                 ["R_FINA", "AA_FINA"],
-                ["R:fina", "MVS", "Aa:isol"],
+                ["R:fina", "Aa:isol"],
             ),
             "chachlag:I_ISOL_AA_FINA": (
                 ["I_ISOL", "AA_FINA"],
-                ["I:isol", "MVS", "Aa:isol"],
+                ["I:isol", "Aa:isol"],
             ),
             "chachlag:I_FINA_AA_FINA": (
                 ["I_FINA", "AA_FINA"],
-                ["I:fina", "MVS", "Aa:isol"],
+                ["I:fina", "Aa:isol"],
             ),
             "chachlag:U_FINA_AA_FINA": (
                 ["U_FINA", "AA_FINA"],
-                ["U:fina", "MVS", "Aa:isol"],
+                ["U:fina", "Aa:isol"],
             ),
             "chachlag:H_FINA_AA_FINA": (
                 ["H_FINA", "AA_FINA"],
-                ["H:fina", "MVS", "Aa:isol"],
+                ["H:fina", "Aa:isol"],
             ),
         }
         self.assertEqual(
@@ -325,8 +325,8 @@ class MappingDataTests(unittest.TestCase):
         controller = (ROOT / "mapping/workbench.js").read_text()
         self.assertLess(page.index('id="utn57"'), page.index('id="zvvnmod"'))
         self.assertLess(page.index('id="zvvnmod"'), page.index('id="mapping-workbench"'))
-        self.assertIn('src="workbench.js?v=10"', page)
-        self.assertIn('from "./csv-data.mjs?v=3"', controller)
+        self.assertIn('src="workbench.js?v=11"', page)
+        self.assertIn('from "./csv-data.mjs?v=4"', controller)
         self.assertIn('src="particle-mappings.js?v=6"', page)
         self.assertNotIn("zvvnmod-utn57-main.csv", controller)
         self.assertIn('const MAPPING_DATA_URL = "data/zvvnmod-utn57-map.csv";', controller)

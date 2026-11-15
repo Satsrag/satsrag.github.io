@@ -17,7 +17,7 @@ Static reference and editing page for preparing the UTN57 ↔ ZVVNMOD mapping Ma
 - `assets/writtenunits-Regular.ttf`: UTN57 written-unit display font from Mongolian Font Builder.
 - `assets/zvvnmod.ttf`: generated from meco's formal `zvvnmod.sfd`.
 
-The browser derives the 106-row main workbench from the sole runtime relation CSV plus the source and target inventories. Six currently unmatched inventory items are added as one-sided rows at load time; they are not stored in a second mapping file.
+The browser derives the 107-row main workbench from the sole runtime relation CSV plus the source and target inventories. Seven currently unmatched inventory items are added as one-sided rows at load time; they are not stored in a second mapping file.
 
 The reviewed relation preserves both `AA_FINA → Aa:isol` and `AA_FINA → Aa:fina` as equal-source positional candidates, plus the longer `A_MEDI AA_FINA → Aa:fina` collapse. This defines the compatible-consumer contract: first apply longest match, then prefer the candidate for the matched span's actual word position; when that position has no candidate, fall back to the unique target whose overall position matches the source sequence's theoretical position.
 
@@ -41,7 +41,7 @@ particle:37,D_INIT A_MEDI I_MEDI AA_FINA,D:init A:medi G:fina,
 
 The runtime mapping CSV always contains both non-empty ordered sides; their lengths remain independent. Inventory-derived workbench rows may be source-only or target-only, but never both empty. The browser can add, remove, reorder, or replace values on either side. The checked-in Git rows are the Restore baseline, and `direct`, `unmapped`, and `special` are runtime display states derived by comparing the current row with that baseline; they are not serialized.
 
-The UTN57 target inventory combines positional written units from `utn57-written-units.html` with format controls from `utn57-format-controls.json`. Both `Nirugu` (U+180A) and `MVS` (U+180E) are non-positional targets with `position: "control"`. Nirugu maps directly from the ZVVNMOD `NIRUGU` code; MVS is emitted structurally before chachlag `Aa:isol` rather than being read from a legacy ZVVNMOD control code.
+The UTN57 target inventory combines positional written units from `utn57-written-units.html` with format controls from `utn57-format-controls.json`. Both `Nirugu` (U+180A) and `MVS` (U+180E) are non-positional targets with `position: "control"`. Nirugu maps directly from the ZVVNMOD `NIRUGU` code; `MVS` remains in the target inventory for detached-suffix boundaries, while chachlag `Aa:isol` synthesizes its own leading `MVS` during normalization (`mongol-norm` 0.4.2+).
 
 The browser download combines main and particle rows whose two ordered sides are non-empty into `zvvnmod-utn57-map.csv`. Its metadata comment contains the exact Git baseline SHA-256 digest, and import rejects a CSV made against a different baseline. This downloaded file is the runtime relation authority and can be copied without conversion to `zvvnmod-utn57/data/zvvnmod-utn57-map.csv`. Source and target catalogues are always derived from their inventories and are not duplicated in the runtime CSV.
 
@@ -52,16 +52,16 @@ The checked-in probes pair pinned Mongfontbuilder shaping with pinned meco obser
 The published chachlag onset-plus-suffix shape mappings are:
 
 ```text
-N_AA_FINA                   → N:fina  + MVS + Aa:isol
-I_ISOL + AA_FINA           → I:isol  + MVS + Aa:isol
-I_FINA + AA_FINA           → I:fina  + MVS + Aa:isol
-U_FINA + AA_FINA           → U:fina  + MVS + Aa:isol
-H_FINA + AA_FINA           → H:fina  + MVS + Aa:isol
-HX_AA_FINA                  → Hx:fina + MVS + Aa:isol
-M_FINA + AA_FINA           → M:fina  + MVS + Aa:isol
-L_FINA + AA_FINA           → L:fina  + MVS + Aa:isol
-S_FINA + AA_FINA           → S:fina  + MVS + Aa:isol
-R_FINA + AA_FINA           → R:fina  + MVS + Aa:isol
+N_AA_FINA                   → N:fina  + Aa:isol
+I_ISOL + AA_FINA           → I:isol  + Aa:isol
+I_FINA + AA_FINA           → I:fina  + Aa:isol
+U_FINA + AA_FINA           → U:fina  + Aa:isol
+H_FINA + AA_FINA           → H:fina  + Aa:isol
+HX_AA_FINA                  → Hx:fina + Aa:isol
+M_FINA + AA_FINA           → M:fina  + Aa:isol
+L_FINA + AA_FINA           → L:fina  + Aa:isol
+S_FINA + AA_FINA           → S:fina  + Aa:isol
+R_FINA + AA_FINA           → R:fina  + Aa:isol
 ```
 
 UTN's syllabic phase selects special onset shapes for N/J/W/H/G. M/L/S/R do not need a `chachlag_onset` substitution: their ordinary connected final written units remain before the narrow MVS. The sequence rows therefore use the actual UTN written-unit shapes rather than nominal-letter labels or implementation-specific meco raw codes. For example, meco observes `S_MEDI` in one vendor path while UTN emits `S:fina`; the semantic mapping uses authoritative `S_FINA`.

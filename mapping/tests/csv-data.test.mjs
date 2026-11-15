@@ -24,7 +24,7 @@ test("runtime authority plus inventories derives the complete workbench", async 
   const particleMetadata = await read("zvvnmod-utn57-particles.csv");
   const particles = particlePayloadFromCsv(particleMetadata, runtime.mappings);
   assert.match(particleMetadata.split("\n")[1], /^id,pattern,particleIndices$/);
-  assert.equal(mapping.mappings.length, 106);
+  assert.equal(mapping.mappings.length, 107);
   assert.equal(particles.mappings.length, 47);
   assert.equal(targets.length, 97);
   assert.deepEqual(
@@ -36,6 +36,7 @@ test("runtime authority plus inventories derives the complete workbench", async 
       "target:Ix:isol",
       "target:Sz:fina",
       "target:Ux:isol",
+      "target:MVS",
     ],
   );
   assert.deepEqual(
