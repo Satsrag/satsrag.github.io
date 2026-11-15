@@ -21,8 +21,8 @@ FORMAT_CONTROL_SCHEMA = "utn57-format-controls-v1"
 CHACHLAG_NOTE = "UTN chachlag onset-plus-suffix shape alignment."
 CANONICAL_SOURCE_TARGETS = {
     "AA_FINA": ("Aa:isol",),
-    "N_AA_FINA": ("N:fina", "MVS", "Aa:isol"),
-    "HX_AA_FINA": ("Hx:fina", "MVS", "Aa:isol"),
+    "N_AA_FINA": ("N:fina", "Aa:isol"),
+    "HX_AA_FINA": ("Hx:fina", "Aa:isol"),
 }
 POSITIONAL_RULES = (
     (
@@ -36,31 +36,31 @@ CHACHLAG_RULES = (
     (
         "chachlag:M_FINA_AA_FINA",
         ("M_FINA", "AA_FINA"),
-        ("M:fina", "MVS", "Aa:isol"),
+        ("M:fina", "Aa:isol"),
     ),
     (
         "chachlag:L_FINA_AA_FINA",
         ("L_FINA", "AA_FINA"),
-        ("L:fina", "MVS", "Aa:isol"),
+        ("L:fina", "Aa:isol"),
     ),
     (
         "chachlag:S_FINA_AA_FINA",
         ("S_FINA", "AA_FINA"),
-        ("S:fina", "MVS", "Aa:isol"),
+        ("S:fina", "Aa:isol"),
     ),
     (
         "chachlag:R_FINA_AA_FINA",
         ("R_FINA", "AA_FINA"),
-        ("R:fina", "MVS", "Aa:isol"),
+        ("R:fina", "Aa:isol"),
     ),
     (
         "chachlag:I_ISOL_AA_FINA",
         ("I_ISOL", "AA_FINA"),
-        ("I:isol", "MVS", "Aa:isol"),
+        ("I:isol", "Aa:isol"),
     ),
-    ("chachlag:I_FINA_AA_FINA", ("I_FINA", "AA_FINA"), ("I:fina", "MVS", "Aa:isol")),
-    ("chachlag:U_FINA_AA_FINA", ("U_FINA", "AA_FINA"), ("U:fina", "MVS", "Aa:isol")),
-    ("chachlag:H_FINA_AA_FINA", ("H_FINA", "AA_FINA"), ("H:fina", "MVS", "Aa:isol")),
+    ("chachlag:I_FINA_AA_FINA", ("I_FINA", "AA_FINA"), ("I:fina", "Aa:isol")),
+    ("chachlag:U_FINA_AA_FINA", ("U_FINA", "AA_FINA"), ("U:fina", "Aa:isol")),
+    ("chachlag:H_FINA_AA_FINA", ("H_FINA", "AA_FINA"), ("H:fina", "Aa:isol")),
 )
 
 
